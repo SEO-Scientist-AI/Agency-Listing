@@ -28,19 +28,19 @@ export function AccordionComponent() {
                 <AccordionItem value="item-3">
                     <AccordionTrigger><span className="font-medium">Do I need to get certified?</span></AccordionTrigger>
                     <AccordionContent>
-                        <p>We strongly recommend all agencies get certified via Semrush Academy after they publish their profile; however, this is not mandatory. Certified agencies get a higher Agency Score. This helps agencies get more visibility and build rapport with the users of the platform. While taking our courses and passing the exams, you'll also get a chance to brush up on your Semrush knowledge and learn how to make the most of our tools.</p>
+                        <p>We strongly recommend all agencies get certified via Semrush Academy after they publish their profile; however, this is not mandatory. Certified agencies get a higher Agency Score. This helps agencies get more visibility and build rapport with the users of the platform. While taking our courses and passing the exams, you&#39;ll also get a chance to brush up on your Semrush knowledge and learn how to make the most of our tools.</p>
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-4">
                     <AccordionTrigger><span className="font-medium">What are the benefits of being listed?</span></AccordionTrigger>
                     <AccordionContent>
-                        <p>The Agency Partners platform connects the users looking for support with their digital projects with trusted marketing agencies. Once you're trained and certified via Semrush Academy, you'll get Semrush Agency Partner Status. You'll be able to create your dedicated page on semrush.com and get exposed to our global community of marketers.</p>
+                        <p>The Agency Partners platform connects the users looking for support with their digital projects with trusted marketing agencies. Once you&#39;re trained and certified via Semrush Academy, you&#39;ll get Semrush Agency Partner Status. You&#39;ll be able to create your dedicated page on semrush.com and get exposed to our global community of marketers.</p>
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-5">
                     <AccordionTrigger><span className="font-medium">What is Agency Score?</span></AccordionTrigger>
                     <AccordionContent>
-                        <p>Agency Score is our proprietary metric created to help you choose the right Agency Partner. It ranges from 1 to 5; the closer the score is to 5, the better. Each agency listed on the platform is evaluated based on their own website's health as well as their Semrush Academy certification status. Most successful agencies do everything for their business that they would do for their clients. We also encourage agencies to keep learning and getting better at what they do. We don't prioritize agencies based on the number of clients they have, since we would like to give equal opportunities to agencies of any scale and size.</p>
+                        <p>Agency Score is our proprietary metric created to help you choose the right Agency Partner. It ranges from 1 to 5; the closer the score is to 5, the better. Each agency listed on the platform is evaluated based on their own website&#39;s health as well as their Semrush Academy certification status. Most successful agencies do everything for their business that they would do for their clients. We also encourage agencies to keep learning and getting better at what they do. We don&#39;t prioritize agencies based on the number of clients they have, since we would like to give equal opportunities to agencies of any scale and size.</p>
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>

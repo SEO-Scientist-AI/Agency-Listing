@@ -67,7 +67,7 @@ const BrowseAgencyGalleries = () => {
                     We simplify every step of your research process
                 </h2>
                 <p className="mx-auto max-w-[500px] text-gray-600 dark:text-gray-400 text-center mt-2 ">
-                    Whatever your search criteria are, we've got you covered.
+                    Whatever your search criteria are, we&apos;ve got you covered.
                     Find a suitable agency team in one of these dedicated
                     galleries.
                 </p>
