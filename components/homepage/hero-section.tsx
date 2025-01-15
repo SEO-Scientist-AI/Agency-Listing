@@ -21,6 +21,23 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import AnimatedShinyText from "../magicui/animated-shiny-text";
 
+const avatarUrls = [
+    "https://avatars.githubusercontent.com/u/16860528",
+    "https://avatars.githubusercontent.com/u/20110627",
+    "https://avatars.githubusercontent.com/u/106103625",
+    "https://avatars.githubusercontent.com/u/59228569",
+];
+
+const avatarElements = avatarUrls.map((url) => (
+    <div key={url}>
+        <img
+            src={url}
+            alt="users avtar"
+            className="h-8 w-8 rounded-full border-2 border-background"
+        />
+    </div>
+));
+
 export default function HeroSection() {
     return (
         <section className="relative">
@@ -50,6 +67,9 @@ export default function HeroSection() {
                         <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
                             with Top Agencies Worldwide
                         </span>
+                        {/* <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-500/80 bg-clip-text text-center text-7xl font-semibold leading-none text-transparent dark:from-white dark:to-slate-900/10">
+                            Discover & Connect with Top Agencies Worldwide
+                        </span> */}
                     </h1>
 
                     <p className="mt-6 max-w-[700px] text-center text-lg text-muted-foreground">
@@ -152,20 +172,7 @@ export default function HeroSection() {
                     </div>
 
                     <div className="mt-12 flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex -space-x-4">
-                            {[...Array(4)].map((_, i) => (
-                                <div
-                                    key={i}
-                                    className={cn(
-                                        "h-8 w-8 rounded-full border-2 border-background",
-                                        i === 0 && "bg-orange-400",
-                                        i === 1 && "bg-rose-400",
-                                        i === 2 && "bg-blue-400",
-                                        i === 3 && "bg-green-400"
-                                    )}
-                                />
-                            ))}
-                        </div>
+                        <div className="flex -space-x-4">{avatarElements}</div>
                         <div>
                             <span className="font-medium">500+</span> Agencies
                             already listed
