@@ -73,7 +73,7 @@ export default function HeroSection() {
                     </h1>
 
                     <p className="mt-6 max-w-[700px] text-center text-lg text-muted-foreground">
-                        Share your requirements & we'll find the right service
+                        Share your requirements & we&#39;ll find the right service
                         provider for your project
                     </p>
 
