@@ -52,16 +52,11 @@
    };
    ```
 
-5. Set up the database:  // skip this step
-   Run Prisma migrations:
-   ```
-   npx prisma migrate dev
-   ```
 
-6. Start the development server:
+5. Start the development server:
    ```
    yarn dev
    ```
 
-7. Open your browser and navigate to `http://localhost:3000` to see your application running.
+6. Open your browser and navigate to `http://localhost:3000` to see your application running.
 
