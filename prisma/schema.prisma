@@ -71,3 +71,9 @@ model invoices {
   email           String
   user_id         String?
 }
+
+
+model agency {
+  service  
+
+}

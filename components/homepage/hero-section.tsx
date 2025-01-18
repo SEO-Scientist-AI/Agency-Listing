@@ -67,9 +67,6 @@ export default function HeroSection() {
                         <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
                             with Top Agencies Worldwide
                         </span>
-                        {/* <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-500/80 bg-clip-text text-center text-7xl font-semibold leading-none text-transparent dark:from-white dark:to-slate-900/10">
-                            Discover & Connect with Top Agencies Worldwide
-                        </span> */}
                     </h1>
 
                     <p className="mt-6 max-w-[700px] text-center text-lg text-muted-foreground">
