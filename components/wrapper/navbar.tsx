@@ -38,7 +38,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@clerk/nextjs";
 import { Dialog, DialogClose } from "@radix-ui/react-dialog";
 import { Icons } from "@/components/Icons";
-import { cities, states, countries } from "@/components/wrapper/locationData";
+import { cities, states, countries } from "@/components/wrapper/location-data";
 
 import {
   Building2,
