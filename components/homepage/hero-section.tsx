@@ -20,6 +20,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import AnimatedShinyText from "../magicui/animated-shiny-text";
+import { cities, services } from "../wrapper/location-data";
 
 const avatarUrls = [
     "https://avatars.githubusercontent.com/u/16860528",
@@ -76,6 +77,19 @@ export default function HeroSection() {
 
                     <Card className="mt-12 w-full max-w-4xl border-none bg-background/60 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                         <div className="grid gap-4 md:grid-cols-[1fr_1fr_1fr_auto]">
+                        <Select >
+                                <SelectTrigger className="h-12">
+                                    <Briefcase className="mr-2 h-4 w-4 text-muted-foreground" />
+                                    <SelectValue placeholder="All Services" />
+                                </SelectTrigger>
+                                <SelectContent className="h-48">
+                                    {services.map(service=>(
+                                        <SelectItem value={service.name} key={service.name}>
+                                        {service.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                             <Select>
                                 <SelectTrigger className="h-12">
                                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -103,42 +117,16 @@ export default function HeroSection() {
                                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <SelectValue placeholder="All Cities" />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="ny">New York</SelectItem>
-                                    <SelectItem value="ld">London</SelectItem>
-                                    <SelectItem value="sg">
-                                        Singapore
-                                    </SelectItem>
-                                    <SelectItem value="db">Dubai</SelectItem>
-                                    <SelectItem value="hk">
-                                        Hong Kong
-                                    </SelectItem>
+                                <SelectContent className="h-48">
+                                {cities.map(city=>(
+                                        <SelectItem value={city} key={city}>
+                                        {city}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
 
-                            <Select>
-                                <SelectTrigger className="h-12">
-                                    <Briefcase className="mr-2 h-4 w-4 text-muted-foreground" />
-                                    <SelectValue placeholder="All Services" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="digital">
-                                        Digital Marketing
-                                    </SelectItem>
-                                    <SelectItem value="seo">
-                                        SEO & Content
-                                    </SelectItem>
-                                    <SelectItem value="social">
-                                        Social Media
-                                    </SelectItem>
-                                    <SelectItem value="ppc">
-                                        PPC & Advertising
-                                    </SelectItem>
-                                    <SelectItem value="web">
-                                        Web Development
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                           
 
                             <Button
                                 size="lg"
@@ -151,13 +139,13 @@ export default function HeroSection() {
                     </Card>
 
                     <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
-                        <Link href="/dashboard">
+                        <Link href="/dashboard/get-listed">
                             <Button className="animate-buttonheartbeat rounded-md bg-orange-500 hover:bg-signature text-sm font-semibold text-white">
                                 List Your Agency
                             </Button>
                         </Link>
 
-                        <Link href="#">
+                        <Link href="/dashboard/find-agencies">
                             <Button variant="outline" className="flex gap-1">
                                 Find Agencies
                                 <Search

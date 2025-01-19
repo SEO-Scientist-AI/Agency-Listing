@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cities, countries, services, states } from "../wrapper/location-data";
+import TabContent from "../common/landing/tab-content";
 
 type Industry = {
     name: string;
@@ -105,31 +107,15 @@ const BrowseAgencyGalleries = () => {
                         >
                             By city
                         </TabsTrigger>
-                        <TabsTrigger
-                            value="size"
-                            className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d]"
-                        >
-                            By size
-                        </TabsTrigger>
+                        
                     </TabsList>
 
-                    <TabsContent value="industry" className="mt-6">
-                        <div className="flex flex-wrap gap-3 justify-center">
-                            {industries.map((industry) => (
-                                <motion.button
-                                    key={industry.name}
-                                    onClick={() =>
-                                        handleIndustryClick(industry.name)
-                                    }
-                                    className={`rounded-full border px-4 py-2 text-sm transition-colors hover:text-signature hover:border-signature`}
-                                    aria-pressed={industry.selected}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    {industry.name}
-                                </motion.button>
-                            ))}
-                        </div>
-                    </TabsContent>
+                    <TabContent tabData={services} value="service" />
+                    <TabContent tabData={industries} value="industry" />
+                    <TabContent tabData={countries} value="country"/>
+                    <TabContent tabData={states} value="state"/>
+                    <TabContent tabData={cities} value="city"/>
+                    
 
                     {/* Other TabsContent components can be added here for service, country, state, city, and size */}
                 </Tabs>
