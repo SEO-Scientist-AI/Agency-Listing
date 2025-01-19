@@ -2,7 +2,14 @@ import { agencyMainData } from '../agency-main-data'
 import { agencies } from '../agency-card-data'
 import { Badge } from '@/components/ui/badge'
 
-export default async function AgencyDetailPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: {
+    id: string
+  }
+  searchParams?: { [key: string]: string | string[] | undefined }
+}
+
+export default async function AgencyDetailPage({ params }: PageProps) {
   const id = params.id
   const agency = agencyMainData.find(a => a.id === parseInt(id))
   const agencyPreview = agencies.find(a => a.id === parseInt(id))
