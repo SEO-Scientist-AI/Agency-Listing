@@ -8,6 +8,7 @@ import {
     ArrowRightIcon,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { BorderBeam } from "../magicui/border-beam";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,10 +32,12 @@ const avatarUrls = [
 
 const avatarElements = avatarUrls.map((url) => (
     <div key={url}>
-        <img
+        <Image
             src={url}
-            alt="users avtar"
-            className="h-8 w-8 rounded-full border-2 border-background"
+            alt="users avatar"
+            width={32}
+            height={32}
+            className="rounded-full border-2 border-background"
         />
     </div>
 ));

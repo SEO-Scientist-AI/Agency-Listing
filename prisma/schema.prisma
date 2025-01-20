@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
@@ -72,8 +73,76 @@ model invoices {
   user_id         String?
 }
 
-
 model agency {
-  service  
+  id          Int      @id @default(autoincrement())
+  created_time DateTime @default(now())
+  name        String
+  slug        String   @unique
+  logo        String
+  description String
+  category    String
+  rating      Float
+  reviews     Int
+  location    String
+  budgetRange String
+  tagline     String
+  employees   String
+  founded     Int
+  expertise   String
+  mission     String
+  trackRecord String
+  
+  // Relations
+  services    agency_service[]
+  industries  agency_industry[]
+  locations   agency_location[]
+  socialLinks agency_social_link[]
+  awards      agency_award[]
+  impact      agency_impact?
+}
 
+model agency_service {
+  id        Int      @id @default(autoincrement())
+  name      String
+  color     String?
+  agencyId  Int
+  agency    agency   @relation(fields: [agencyId], references: [id])
+}
+
+model agency_industry {
+  id        Int      @id @default(autoincrement())
+  name      String
+  agencyId  Int
+  agency    agency   @relation(fields: [agencyId], references: [id])
+}
+
+model agency_location {
+  id        Int      @id @default(autoincrement())
+  name      String
+  agencyId  Int
+  agency    agency   @relation(fields: [agencyId], references: [id])
+}
+
+model agency_social_link {
+  id        Int      @id @default(autoincrement())
+  platform  String
+  url       String
+  agencyId  Int
+  agency    agency   @relation(fields: [agencyId], references: [id])
+}
+
+model agency_award {
+  id        Int      @id @default(autoincrement())
+  title     String
+  agencyId  Int
+  agency    agency   @relation(fields: [agencyId], references: [id])
+}
+
+model agency_impact {
+  id                Int      @id @default(autoincrement())
+  projectsCompleted Int
+  successRate       Int
+  clientSatisfaction Int
+  agencyId         Int      @unique
+  agency           agency   @relation(fields: [agencyId], references: [id])
 }

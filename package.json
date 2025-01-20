@@ -6,7 +6,10 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && next build"
+
   },
   "dependencies": {
     "@clerk/nextjs": "^6.0.2",
@@ -81,6 +84,10 @@
     "eslint-config-next": "latest",
     "postcss": "latest",
     "tailwindcss": "^3.3.5",
+    "ts-node": "^10.9.2",
     "typescript": "latest"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }

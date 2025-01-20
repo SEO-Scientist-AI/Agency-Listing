@@ -1,14 +1,38 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUpRight, Star, MapPin } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import SideBarFilters from "./side-bar-filters";
-import { agencies } from "./agency-card-data";
+import prisma from "@/lib/prisma";
+import { Suspense } from 'react';
 
-export default async function findAgencies() {
+interface PageProps {
+    params: Promise<{}>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+async function getAgencies() {
+    try {
+        const agencies = await prisma.agency.findMany({
+            include: {
+                services: true,
+            },
+        });
+        return agencies;
+    } catch (error) {
+        console.error('Error fetching agencies:', error);
+        return [];
+    }
+}
+
+export default async function FindAgencies({ params, searchParams }: PageProps) {
+    const resolvedParams = await params;
+    const resolvedSearchParams = await searchParams;
+    const agencies = await getAgencies();
+
     return (
-        <>
+        <Suspense fallback={<div>Loading...</div>}>
             <div className="container mx-auto max-w-7xl py-8">
                 <div className="space-y-4 mb-8">
                     <h1 className="text-3xl font-bold tracking-tight">
@@ -25,7 +49,7 @@ export default async function findAgencies() {
                 <div className="flex gap-6">
                     <div className="flex-1 grid gap-6">
                         {agencies.map((agency) => (
-                            <Link href={`/dashboard/find-agencies/${agency.id}`} key={agency.id}>
+                            <Link href={`/dashboard/find-agencies/${agency.slug}`} key={agency.id}>
                                 <Card className="transition-all hover:shadow-lg cursor-pointer">
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
                                         <div className="flex items-center gap-3">
@@ -59,9 +83,9 @@ export default async function findAgencies() {
                                         </p>
 
                                         <div className="flex flex-wrap gap-2 mb-3">
-                                            {agency.services.map((service, index) => (
+                                            {agency.services.map((service) => (
                                                 <span
-                                                    key={index}
+                                                    key={service.id}
                                                     className="px-2 py-0.5 rounded-full text-xs bg-secondary text-secondary-foreground"
                                                 >
                                                     {service.name}
@@ -83,6 +107,6 @@ export default async function findAgencies() {
                     <SideBarFilters />
                 </div>
             </div>
-        </>
+        </Suspense>
     );
 }
