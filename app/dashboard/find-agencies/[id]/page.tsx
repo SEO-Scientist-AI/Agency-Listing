@@ -1,20 +1,31 @@
-import { agencyMainData } from '../agency-main-data'
-import { agencies } from '../agency-card-data'
 import { Badge } from '@/components/ui/badge'
+import prisma from '@/lib/prisma'
+import { notFound } from 'next/navigation'
 
 interface PageProps {
   params: {
     id: string
   }
-  searchParams?: { [key: string]: string | string[] | undefined }
+}
+
+async function getAgency(id: number) {
+  const agency = await prisma.agency.findUnique({
+    where: { id },
+    include: {
+      services: true,
+      industries: true,
+      locations: true,
+      socialLinks: true,
+      impact: true,
+    },
+  });
+  return agency;
 }
 
 export default async function AgencyDetailPage({ params }: PageProps) {
-  const id = params.id
-  const agency = agencyMainData.find(a => a.id === parseInt(id))
-  const agencyPreview = agencies.find(a => a.id === parseInt(id))
+  const agency = await getAgency(parseInt(params.id));
 
-  if (!agency || !agencyPreview) return <div>Agency not found</div>
+  if (!agency) return notFound();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -22,7 +33,7 @@ export default async function AgencyDetailPage({ params }: PageProps) {
         {/* Header with Preview Info */}
         <div className="flex items-start gap-6">
           <img
-            src={agencyPreview.logo}
+            src={agency.logo}
             alt={agency.name}
             className="w-24 h-24 rounded-lg"
           />
@@ -38,15 +49,15 @@ export default async function AgencyDetailPage({ params }: PageProps) {
 
         {/* Social Links */}
         <div className="flex gap-4">
-          {Object.entries(agency.socialLinks).map(([platform, link]) => (
+          {agency.socialLinks.map((link) => (
             <a
-              key={platform}
-              href={link}
+              key={link.id}
+              href={link.url}
               className="text-blue-600 hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
-              {platform}
+              {link.platform}
             </a>
           ))}
         </div>
@@ -64,8 +75,8 @@ export default async function AgencyDetailPage({ params }: PageProps) {
           <div>
             <h3 className="font-semibold">Locations</h3>
             <ul>
-              {agency.locations.map((location, index) => (
-                <li key={index}>{location}</li>
+              {agency.locations.map((location) => (
+                <li key={location.id}>{location.name}</li>
               ))}
             </ul>
           </div>
@@ -75,12 +86,16 @@ export default async function AgencyDetailPage({ params }: PageProps) {
         <div className="prose max-w-none">
           <p>{agency.description}</p>
           
-          <h2>Our Impact</h2>
-          <ul>
-            <li>{agency.impact.experience}</li>
-            <li>{agency.impact.revenue}</li>
-            <li>{agency.impact.businesses}</li>
-          </ul>
+          {agency.impact && (
+            <>
+              <h2>Our Impact</h2>
+              <ul>
+                <li>{agency.impact.experience}</li>
+                <li>{agency.impact.revenue}</li>
+                <li>{agency.impact.businesses}</li>
+              </ul>
+            </>
+          )}
         </div>
 
         {/* Services and Industries */}
@@ -88,9 +103,9 @@ export default async function AgencyDetailPage({ params }: PageProps) {
           <div>
             <h2 className="text-xl font-bold mb-4">Services</h2>
             <div className="flex flex-wrap gap-2">
-              {agency.services.map((service, index) => (
-                <Badge key={index} variant="secondary">
-                  {service}
+              {agency.services.map((service) => (
+                <Badge key={service.id} variant="secondary">
+                  {service.name}
                 </Badge>
               ))}
             </div>
@@ -99,9 +114,9 @@ export default async function AgencyDetailPage({ params }: PageProps) {
           <div>
             <h2 className="text-xl font-bold mb-4">Industries</h2>
             <div className="flex flex-wrap gap-2">
-              {agency.industries.map((industry, index) => (
-                <Badge key={index} variant="secondary">
-                  {industry}
+              {agency.industries.map((industry) => (
+                <Badge key={industry.id} variant="secondary">
+                  {industry.name}
                 </Badge>
               ))}
             </div>

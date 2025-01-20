@@ -26,7 +26,6 @@ export const AgencyCard = ({ agency }: { agency: (typeof agencies)[0] }) => {
               {agency.services.map((service, index) => (
                 <Badge 
                   key={index} 
-                  variant="secondary"
                 >
                   {service.name}
                 </Badge>

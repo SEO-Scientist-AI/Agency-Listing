@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
@@ -72,8 +73,77 @@ model invoices {
   user_id         String?
 }
 
-
-model agency {
-  service  
-
+model Agency {
+  id          Int      @id @default(autoincrement())
+  created_time DateTime @default(now())
+  name        String
+  logo        String
+  description String
+  category    String
+  rating      Float
+  reviews     Int
+  location    String
+  budgetRange String
+  tagline     String
+  employees   String
+  founded     Int
+  expertise   String
+  mission     String
+  trackRecord String
+  
+  // Relations
+  services    AgencyService[]
+  industries  AgencyIndustry[]
+  locations   AgencyLocation[]
+  socialLinks AgencySocialLink[]
+  awards      AgencyAward[]
+  impact      AgencyImpact?
 }
+
+model AgencyService {
+  id        Int      @id @default(autoincrement())
+  name      String
+  color     String?
+  agencyId  Int
+  agency    Agency   @relation(fields: [agencyId], references: [id])
+}
+
+model AgencyIndustry {
+  id        Int      @id @default(autoincrement())
+  name      String
+  agencyId  Int
+  agency    Agency   @relation(fields: [agencyId], references: [id])
+}
+
+model AgencyLocation {
+  id        Int      @id @default(autoincrement())
+  name      String
+  agencyId  Int
+  agency    Agency   @relation(fields: [agencyId], references: [id])
+}
+
+model AgencySocialLink {
+  id        Int      @id @default(autoincrement())
+  platform  String
+  url       String
+  agencyId  Int
+  agency    Agency   @relation(fields: [agencyId], references: [id])
+}
+
+model AgencyAward {
+  id        Int      @id @default(autoincrement())
+  title     String
+  agencyId  Int
+  agency    Agency   @relation(fields: [agencyId], references: [id])
+}
+
+model AgencyImpact {
+  id          Int      @id @default(autoincrement())
+  experience  String
+  revenue     String
+  businesses  String
+  agencyId    Int      @unique
+  agency      Agency   @relation(fields: [agencyId], references: [id])
+}
+
+

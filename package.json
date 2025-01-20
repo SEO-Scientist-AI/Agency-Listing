@@ -81,6 +81,10 @@
     "eslint-config-next": "latest",
     "postcss": "latest",
     "tailwindcss": "^3.3.5",
+    "ts-node": "^10.9.2",
     "typescript": "latest"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }
