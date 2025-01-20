@@ -14,7 +14,7 @@ interface PageProps {
 
 async function getAgencies() {
     try {
-        const agencies = await prisma.agency.findMany({
+        const agencies = await prisma.Agency.findMany({
             include: {
                 services: true,
             },
