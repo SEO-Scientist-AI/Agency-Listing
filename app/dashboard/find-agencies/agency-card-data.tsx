@@ -1,16 +1,19 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export const AgencyCard = ({ agency }: { agency: (typeof agencies)[0] }) => {
     return (
-      <Link href={`/dashboard/find-agencies/${agency.id}`}>
+      <Link href={`/dashboard/find-agencies/${agency.slug}`}>
         <Card className="hover:shadow-lg transition-shadow duration-200">
           <CardHeader className="flex flex-row items-center gap-4">
-            <img 
+            <Image 
               src={agency.logo} 
               alt={agency.name} 
-              className="w-16 h-16 object-cover rounded-lg"
+              width={64}
+              height={64}
+              className="object-cover rounded-lg"
             />
             <div>
               <h3 className="font-semibold text-lg">{agency.name}</h3>
@@ -44,6 +47,7 @@ export const AgencyCard = ({ agency }: { agency: (typeof agencies)[0] }) => {
 export const agencies = [
       {
           id: 1,
+          slug: "digital-marketing-pro-agency",
           name: "Digital Marketing Pro Agency",
           logo: "https://images.unsplash.com/photo-1612810806546-ebbf22b53496?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
           description: "We help businesses grow their online presence through data-driven SEO strategies and comprehensive digital marketing solutions.",
@@ -60,6 +64,7 @@ export const agencies = [
       },
       {
           id: 2,
+          slug: "creative-design-solutions",
           name: "Creative Design Solutions",
           logo: "https://res.cloudinary.com/dfhp33ufc/image/upload/v1715276560/logos/nymiivu48d5lywhf9rpf.svg",
           description: "Award-winning design agency specializing in brand identity, UI/UX design, and creative solutions for modern businesses.",

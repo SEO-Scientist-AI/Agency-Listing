@@ -7,9 +7,14 @@ import SideBarFilters from "./side-bar-filters";
 import prisma from "@/lib/prisma";
 import { Suspense } from 'react';
 
+interface PageProps {
+    params: Promise<{}>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
 async function getAgencies() {
     try {
-        const agencies = await prisma.Agency.findMany({
+        const agencies = await prisma.agency.findMany({
             include: {
                 services: true,
             },
@@ -21,7 +26,9 @@ async function getAgencies() {
     }
 }
 
-export default async function FindAgencies() {
+export default async function FindAgencies({ params, searchParams }: PageProps) {
+    const resolvedParams = await params;
+    const resolvedSearchParams = await searchParams;
     const agencies = await getAgencies();
 
     return (
@@ -42,7 +49,7 @@ export default async function FindAgencies() {
                 <div className="flex gap-6">
                     <div className="flex-1 grid gap-6">
                         {agencies.map((agency) => (
-                            <Link href={`/dashboard/find-agencies/${agency.id}`} key={agency.id}>
+                            <Link href={`/dashboard/find-agencies/${agency.slug}`} key={agency.id}>
                                 <Card className="transition-all hover:shadow-lg cursor-pointer">
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
                                         <div className="flex items-center gap-3">

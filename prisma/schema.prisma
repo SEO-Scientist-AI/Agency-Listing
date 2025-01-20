@@ -77,6 +77,7 @@ model Agency {
   id          Int      @id @default(autoincrement())
   created_time DateTime @default(now())
   name        String
+  slug        String   @unique
   logo        String
   description String
   category    String
@@ -138,12 +139,10 @@ model AgencyAward {
 }
 
 model AgencyImpact {
-  id          Int      @id @default(autoincrement())
-  experience  String
-  revenue     String
-  businesses  String
-  agencyId    Int      @unique
-  agency      Agency   @relation(fields: [agencyId], references: [id])
+  id                Int      @id @default(autoincrement())
+  projectsCompleted Int
+  successRate       Int
+  clientSatisfaction Int
+  agencyId         Int      @unique
+  agency           Agency   @relation(fields: [agencyId], references: [id])
 }
-
-
