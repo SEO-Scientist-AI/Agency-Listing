@@ -73,7 +73,7 @@ model invoices {
   user_id         String?
 }
 
-model Agency {
+model agency {
   id          Int      @id @default(autoincrement())
   created_time DateTime @default(now())
   name        String
@@ -93,56 +93,56 @@ model Agency {
   trackRecord String
   
   // Relations
-  services    AgencyService[]
-  industries  AgencyIndustry[]
-  locations   AgencyLocation[]
-  socialLinks AgencySocialLink[]
-  awards      AgencyAward[]
-  impact      AgencyImpact?
+  services    agency_service[]
+  industries  agency_industry[]
+  locations   agency_location[]
+  socialLinks agency_social_link[]
+  awards      agency_award[]
+  impact      agency_impact?
 }
 
-model AgencyService {
+model agency_service {
   id        Int      @id @default(autoincrement())
   name      String
   color     String?
   agencyId  Int
-  agency    Agency   @relation(fields: [agencyId], references: [id])
+  agency    agency   @relation(fields: [agencyId], references: [id])
 }
 
-model AgencyIndustry {
+model agency_industry {
   id        Int      @id @default(autoincrement())
   name      String
   agencyId  Int
-  agency    Agency   @relation(fields: [agencyId], references: [id])
+  agency    agency   @relation(fields: [agencyId], references: [id])
 }
 
-model AgencyLocation {
+model agency_location {
   id        Int      @id @default(autoincrement())
   name      String
   agencyId  Int
-  agency    Agency   @relation(fields: [agencyId], references: [id])
+  agency    agency   @relation(fields: [agencyId], references: [id])
 }
 
-model AgencySocialLink {
+model agency_social_link {
   id        Int      @id @default(autoincrement())
   platform  String
   url       String
   agencyId  Int
-  agency    Agency   @relation(fields: [agencyId], references: [id])
+  agency    agency   @relation(fields: [agencyId], references: [id])
 }
 
-model AgencyAward {
+model agency_award {
   id        Int      @id @default(autoincrement())
   title     String
   agencyId  Int
-  agency    Agency   @relation(fields: [agencyId], references: [id])
+  agency    agency   @relation(fields: [agencyId], references: [id])
 }
 
-model AgencyImpact {
+model agency_impact {
   id                Int      @id @default(autoincrement())
   projectsCompleted Int
   successRate       Int
   clientSatisfaction Int
   agencyId         Int      @unique
-  agency           Agency   @relation(fields: [agencyId], references: [id])
+  agency           agency   @relation(fields: [agencyId], references: [id])
 }

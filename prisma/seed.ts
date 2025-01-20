@@ -2,144 +2,136 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
 async function main() {
   // Delete existing data
-  await prisma.agencyImpact.deleteMany();
-  await prisma.agencyAward.deleteMany();
-  await prisma.agencySocialLink.deleteMany();
-  await prisma.agencyLocation.deleteMany();
-  await prisma.agencyIndustry.deleteMany();
-  await prisma.agencyService.deleteMany();
+  await prisma.agency_impact.deleteMany();
+  await prisma.agency_award.deleteMany();
+  await prisma.agency_social_link.deleteMany();
+  await prisma.agency_location.deleteMany();
+  await prisma.agency_industry.deleteMany();
+  await prisma.agency_service.deleteMany();
   await prisma.agency.deleteMany();
 
-  // Create agencies with their related data
+  // Create agencies
   const agency1 = await prisma.agency.create({
     data: {
-      name: "Digital Marketing Pro Agency",
-      slug: slugify("Digital Marketing Pro Agency"),
-      logo: "https://images.unsplash.com/photo-1612810806546-ebbf22b53496?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3",
-      description: "We help businesses grow their online presence through data-driven SEO strategies and comprehensive digital marketing solutions.",
+      name: "Digital Growth Partners",
+      slug: "digital-growth-partners",
+      logo: "https://example.com/dgp-logo.png",
+      description: "A full-service digital marketing agency specializing in growth strategies",
       category: "Digital Marketing",
       rating: 4.8,
-      reviews: 128,
-      location: "New York City, NY",
-      budgetRange: "$1,000 - $5,000 /month",
-      tagline: "Experts in SEO & Digital Marketing",
-      employees: "10-50",
+      reviews: 127,
+      location: "New York, USA",
+      budgetRange: "$10,000 - $50,000",
+      tagline: "Driving Digital Success Through Innovation",
+      employees: "50-100",
       founded: 2015,
-      expertise: "Leading digital marketing solutions with proven ROI",
-      mission: "Empowering businesses through digital excellence",
-      trackRecord: "Proven track record",
+      expertise: "SEO, PPC, Content Marketing",
+      mission: "To help businesses achieve sustainable growth through digital excellence",
+      trackRecord: "Over 500 successful projects completed",
       services: {
         create: [
-          { name: "SEO", color: "indigo" },
-          { name: "Content Marketing", color: "blue" },
-          { name: "PPC", color: "green" },
-        ],
+          { name: "Search Engine Optimization", color: "#FF5733" },
+          { name: "Pay-Per-Click Advertising", color: "#33FF57" },
+          { name: "Content Marketing", color: "#3357FF" }
+        ]
       },
       industries: {
         create: [
           { name: "E-commerce" },
-          { name: "Tech" },
-          { name: "Healthcare" },
-        ],
+          { name: "SaaS" },
+          { name: "Healthcare" }
+        ]
       },
       locations: {
         create: [
-          { name: "New York City, NY" },
-          { name: "Boston, MA" },
-        ],
+          { name: "New York" },
+          { name: "Los Angeles" }
+        ]
       },
       socialLinks: {
         create: [
-          { platform: "Facebook", url: "https://facebook.com/digitalmarketingpro" },
-          { platform: "Twitter", url: "https://twitter.com/digitalmarketingpro" },
-        ],
+          { platform: "LinkedIn", url: "https://linkedin.com/company/dgp" },
+          { platform: "Twitter", url: "https://twitter.com/dgp" }
+        ]
       },
       awards: {
         create: [
-          { title: "Best Digital Marketing Agency 2023" },
-          { title: "Top SEO Agency" },
-        ],
+          { title: "Best Digital Marketing Agency 2024" },
+          { title: "Top SEO Agency Award" }
+        ]
       },
       impact: {
         create: {
-          projectsCompleted: 250,
+          projectsCompleted: 500,
           successRate: 95,
-          clientSatisfaction: 98,
-        },
-      },
-    },
+          clientSatisfaction: 98
+        }
+      }
+    }
   });
 
   const agency2 = await prisma.agency.create({
     data: {
-      name: "Creative Design Solutions",
-      slug: slugify("Creative Design Solutions"),
-      logo: "https://res.cloudinary.com/dfhp33ufc/image/upload/v1715276560/logos/nymiivu48d5lywhf9rpf.svg",
-      description: "Award-winning design agency specializing in brand identity, UI/UX design, and creative solutions for modern businesses.",
-      category: "Design",
-      rating: 4.9,
-      reviews: 85,
-      location: "San Francisco, CA",
-      budgetRange: "$5,000 - $25,000 /project",
-      tagline: "Where Creativity Meets Strategy",
-      employees: "25-100",
-      founded: 2012,
-      expertise: "Brand identity and UI/UX design",
-      mission: "Creating impactful digital experiences",
-      trackRecord: "Award-winning designs",
+      name: "Tech Marketing Solutions",
+      slug: "tech-marketing-solutions",
+      logo: "https://example.com/tms-logo.png",
+      description: "Specialized in B2B tech marketing and lead generation",
+      category: "B2B Marketing",
+      rating: 4.7,
+      reviews: 89,
+      location: "San Francisco, USA",
+      budgetRange: "$25,000 - $100,000",
+      tagline: "Transforming Tech Marketing",
+      employees: "25-50",
+      founded: 2018,
+      expertise: "B2B Marketing, Lead Generation, Marketing Automation",
+      mission: "To accelerate growth for technology companies through strategic marketing",
+      trackRecord: "250+ tech companies served",
       services: {
         create: [
-          { name: "UI/UX Design", color: "purple" },
-          { name: "Brand Identity", color: "pink" },
-          { name: "Web Design", color: "yellow" },
-        ],
+          { name: "B2B Marketing Strategy", color: "#4287f5" },
+          { name: "Lead Generation", color: "#42f5a7" },
+          { name: "Marketing Automation", color: "#f542a7" }
+        ]
       },
       industries: {
         create: [
           { name: "Technology" },
-          { name: "Startups" },
-          { name: "Retail" },
-        ],
+          { name: "Software" },
+          { name: "IT Services" }
+        ]
       },
       locations: {
         create: [
-          { name: "San Francisco, CA" },
-          { name: "Los Angeles, CA" },
-        ],
+          { name: "San Francisco" },
+          { name: "Austin" }
+        ]
       },
       socialLinks: {
         create: [
-          { platform: "Instagram", url: "https://instagram.com/creativedesignsolutions" },
-          { platform: "Behance", url: "https://behance.net/creativedesignsolutions" },
-        ],
+          { platform: "LinkedIn", url: "https://linkedin.com/company/tms" },
+          { platform: "Twitter", url: "https://twitter.com/tms" }
+        ]
       },
       awards: {
         create: [
-          { title: "Best Design Agency 2023" },
-          { title: "Innovation in Design" },
-        ],
+          { title: "Best B2B Marketing Agency 2024" },
+          { title: "MarTech Innovation Award" }
+        ]
       },
       impact: {
         create: {
-          projectsCompleted: 180,
-          successRate: 97,
-          clientSatisfaction: 99,
-        },
-      },
-    },
+          projectsCompleted: 250,
+          successRate: 92,
+          clientSatisfaction: 96
+        }
+      }
+    }
   });
 
-  console.log('Database has been seeded. 🌱');
+  console.log('Seeding completed successfully');
 }
 
 main()
