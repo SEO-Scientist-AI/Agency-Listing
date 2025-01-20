@@ -10,7 +10,7 @@ interface PageProps {
 }
 
 async function getAgency(slug: string) {
-  const agency = await prisma.Agency.findFirst({
+  const agency = await prisma.agency.findFirst({
     where: { slug },
     include: {
       services: true,
