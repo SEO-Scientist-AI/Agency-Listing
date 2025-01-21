@@ -9,7 +9,6 @@
     "lint": "next lint",
     "postinstall": "prisma generate",
     "vercel-build": "prisma generate && next build"
-
   },
   "dependencies": {
     "@clerk/nextjs": "^6.0.2",
@@ -76,7 +75,7 @@
     "zod": "^3.23.5"
   },
   "devDependencies": {
-    "@types/node": "latest",
+    "@types/node": "^22.10.7",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "autoprefixer": "latest",
@@ -85,7 +84,7 @@
     "postcss": "latest",
     "tailwindcss": "^3.3.5",
     "ts-node": "^10.9.2",
-    "typescript": "latest"
+    "typescript": "^5.7.3"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

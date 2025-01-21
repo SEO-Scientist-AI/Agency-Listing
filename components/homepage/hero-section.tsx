@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { BorderBeam } from "../magicui/border-beam";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,19 +23,20 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import AnimatedShinyText from "../magicui/animated-shiny-text";
 import { cities, services } from "../wrapper/location-data";
+import { useState } from "react";
 
 const avatarUrls = [
-    "https://avatars.githubusercontent.com/u/16860528",
-    "https://avatars.githubusercontent.com/u/20110627",
-    "https://avatars.githubusercontent.com/u/106103625",
-    "https://avatars.githubusercontent.com/u/59228569",
+    { id: 1, url: "/images/placeholder.svg" },
+    { id: 2, url: "/images/placeholder.svg" },
+    { id: 3, url: "/images/placeholder.svg" },
+    { id: 4, url: "/images/placeholder.svg" },
 ];
 
-const avatarElements = avatarUrls.map((url) => (
-    <div key={url}>
+const avatarElements = avatarUrls.map((avatar) => (
+    <div key={avatar.id}>
         <Image
-            src={url}
-            alt="users avatar"
+            src={avatar.url}
+            alt={`User avatar ${avatar.id}`}
             width={32}
             height={32}
             className="rounded-full border-2 border-background"
@@ -43,6 +45,28 @@ const avatarElements = avatarUrls.map((url) => (
 ));
 
 export default function HeroSection() {
+    const router = useRouter();
+    const [selectedService, setSelectedService] = useState<string>("");
+    const [selectedRegion, setSelectedRegion] = useState<string>("");
+    const [selectedCity, setSelectedCity] = useState<string>("");
+
+    const handleSearch = () => {
+        const searchParams = new URLSearchParams();
+        
+        if (selectedService) {
+            searchParams.append("service", selectedService);
+        }
+        if (selectedRegion) {
+            searchParams.append("region", selectedRegion);
+        }
+        if (selectedCity) {
+            searchParams.append("city", selectedCity);
+        }
+
+        const queryString = searchParams.toString();
+        router.push(`/dashboard/find-agencies${queryString ? `?${queryString}` : ""}`);
+    };
+
     return (
         <section className="relative">
             {/* Background gradient */}
@@ -80,60 +104,52 @@ export default function HeroSection() {
 
                     <Card className="mt-12 w-full max-w-4xl border-none bg-background/60 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                         <div className="grid gap-4 md:grid-cols-[1fr_1fr_1fr_auto]">
-                        <Select >
+                            <Select value={selectedService} onValueChange={setSelectedService}>
                                 <SelectTrigger className="h-12">
                                     <Briefcase className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <SelectValue placeholder="All Services" />
                                 </SelectTrigger>
                                 <SelectContent className="h-48">
-                                    {services.map(service=>(
+                                    {services.map(service => (
                                         <SelectItem value={service.name} key={service.name}>
-                                        {service.name}
+                                            {service.name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <Select>
+
+                            <Select value={selectedRegion} onValueChange={setSelectedRegion}>
                                 <SelectTrigger className="h-12">
                                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <SelectValue placeholder="Select Region" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="na">
-                                        North America
-                                    </SelectItem>
+                                    <SelectItem value="na">North America</SelectItem>
                                     <SelectItem value="eu">Europe</SelectItem>
-                                    <SelectItem value="asia">
-                                        Asia Pacific
-                                    </SelectItem>
-                                    <SelectItem value="latam">
-                                        Latin America
-                                    </SelectItem>
-                                    <SelectItem value="mea">
-                                        Middle East & Africa
-                                    </SelectItem>
+                                    <SelectItem value="asia">Asia Pacific</SelectItem>
+                                    <SelectItem value="latam">Latin America</SelectItem>
+                                    <SelectItem value="mea">Middle East & Africa</SelectItem>
                                 </SelectContent>
                             </Select>
 
-                            <Select>
+                            <Select value={selectedCity} onValueChange={setSelectedCity}>
                                 <SelectTrigger className="h-12">
                                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <SelectValue placeholder="All Cities" />
                                 </SelectTrigger>
                                 <SelectContent className="h-48">
-                                {cities.map(city=>(
+                                    {cities.map(city => (
                                         <SelectItem value={city} key={city}>
-                                        {city}
+                                            {city}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
 
-                           
-
                             <Button
                                 size="lg"
                                 className="h-12 bg-orange-500 px-8 hover:bg-orange-600"
+                                onClick={handleSearch}
                             >
                                 Search
                                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -151,10 +167,7 @@ export default function HeroSection() {
                         <Link href="/dashboard/find-agencies">
                             <Button variant="outline" className="flex gap-1">
                                 Find Agencies
-                                <Search
-                                    className="w-4 h-4"
-                                    aria-hidden="true"
-                                />
+                                <Search className="w-4 h-4" aria-hidden="true" />
                             </Button>
                         </Link>
                     </div>

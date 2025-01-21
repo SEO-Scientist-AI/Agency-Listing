@@ -8,7 +8,7 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { agencies } from "./agency-card-data";
+import { agencies } from "./agency-card";
 
 // Extract unique values from agencies data
 const allServices = [...new Set(agencies.flatMap(agency => agency.services))];

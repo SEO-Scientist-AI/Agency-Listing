@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["multiSchema"]
 }
 
@@ -74,75 +74,30 @@ model invoices {
 }
 
 model agency {
-  id          Int      @id @default(autoincrement())
-  created_time DateTime @default(now())
-  name        String
-  slug        String   @unique
-  logo        String
-  description String
-  category    String
-  rating      Float
-  reviews     Int
-  location    String
-  budgetRange String
-  tagline     String
-  employees   String
-  founded     Int
-  expertise   String
-  mission     String
-  trackRecord String
-  
-  // Relations
-  services    agency_service[]
-  industries  agency_industry[]
-  locations   agency_location[]
-  socialLinks agency_social_link[]
-  awards      agency_award[]
-  impact      agency_impact?
-}
+  id                  Int      @id @default(autoincrement())
+  created_at          DateTime @default(now())
+  slug                String   @unique
+  name                String
+  tagline             String
+  description         String
+  location            String
+  founded_year        Int
+  team_size           String
+  starting_price      String
+  min_budget          Int
+  max_budget          Int
+  budget_ranges       Json
+  services            Json
+  industries          Json
+  client_sizes        Json
+  project_durations   Json
+  locations           Json
+  languages           Json
+  google_rating       Float
+  google_review_count Int
+  expertise           Json
 
-model agency_service {
-  id        Int      @id @default(autoincrement())
-  name      String
-  color     String?
-  agencyId  Int
-  agency    agency   @relation(fields: [agencyId], references: [id])
-}
-
-model agency_industry {
-  id        Int      @id @default(autoincrement())
-  name      String
-  agencyId  Int
-  agency    agency   @relation(fields: [agencyId], references: [id])
-}
-
-model agency_location {
-  id        Int      @id @default(autoincrement())
-  name      String
-  agencyId  Int
-  agency    agency   @relation(fields: [agencyId], references: [id])
-}
-
-model agency_social_link {
-  id        Int      @id @default(autoincrement())
-  platform  String
-  url       String
-  agencyId  Int
-  agency    agency   @relation(fields: [agencyId], references: [id])
-}
-
-model agency_award {
-  id        Int      @id @default(autoincrement())
-  title     String
-  agencyId  Int
-  agency    agency   @relation(fields: [agencyId], references: [id])
-}
-
-model agency_impact {
-  id                Int      @id @default(autoincrement())
-  projectsCompleted Int
-  successRate       Int
-  clientSatisfaction Int
-  agencyId         Int      @unique
-  agency           agency   @relation(fields: [agencyId], references: [id])
+  @@index([slug])
+  @@index([location])
+  @@index([min_budget, max_budget])
 }

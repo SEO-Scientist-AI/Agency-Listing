@@ -2,11 +2,28 @@
 const nextConfig = {
   experimental: {
     serverActions: {
-      enabled: true
+      allowedOrigins: ['localhost:3000'],
     },
   },
   images: {
-    domains: ['images.unsplash.com', 'res.cloudinary.com', 'utfs.io']
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'utfs.io'
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com'
+      }
+    ]
   }
 }
 
