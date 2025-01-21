@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+
 import {
     Building2,
     MapPin,
@@ -27,16 +28,15 @@ const GoogleLogo = () => (
     />
 );
 
-interface PageProps {
-  params: {
-    slug: string
-  }
+type PageProps = {
+  params: { slug: string }
 }
 
-export default async function AgencyDetailPage({ params }: PageProps) {
+export default async function AgencyDetailPage({
+  params,
+}: PageProps) {
   const agency = await getAgencyBySlug(params.slug)
-  
-  if (!agency) return notFound();
+  if (!agency) return notFound()
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
