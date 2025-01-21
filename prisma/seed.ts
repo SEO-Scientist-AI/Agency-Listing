@@ -17,7 +17,7 @@ async function main() {
     data: {
       name: "Digital Growth Partners",
       slug: "digital-growth-partners",
-      logo: "https://example.com/dgp-logo.png",
+      logo: "https://placehold.co/600x400.svg",
       description: "A full-service digital marketing agency specializing in growth strategies",
       category: "Digital Marketing",
       rating: 4.8,
@@ -76,7 +76,7 @@ async function main() {
     data: {
       name: "Tech Marketing Solutions",
       slug: "tech-marketing-solutions",
-      logo: "https://example.com/tms-logo.png",
+      logo: "https://placehold.co/600x400.svg",
       description: "Specialized in B2B tech marketing and lead generation",
       category: "B2B Marketing",
       rating: 4.7,
