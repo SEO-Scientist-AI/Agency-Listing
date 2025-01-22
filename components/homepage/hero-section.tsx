@@ -64,105 +64,48 @@ export default function HeroSection() {
         }
 
         const queryString = searchParams.toString();
-        router.push(`/find-agencies${queryString ? `?${queryString}` : ""}`);
+        router.push(`/dashboard/find-agencies${queryString ? `?${queryString}` : ""}`);
     };
 
     return (
-        <div className="min-h-screen w-full dark:bg-black bg-white dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative overflow-hidden">
-            {/* Radial gradient for the container to give a faded look */}
-            <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] z-10"></div>
-            
-            {/* Floating agency-related elements */}
-            <div className="absolute inset-0 overflow-hidden z-10">
-                {/* Digital Marketing Icon */}
-                <div className="absolute top-20 right-[15%] text-4xl opacity-20 dark:opacity-10 rotate-12 animate-float-slow">
-                    <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M21 8V16C21 18.7614 18.7614 21 16 21H8C5.23858 21 3 18.7614 3 16V8C3 5.23858 5.23858 3 8 3H16C18.7614 3 21 5.23858 21 8Z" className="stroke-orange-500 dark:stroke-orange-400" strokeWidth="1.5"/>
-                        <path d="M7 17V13.5V10" className="stroke-orange-500 dark:stroke-orange-400" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M11 17V7" className="stroke-orange-500 dark:stroke-orange-400" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M15 17V13.5V10" className="stroke-orange-500 dark:stroke-orange-400" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M19 17V7" className="stroke-orange-500 dark:stroke-orange-400" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </div>
-
-                {/* Web Development Icon */}
-                <div className="absolute top-1/3 left-[10%] text-4xl opacity-20 dark:opacity-10 -rotate-12 animate-float">
-                    <svg className="w-20 h-20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15.5 9L15.6716 9.17157C17.0049 10.5049 17.6716 11.1716 17.6716 12C17.6716 12.8284 17.0049 13.4951 15.6716 14.8284L15.5 15" className="stroke-blue-500 dark:stroke-blue-400" strokeWidth="1.5" strokeLinecap="round"/>
-                        <path d="M13.5 7L10.5 17" className="stroke-blue-500 dark:stroke-blue-400" strokeWidth="1.5" strokeLinecap="round"/>
-                        <path d="M8.5 9L8.32843 9.17157C6.99509 10.5049 6.32843 11.1716 6.32843 12C6.32843 12.8284 6.99509 13.4951 8.32843 14.8284L8.5 15" className="stroke-blue-500 dark:stroke-blue-400" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
-                </div>
-
-                {/* SEO Icon */}
-                <div className="absolute bottom-1/4 right-[20%] text-4xl opacity-20 dark:opacity-10 rotate-45 animate-float-slow delay-300">
-                    <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M21 21L16.65 16.65M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" className="stroke-purple-500 dark:stroke-purple-400" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </div>
-
-                {/* Social Media Icon */}
-                <div className="absolute bottom-[20%] left-[25%] text-4xl opacity-20 dark:opacity-10 -rotate-12 animate-float delay-150">
-                    <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7 10V16M12 7V16M17 4V16" className="stroke-pink-500 dark:stroke-pink-400" strokeWidth="1.5" strokeLinecap="round"/>
-                        <path d="M21 16.0001H3" className="stroke-pink-500 dark:stroke-pink-400" strokeWidth="1.5" strokeLinecap="round"/>
-                        <path d="M21 20.0001H3" className="stroke-pink-500 dark:stroke-pink-400" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
-                </div>
-
-                {/* Content Creation Icon */}
-                <div className="absolute top-[25%] left-[30%] text-4xl opacity-20 dark:opacity-10 rotate-90 animate-float-slow delay-700">
-                    <svg className="w-14 h-14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 4H6C4.89543 4 4 4.89543 4 6V8M8 20H6C4.89543 20 4 19.1046 4 18V16M16 4H18C19.1046 4 20 4.89543 20 6V8M16 20H18C19.1046 20 20 19.1046 20 18V16" className="stroke-green-500 dark:stroke-green-400" strokeWidth="1.5" strokeLinecap="round"/>
-                        <path d="M12 9V12M12 12V15M12 12H15M12 12H9" className="stroke-green-500 dark:stroke-green-400" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
-                </div>
+        <section className="relative">
+            {/* Background gradient */}
+            <div
+                className="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"
+                aria-hidden="true"
+            >
+                <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-orange-400 opacity-20 blur-[100px]" />
             </div>
 
-            <style jsx>{`
-                @keyframes float {
-                    0%, 100% { transform: translateY(0) rotate(var(--tw-rotate)); }
-                    50% { transform: translateY(-20px) rotate(var(--tw-rotate)); }
-                }
-                @keyframes float-slow {
-                    0%, 100% { transform: translateY(0) rotate(var(--tw-rotate)); }
-                    50% { transform: translateY(-10px) rotate(var(--tw-rotate)); }
-                }
-                .animate-float {
-                    animation: float 6s ease-in-out infinite;
-                }
-                .animate-float-slow {
-                    animation: float-slow 8s ease-in-out infinite;
-                }
-            `}</style>
-
-            <div className="relative z-20 container mx-auto px-4 py-20">
-                <div className="flex flex-col items-center leading-6">
-                    <div className="mx-auto max-w-4xl text-center">
-                        <h1 className="mt-8 text-center relative">
-                            <span className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl inline-block">
-                                Discover & Connect
-                            </span>
-                            <div className="relative">
-                                <span className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 inline-block">
-                                    with Top Agencies
-                                </span>
-                                <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 transform scale-x-0 transition-transform duration-700 group-hover:scale-x-100"></span>
-                            </div>
-                            <span className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl inline-block">
-                                Worldwide
-                            </span>
-                        </h1>
-
-                        <p className="mt-6 text-base leading-8 text-gray-600 dark:text-gray-300 sm:text-lg md:text-xl">
-                            Connect with top-rated agencies that match your needs. Filter by location, expertise, and budget to find your ideal partner.
-                        </p>
+            <div className="container px-4 pb-16 pt-20 md:pb-24 md:pt-28 lg:pb-32 lg:pt-36">
+                <div className="flex flex-col items-center justify-center leading-6 ">
+                    <div
+                        className={cn(
+                            "group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                        )}
+                    >
+                        <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400">
+                            <span>✨ Find Your Perfect Agency Match</span>
+                            <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
+                        </AnimatedShinyText>
                     </div>
 
-                    <Card className="mt-12 w-full max-w-4xl border border-black/5 dark:border-white/5 bg-white/80 dark:bg-black/80 p-6 backdrop-blur-sm transition-colors duration-300">
+                    <h1 className="mt-6 text-center text-2xl font-bold tracking-tight sm:text-3xl md:text-5xl lg:text-6xl">
+                        Discover & Connect <br />
+                        <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+                            with Top Agencies Worldwide
+                        </span>
+                    </h1>
+
+                    <p className="mt-6 max-w-[700px] text-center text-lg text-muted-foreground">
+                        Share your requirements & we&#39;ll find the right service
+                        provider for your project
+                    </p>
+
+                    <Card className="mt-12 w-full max-w-4xl border-none bg-background/60 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                         <div className="grid gap-4 md:grid-cols-[1fr_1fr_1fr_auto]">
                             <Select value={selectedService} onValueChange={setSelectedService}>
-                                <SelectTrigger className="h-12 bg-white/50 dark:bg-black/50">
+                                <SelectTrigger className="h-12">
                                     <Briefcase className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <SelectValue placeholder="All Services" />
                                 </SelectTrigger>
@@ -176,7 +119,7 @@ export default function HeroSection() {
                             </Select>
 
                             <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-                                <SelectTrigger className="h-12 bg-white/50 dark:bg-black/50">
+                                <SelectTrigger className="h-12">
                                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <SelectValue placeholder="Select Region" />
                                 </SelectTrigger>
@@ -190,7 +133,7 @@ export default function HeroSection() {
                             </Select>
 
                             <Select value={selectedCity} onValueChange={setSelectedCity}>
-                                <SelectTrigger className="h-12 bg-white/50 dark:bg-black/50">
+                                <SelectTrigger className="h-12">
                                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <SelectValue placeholder="All Cities" />
                                 </SelectTrigger>
@@ -203,45 +146,41 @@ export default function HeroSection() {
                                 </SelectContent>
                             </Select>
 
-                            <Button 
+                            <Button
                                 size="lg"
-                                className="h-12 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 px-8 relative group overflow-hidden"
+                                className="h-12 bg-orange-500 px-8 hover:bg-orange-600"
                                 onClick={handleSearch}
                             >
-                                <span className="relative z-10 flex items-center gap-2">
-                                    Search Agencies
-                                    <Search className="h-4 w-4" />
-                                </span>
-                                <div className="absolute inset-0 bg-orange-500 transform translate-y-full transition-transform duration-300 ease-out group-hover:translate-y-0"></div>
+                                Search
+                                <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </div>
                     </Card>
 
-                    <div className="mt-8 flex justify-center">
+                    <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
                         <Link href="/dashboard/get-listed">
-                            <Button className="rounded-md bg-orange-500 hover:bg-orange-600 text-white px-8 py-3">
+                            <Button className="animate-buttonheartbeat rounded-md bg-orange-500 hover:bg-signature text-sm font-semibold text-white">
                                 List Your Agency
-                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </Link>
+
+                        <Link href="/dashboard/find-agencies">
+                            <Button variant="outline" className="flex gap-1">
+                                Find Agencies
+                                <Search className="w-4 h-4" aria-hidden="true" />
                             </Button>
                         </Link>
                     </div>
 
-                    <div className="mt-12 flex items-center gap-4">
-                        <div className="flex -space-x-4">
-                            {avatarElements.map((avatar, index) => (
-                                <div key={index} className="relative transition-transform hover:scale-110 duration-300">
-                                    {avatar}
-                                    <div className="absolute inset-0 rounded-full ring-2 ring-orange-500/20 dark:ring-orange-400/30" />
-                                </div>
-                            ))}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                            <span className="font-semibold text-black dark:text-white">500+</span> Agencies
+                    <div className="mt-12 flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex -space-x-4">{avatarElements}</div>
+                        <div>
+                            <span className="font-medium">500+</span> Agencies
                             already listed
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     );
 }

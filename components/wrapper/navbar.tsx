@@ -61,7 +61,7 @@ export default function NavbarCopy() {
   const userId = config?.auth?.enabled ? auth?.userId : null;
 
   return (
-    <div className="flex min-w-full fixed justify-between p-4 border-b z-50 dark:bg-black dark:bg-opacity-50 bg-white">
+    <div className="flex min-w-full fixed justify-between p-4 border-b z-10 dark:bg-black dark:bg-opacity-50 bg-white">
       <div className="flex justify-between w-full min-[825px]:hidden">
         <Sheet>
           <SheetTrigger className="p-2 transition">

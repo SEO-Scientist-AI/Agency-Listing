@@ -1,28 +1,11 @@
 import { prisma } from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
-
-// Helper function to safely parse JSON
-const safeJsonParse = (value: string | null) => {
-  if (!value) return null;
-  try {
-    return JSON.parse(value);
-  } catch {
-    return value;
-  }
-};
 
 export async function getAgencies() {
   try {
-    // Use a transaction to ensure connection is properly managed
-    const agencies = await prisma.$transaction(async (tx) => {
-      return await tx.agency.findMany({
-        orderBy: {
-          created_at: 'desc'
-        }
-      })
-    }, {
-      maxWait: 5000, // 5s maximum wait time
-      timeout: 10000  // 10s timeout
+    const agencies = await prisma.agency.findMany({
+      orderBy: {
+        created_at: 'desc'
+      }
     })
 
     // Return empty array if no agencies found
@@ -35,31 +18,25 @@ export async function getAgencies() {
       try {
         return {
           ...agency,
-          // Parse array fields as JSON
-          services: safeJsonParse(agency.services as string | null) || [],
-          industries: safeJsonParse(agency.industries as string | null) || [],
-          locations: safeJsonParse(agency.locations as string | null) || [],
-          budget_ranges: safeJsonParse(agency.budget_ranges as string | null) || [],
-          // Handle scalar fields directly
-          team_size: agency.team_size || null,
-          starting_price: agency.starting_price || null,
+          services: agency.services ? JSON.parse(agency.services as string) : [],
+          industries: agency.industries ? JSON.parse(agency.industries as string) : [],
+          locations: agency.locations ? JSON.parse(agency.locations as string) : [],
+          budget_ranges: agency.budget_ranges ? JSON.parse(agency.budget_ranges as string) : [],
+          client_sizes: agency.client_sizes ? JSON.parse(agency.client_sizes as string) : [],
+          project_durations: agency.project_durations ? JSON.parse(agency.project_durations as string) : [],
+          languages: agency.languages ? JSON.parse(agency.languages as string) : [],
+          expertise: agency.expertise ? JSON.parse(agency.expertise as string) : {
+            seo: [],
+            marketing: [],
+            development: []
+          }
         }
-      } catch (error) {
-        console.error('Error parsing agency data:', error)
+      } catch {
         return agency
       }
     })
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.error('Known Prisma error:', error.message, error.code)
-    } else if (error instanceof Prisma.PrismaClientUnknownRequestError) {
-      console.error('Unknown Prisma error:', error.message)
-    } else {
-      console.error('Unexpected error:', error)
-    }
-    throw error
-  } finally {
-    // Ensure connection is properly disconnected
-    await prisma.$disconnect()
+    console.error("Database Error:", error)
+    return []
   }
 }
