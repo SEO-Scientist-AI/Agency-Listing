@@ -4,25 +4,18 @@ import { seedAgencies } from './seed-data'
 const prisma = new PrismaClient()
 
 async function main() {
-  // Clear existing data
-  await prisma.agency.deleteMany({})
-
-  // Insert new data
   for (const agency of seedAgencies) {
-    await prisma.agency.upsert({
-      where: { slug: agency.slug },
-      update: agency,
-      create: agency
+    await prisma.agency.create({
+      data: agency
     })
   }
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
+  .catch((e) => {
     console.error(e)
-    await prisma.$disconnect()
     process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
   })

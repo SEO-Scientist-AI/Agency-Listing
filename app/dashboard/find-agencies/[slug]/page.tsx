@@ -29,14 +29,14 @@ const GoogleLogo = () => (
 );
 
 type PageProps = {
-  params: { slug: string }
-}
+    params: {
+        slug: string;
+    };
+};
 
-export default async function AgencyDetailPage({
-  params,
-}: PageProps) {
-  const agency = await getAgencyBySlug(params.slug)
-  if (!agency) return notFound()
+export default async function AgencyDetailPage({ params }: PageProps) {
+    const agency = await getAgencyBySlug(params.slug);
+    if (!agency) return notFound();
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
