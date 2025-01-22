@@ -26,11 +26,49 @@ interface ContactModalProps {
 export function ContactModal({ agency, trigger }: ContactModalProps) {
   const [open, setOpen] = useState(false)
   const [selectedMainService, setSelectedMainService] = useState("")
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [message, setMessage] = useState("")
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    message: "",
+  })
+
+  // Ensure agency data is valid
+  if (!agency?.name || !Array.isArray(agency?.services)) {
+    console.error('Invalid agency data provided to ContactModal')
+    return null
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    setOpen(false)
+    const newErrors = {
+      name: "",
+      email: "",
+      message: "",
+    }
+
+    if (!name) {
+      newErrors.name = "Name is required"
+    }
+
+    if (!email) {
+      newErrors.email = "Email is required"
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+      newErrors.email = "Invalid email address"
+    }
+
+    if (!message) {
+      newErrors.message = "Message is required"
+    }
+
+    setErrors(newErrors)
+
+    if (Object.values(newErrors).every((error) => !error)) {
+      // Handle form submission
+      setOpen(false)
+    }
   }
 
   return (
@@ -54,17 +92,32 @@ export function ContactModal({ agency, trigger }: ContactModalProps) {
             <Label htmlFor="name" className="text-sm font-medium">
               Full name
             </Label>
-            <Input id="name" required className="w-full" />
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full"
+            />
+            {errors.name && <div className="text-red-500">{errors.name}</div>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium">
               Email
             </Label>
-            <Input id="email" type="email" required className="w-full" />
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full"
+            />
+            {errors.email && <div className="text-red-500">{errors.email}</div>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="service" className="text-sm font-medium">
-            Main service you&apos;re interested in
+              Main service you're interested in
             </Label>
             <Select value={selectedMainService} onValueChange={setSelectedMainService}>
               <SelectTrigger>
@@ -80,29 +133,18 @@ export function ContactModal({ agency, trigger }: ContactModalProps) {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="timeline" className="text-sm font-medium">
-              Project timeline
-            </Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select timeline" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1-3">1-3 months</SelectItem>
-                <SelectItem value="3-6">3-6 months</SelectItem>
-                <SelectItem value="6+">6+ months</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="message" className="text-sm font-medium">
               Project details
             </Label>
             <Textarea
               id="message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               placeholder="Tell us about your project..."
+              required
               className="min-h-[100px]"
             />
+            {errors.message && <div className="text-red-500">{errors.message}</div>}
           </div>
           <Button type="submit" className="w-full">
             Send Message

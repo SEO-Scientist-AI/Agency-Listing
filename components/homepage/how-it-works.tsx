@@ -4,7 +4,13 @@ import { GridPatternCard, GridPatternCardBody } from "@/components/ui/card-with-
 import { cn } from "@/lib/utils";
 import { ClipboardList, MessageSquare, UserCheck } from "lucide-react";
 
-const steps = [
+export type HowItWorksCard = {
+  title: string;
+  description: string;
+  icon: any;
+};
+
+const steps: HowItWorksCard[] = [
   {
     title: "Define Your Needs",
     description:
@@ -47,7 +53,7 @@ export default function HowItWorks() {
             >
               <GridPatternCardBody>
                 <div className="mb-4">
-                  <step.icon className="w-12 h-12 text-primary" />
+                  <step.icon className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-lg font-bold mb-3 text-foreground">{step.title}</h3>
                 <p className="text-wrap text-xs text-foreground/60">{step.description}</p>

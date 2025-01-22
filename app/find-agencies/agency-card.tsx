@@ -103,7 +103,7 @@ export function AgencyCard({
                     <div className="flex justify-between items-start">
                         <div>
                             <Link
-                                href={`/dashboard/find-agencies/${slug}`}
+                                href={`/find-agencies/${slug}`}
                                 className="hover:underline"
                             >
                                 <h2 className="text-xl font-bold">{name}</h2>
@@ -167,7 +167,7 @@ export function AgencyCard({
                                 Starting Price: {starting_price}
                             </span>
                         </div>
-                        <Link href={`/dashboard/find-agencies/${slug}`}>
+                        <Link href={`/find-agencies/${slug}`}>
                             <Button size="sm">View Details</Button>
                         </Link>
                     </div>

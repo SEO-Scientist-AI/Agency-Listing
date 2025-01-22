@@ -64,7 +64,7 @@ export default function HeroSection() {
         }
 
         const queryString = searchParams.toString();
-        router.push(`/dashboard/find-agencies${queryString ? `?${queryString}` : ""}`);
+        router.push(`/find-agencies${queryString ? `?${queryString}` : ""}`);
     };
 
     return (
