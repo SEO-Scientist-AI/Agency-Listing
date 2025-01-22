@@ -117,7 +117,7 @@ export function ContactModal({ agency, trigger }: ContactModalProps) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="service" className="text-sm font-medium">
-              Main service you're interested in
+              Main service you&apos;re interested in
             </Label>
             <Select value={selectedMainService} onValueChange={setSelectedMainService}>
               <SelectTrigger>
