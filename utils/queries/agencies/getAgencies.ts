@@ -8,35 +8,30 @@ export async function getAgencies() {
       }
     })
 
-    // Return empty array if no agencies found
     if (!agencies || agencies.length === 0) {
       return []
     }
 
-    // Parse JSON fields only if they exist
     return agencies.map(agency => {
       try {
         return {
           ...agency,
-          services: agency.services ? JSON.parse(agency.services as string) : [],
-          industries: agency.industries ? JSON.parse(agency.industries as string) : [],
-          locations: agency.locations ? JSON.parse(agency.locations as string) : [],
-          budget_ranges: agency.budget_ranges ? JSON.parse(agency.budget_ranges as string) : [],
-          client_sizes: agency.client_sizes ? JSON.parse(agency.client_sizes as string) : [],
-          project_durations: agency.project_durations ? JSON.parse(agency.project_durations as string) : [],
-          languages: agency.languages ? JSON.parse(agency.languages as string) : [],
-          expertise: agency.expertise ? JSON.parse(agency.expertise as string) : {
-            seo: [],
-            marketing: [],
-            development: []
-          }
+          services: typeof agency.services === 'string' ? JSON.parse(agency.services) : agency.services,
+          industries: typeof agency.industries === 'string' ? JSON.parse(agency.industries) : agency.industries,
+          locations: typeof agency.locations === 'string' ? JSON.parse(agency.locations) : agency.locations,
+          budget_ranges: typeof agency.budget_ranges === 'string' ? JSON.parse(agency.budget_ranges) : agency.budget_ranges,
+          client_sizes: typeof agency.client_sizes === 'string' ? JSON.parse(agency.client_sizes) : agency.client_sizes,
+          project_durations: typeof agency.project_durations === 'string' ? JSON.parse(agency.project_durations) : agency.project_durations,
+          languages: typeof agency.languages === 'string' ? JSON.parse(agency.languages) : agency.languages,
+          expertise: typeof agency.expertise === 'string' ? JSON.parse(agency.expertise) : agency.expertise
         }
-      } catch {
+      } catch (parseError) {
+        console.error('Error parsing agency data:', parseError)
         return agency
       }
     })
   } catch (error) {
-    console.error("Database Error:", error)
+    console.error("Database Error:", error instanceof Error ? error.message : String(error))
     return []
   }
 }
