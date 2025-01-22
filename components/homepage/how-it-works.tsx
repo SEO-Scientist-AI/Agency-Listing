@@ -1,61 +1,61 @@
-import React from 'react';
-import HowItsWorksCard from '../common/landing/how-it-works-card';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
+"use client";
 
-export interface HowItsWorksCards {
-    image: string;
-    heading: string;
-    description: string;
-    step: number;
-    url: string;
-}
+import { GridPatternCard, GridPatternCardBody } from "@/components/ui/card-with-grid-ellipsis-pattern";
+import { cn } from "@/lib/utils";
+import { ClipboardList, MessageSquare, UserCheck } from "lucide-react";
 
-const HowItsWorks = () => {
-    const CardsData: HowItsWorksCards[] = [{
-        heading:"Define Your Needs",
-        description: "Tell us about your needs, so we can find the right partner for the job,The most suitable agencies will get your brief.",
-        url:"some",
-        step: 1,
-        image:"/images/step1.jpg"
-    },
-    {
-        heading:"Receive Agency Proposals",
-        description:"The most suitable agencies will get your brief. The agencies will message you on the Agency Partners platform within 2 days and suggest how they can help.",
-        url:"some",
-        step: 2,
-         image:"/images/step2.jpg"
-    },{
-        heading:"Find the Right Partners",
-        description:"Importantly, you are under no obligation to hire any of the agencies presented to you. You have the freedom to explore your options and choose the best fit.",
-        url:"some",
-        step: 3,
-         image:"/images/step3.jpg"
-    }]
+const steps = [
+  {
+    title: "Define Your Needs",
+    description:
+      "Tell us about your needs, so we can find the right partner for the job. The most suitable agencies will get your brief.",
+    icon: ClipboardList,
+  },
+  {
+    title: "Receive Agency Proposals",
+    description:
+      "The most suitable agencies will get your brief. The agencies will message you on the Agency Partners platform within 2 days and suggest how they can help.",
+    icon: MessageSquare,
+  },
+  {
+    title: "Find the Right Partners",
+    description:
+      "Importantly, you are under no obligation to hire any of the agencies presented to you. You have the freedom to explore your options and choose the best fit.",
+    icon: UserCheck,
+  },
+];
+
+export default function HowItWorks() {
   return (
-    <div>
-        <div className="hidden md:flex flex-wrap justify-center items-center gap-4">
+    <section className="flex flex-col justify-center items-center">
+      <div className="flex flex-col justify-center items-center lg:w-[75%] px-4 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold tracking-tight mb-4">
+            How It Works
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Our simple process helps you find the perfect agency partner for your business needs
+          </p>
+        </div>
 
-        {CardsData.map(card=>
-            <HowItsWorksCard card={card} key={card.step}/>
-        )}
+        <div className="grid md:grid-cols-3 gap-8 w-full">
+          {steps.map((step, index) => (
+            <GridPatternCard 
+              key={index}
+              className="h-full"
+              gradientClassName="from-background/95 via-background/70 to-background/30"
+            >
+              <GridPatternCardBody>
+                <div className="mb-4">
+                  <step.icon className="w-12 h-12 text-primary" />
+                </div>
+                <h3 className="text-lg font-bold mb-3 text-foreground">{step.title}</h3>
+                <p className="text-wrap text-xs text-foreground/60">{step.description}</p>
+              </GridPatternCardBody>
+            </GridPatternCard>
+          ))}
         </div>
-        <div className="md:hidden">
-        <Carousel className="w-full max-w-xs">
-      <CarouselContent>
-        {CardsData.map((card, index) => (
-          <CarouselItem key={card.step}>
-            <HowItsWorksCard card={card} />
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-    </Carousel>
-        </div>
-    </div>
+      </div>
+    </section>
   );
 }
-
-export default HowItsWorks;
