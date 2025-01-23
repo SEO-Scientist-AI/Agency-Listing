@@ -2,9 +2,7 @@ import { prisma } from '@/lib/prisma'
 export async function getAgencies() {
   try {
     const agencies = await prisma.agency.findMany({
-      orderBy: {
-        created_at: 'desc'
-      }
+      
     })
 
     if (!agencies || agencies.length === 0) {
