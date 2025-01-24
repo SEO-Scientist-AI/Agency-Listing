@@ -11,19 +11,19 @@ import config from "@/config";
 export default function Home() {
   return (
     <PageWrapper>
-      <div data-scroll-section className="flex flex-col justify-center items-center w-full mt-[1rem] p-3">
+      <div className="flex flex-col justify-center items-center w-full mt-[1rem] p-3">
         <HeroSection />
       </div>
-      <div data-scroll-section className="flex my-[8rem] w-full justify-center items-center">
+      <div className="flex my-[8rem] w-full justify-center items-center">
         <SideBySide />
       </div>
-      <div data-scroll-section>
+      <div>
         <HowItWorks />
       </div>
-      <div data-scroll-section className="flex flex-col p-2 w-full justify-center items-center">
+      <div className="flex flex-col p-2 w-full justify-center items-center">
         <BrowseAgencyGalleries />
       </div>
-      <div data-scroll-section className="flex justify-center items-center w-full my-[8rem]">
+      <div className="flex justify-center items-center w-full my-[8rem]">
         <AccordionComponent />
       </div>
 
@@ -36,4 +36,3 @@ export default function Home() {
     </PageWrapper>
   );
 }
-
