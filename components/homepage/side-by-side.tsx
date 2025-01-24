@@ -1,7 +1,8 @@
 "use client"
 
 import { Search, Handshake, TrendingUp } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { TITLE_TAILWIND_CLASS } from '@/utils/constants'
 
 const features = [
@@ -27,6 +28,19 @@ const features = [
 
 export default function SideBySide() {
   const [selectedFeature, setSelectedFeature] = useState(features[0])
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        const newIndex = (prevIndex + 1) % features.length
+        setSelectedFeature(features[newIndex])
+        return newIndex
+      })
+    }, 4000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="overflow-hidden">
@@ -41,7 +55,7 @@ export default function SideBySide() {
                 Experience a seamless journey from discovering the perfect agency to scaling your business success
               </p>
               <dl className="mt-10 max-w-xl space-y-8 leading-7 text-gray-600 lg:max-w-none">
-                {features.map((feature) => (
+                {features.map((feature, index) => (
                   <div 
                     key={feature.name} 
                     className={`relative pl-9 cursor-pointer transition-colors duration-200 ${
@@ -49,10 +63,24 @@ export default function SideBySide() {
                         ? 'dark:text-white text-black' 
                         : 'dark:text-gray-400 text-gray-600'
                     }`}
-                    onClick={() => setSelectedFeature(feature)}
+                    onClick={() => {
+                      setSelectedFeature(feature)
+                      setCurrentIndex(index)
+                    }}
                   >
+                    <motion.div 
+                      className="absolute left-0 top-0 w-0.5 bg-orange-500"
+                      initial={{ height: 0 }}
+                      animate={{ 
+                        height: selectedFeature.name === feature.name ? "100%" : "0%"
+                      }}
+                      transition={{ 
+                        duration: 0.4,
+                        ease: "easeInOut"
+                      }}
+                    />
                     <dt className="inline font-semibold">
-                      <feature.icon className="absolute left-1 top-1 h-5 w-5" aria-hidden="true" />
+                      <feature.icon className="absolute left-3 top-1 h-5 w-5" aria-hidden="true" />
                       {feature.name}
                     </dt>{' '}
                     <dd className="inline">{feature.description}</dd>
