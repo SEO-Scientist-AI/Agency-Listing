@@ -1,21 +1,34 @@
 import { PrismaClient } from '@prisma/client'
-import { seedAgencies } from './seed-data'
+import { agencies } from '../app/find-agencies/agency-data'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  for (const agency of seedAgencies) {
-    await prisma.agency.create({
-      data: agency
+  for (const agency of agencies) {
+    await prisma.agency.upsert({
+      where: { slug: agency.id },
+      update: {
+        ...agency,
+        slug: agency.id,
+        googleReview: agency.googleReview as any,
+        expertise: agency.expertise as any,
+      },
+      create: {
+        ...agency,
+        slug: agency.id,
+        googleReview: agency.googleReview as any,
+        expertise: agency.expertise as any,
+      },
     })
   }
 }
 
 main()
-  .catch((e) => {
-    console.error(e)
-    process.exit(1)
-  })
-  .finally(async () => {
+  .then(async () => {
     await prisma.$disconnect()
+  })
+  .catch(async (e) => {
+    console.error(e)
+    await prisma.$disconnect()
+    process.exit(1)
   })

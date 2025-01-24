@@ -76,7 +76,7 @@ const BrowseAgencyGalleries = () => {
             </div>
             <div className="w-full">
                 <Tabs defaultValue="industry" className="w-full">
-                    <TabsList className="flex flex-wrap   w-full justify-center border-border mb-16 sm:mb-6 bg-white dark:bg-black">
+                    <TabsList className="flex w-full justify-center border-border mb-6 bg-white dark:bg-black">
                         <TabsTrigger
                             value="service"
                             className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d]"

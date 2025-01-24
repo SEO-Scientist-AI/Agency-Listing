@@ -1,12 +1,35 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["multiSchema"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+}
+
+model agency {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  name                String
+  tagline             String
+  description         String
+  location            String
+  additionalLocations String[]
+  founded             Int
+  teamSize            String
+  services            String[]
+  industries          String[]
+  clientSize          String[]
+  budgetRange         String[]
+  projectDuration     String[]
+  geographicFocus     String[]
+  languages           String[]
+  startingPrice       String
+  googleReview        Json
+  expertise           Json
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 model user {
@@ -73,31 +96,4 @@ model invoices {
   user_id         String?
 }
 
-model agency {
-  id                  Int      @id @default(autoincrement())
-  created_at          DateTime @default(now())
-  slug                String   @unique
-  name                String
-  tagline             String
-  description         String
-  location            String
-  founded_year        Int
-  team_size           String
-  starting_price      String
-  min_budget          Int
-  max_budget          Int
-  budget_ranges       Json
-  services            Json
-  industries          Json
-  client_sizes        Json
-  project_durations   Json
-  locations           Json
-  languages           Json
-  google_rating       Float
-  google_review_count Int
-  expertise           Json
 
-  @@index([slug])
-  @@index([location])
-  @@index([min_budget, max_budget])
-}

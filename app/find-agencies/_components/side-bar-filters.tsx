@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, X, ChevronDown } from "lucide-react";
@@ -8,17 +8,23 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { agencies } from "./agency-card";
+import { agencies } from "../agency-data";
+
+// Utility function to extract unique values from an array
+const getUniqueValues = <T,>(array: T[]): T[] => Array.from(new Set(array));
 
 // Extract unique values from agencies data
-const allServices = [...new Set(agencies.flatMap(agency => agency.services))];
-const allIndustries = [...new Set(agencies.flatMap(agency => agency.industries))];
-const allLocations = [...new Set(agencies.map(agency => agency.location))];
-
+const allServices = getUniqueValues(
+    agencies.flatMap((agency) => agency.services)
+);
+const allIndustries = getUniqueValues(
+    agencies.flatMap((agency) => agency.industries)
+);
+const allLocations = getUniqueValues(agencies.map((agency) => agency.location));
 const budgetRanges = [
     { label: "$1,000 - $5,000", min: 1000, max: 5000 },
     { label: "$5,000 - $10,000", min: 5000, max: 10000 },
-    { label: "$10,000+", min: 10000, max: Infinity }
+    { label: "$10,000+", min: 10000, max: Infinity },
 ];
 
 interface FilterState {
@@ -33,7 +39,9 @@ interface SideBarFiltersProps {
     onFiltersChange: (filters: FilterState) => void;
 }
 
-export default function SideBarFilters({ onFiltersChange }: SideBarFiltersProps) {
+export default function SideBarFilters({
+    onFiltersChange,
+}: SideBarFiltersProps) {
     const [filters, setFilters] = useState<FilterState>({
         search: "",
         services: [],
@@ -50,30 +58,30 @@ export default function SideBarFilters({ onFiltersChange }: SideBarFiltersProps)
     });
 
     const toggleSection = (section: keyof typeof openSections) => {
-        setOpenSections(prev => ({
+        setOpenSections((prev) => ({
             ...prev,
-            [section]: !prev[section]
+            [section]: !prev[section],
         }));
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFilters(prev => ({ ...prev, search: e.target.value }));
+        setFilters((prev) => ({ ...prev, search: e.target.value }));
     };
 
     const toggleFilter = (type: keyof FilterState, value: any) => {
-        setFilters(prev => {
+        setFilters((prev) => {
             const currentValues = prev[type] as any[];
             const newValues = currentValues.includes(value)
-                ? currentValues.filter(v => v !== value)
+                ? currentValues.filter((v) => v !== value)
                 : [...currentValues, value];
             return { ...prev, [type]: newValues };
         });
     };
 
     const removeFilter = (type: keyof FilterState, value: any) => {
-        setFilters(prev => ({
+        setFilters((prev) => ({
             ...prev,
-            [type]: (prev[type] as any[]).filter(v => v !== value)
+            [type]: (prev[type] as any[]).filter((v) => v !== value),
         }));
     };
 
@@ -99,13 +107,15 @@ export default function SideBarFilters({ onFiltersChange }: SideBarFiltersProps)
                     <CardTitle className="">Filters</CardTitle>
                     {appliedFiltersCount > 0 && (
                         <button
-                            onClick={() => setFilters({
-                                search: "",
-                                services: [],
-                                industries: [],
-                                locations: [],
-                                budgetRanges: [],
-                            })}
+                            onClick={() =>
+                                setFilters({
+                                    search: "",
+                                    services: [],
+                                    industries: [],
+                                    locations: [],
+                                    budgetRanges: [],
+                                })
+                            }
                             className="text-sm text-muted-foreground hover:text-foreground"
                         >
                             Clear all
@@ -137,35 +147,50 @@ export default function SideBarFilters({ onFiltersChange }: SideBarFiltersProps)
                                         <span className="px-2.5 py-0.5 rounded-full text-sm bg-indigo-100 text-indigo-700 border border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700/30 flex items-center gap-1">
                                             Search: {filters.search}
                                             <button
-                                                onClick={() => setFilters(prev => ({ ...prev, search: "" }))}
+                                                onClick={() =>
+                                                    setFilters((prev) => ({
+                                                        ...prev,
+                                                        search: "",
+                                                    }))
+                                                }
                                                 className="hover:text-indigo-900"
                                             >
                                                 <X className="h-3 w-3" />
                                             </button>
                                         </span>
                                     )}
-                                    {filters.services.map(service => (
+                                    {filters.services.map((service) => (
                                         <span
                                             key={service}
                                             className="px-2.5 py-0.5 rounded-full text-sm bg-indigo-100 text-indigo-700 border border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700/30 flex items-center gap-1"
                                         >
                                             {service}
                                             <button
-                                                onClick={() => removeFilter("services", service)}
+                                                onClick={() =>
+                                                    removeFilter(
+                                                        "services",
+                                                        service
+                                                    )
+                                                }
                                                 className="hover:text-indigo-900"
                                             >
                                                 <X className="h-3 w-3" />
                                             </button>
                                         </span>
                                     ))}
-                                    {filters.industries.map(industry => (
+                                    {filters.industries.map((industry) => (
                                         <span
                                             key={industry}
                                             className="px-2.5 py-0.5 rounded-full text-sm bg-indigo-100 text-indigo-700 border border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700/30 flex items-center gap-1"
                                         >
                                             {industry}
                                             <button
-                                                onClick={() => removeFilter("industries", industry)}
+                                                onClick={() =>
+                                                    removeFilter(
+                                                        "industries",
+                                                        industry
+                                                    )
+                                                }
                                                 className="hover:text-indigo-900"
                                             >
                                                 <X className="h-3 w-3" />
@@ -176,83 +201,151 @@ export default function SideBarFilters({ onFiltersChange }: SideBarFiltersProps)
                             </div>
                         )}
 
-                        <Collapsible open={openSections.services} onOpenChange={() => toggleSection("services")}>
+                        <Collapsible
+                            open={openSections.services}
+                            onOpenChange={() => toggleSection("services")}
+                        >
                             <CollapsibleTrigger className="flex w-full items-center justify-between">
-                                <p className="font-semibold text-muted-foreground">Services</p>
+                                <p className="font-semibold text-muted-foreground">
+                                    Services
+                                </p>
                                 <ChevronDown className="h-4 w-4" />
                             </CollapsibleTrigger>
                             <CollapsibleContent className="space-y-2 pt-2">
-                                {allServices.map(service => (
-                                    <label key={service} className="flex items-center gap-2">
+                                {allServices.map((service) => (
+                                    <label
+                                        key={service}
+                                        className="flex items-center gap-2"
+                                    >
                                         <input
                                             type="checkbox"
-                                            checked={filters.services.includes(service)}
-                                            onChange={() => toggleFilter("services", service)}
+                                            checked={filters.services.includes(
+                                                service
+                                            )}
+                                            onChange={() =>
+                                                toggleFilter(
+                                                    "services",
+                                                    service
+                                                )
+                                            }
                                             className="rounded border-gray-300"
                                         />
-                                        <span className="text-sm">{service}</span>
+                                        <span className="text-sm">
+                                            {service}
+                                        </span>
                                     </label>
                                 ))}
                             </CollapsibleContent>
                         </Collapsible>
 
-                        <Collapsible open={openSections.industries} onOpenChange={() => toggleSection("industries")}>
+                        <Collapsible
+                            open={openSections.industries}
+                            onOpenChange={() => toggleSection("industries")}
+                        >
                             <CollapsibleTrigger className="flex w-full items-center justify-between">
-                                <p className="font-semibold text-muted-foreground">Industries</p>
+                                <p className="font-semibold text-muted-foreground">
+                                    Industries
+                                </p>
                                 <ChevronDown className="h-4 w-4" />
                             </CollapsibleTrigger>
                             <CollapsibleContent className="space-y-2 pt-2">
-                                {allIndustries.map(industry => (
-                                    <label key={industry} className="flex items-center gap-2">
+                                {allIndustries.map((industry) => (
+                                    <label
+                                        key={industry}
+                                        className="flex items-center gap-2"
+                                    >
                                         <input
                                             type="checkbox"
-                                            checked={filters.industries.includes(industry)}
-                                            onChange={() => toggleFilter("industries", industry)}
+                                            checked={filters.industries.includes(
+                                                industry
+                                            )}
+                                            onChange={() =>
+                                                toggleFilter(
+                                                    "industries",
+                                                    industry
+                                                )
+                                            }
                                             className="rounded border-gray-300"
                                         />
-                                        <span className="text-sm">{industry}</span>
+                                        <span className="text-sm">
+                                            {industry}
+                                        </span>
                                     </label>
                                 ))}
                             </CollapsibleContent>
                         </Collapsible>
 
-                        <Collapsible open={openSections.location} onOpenChange={() => toggleSection("location")}>
+                        <Collapsible
+                            open={openSections.location}
+                            onOpenChange={() => toggleSection("location")}
+                        >
                             <CollapsibleTrigger className="flex w-full items-center justify-between">
-                                <p className="font-semibold text-muted-foreground">Location</p>
+                                <p className="font-semibold text-muted-foreground">
+                                    Location
+                                </p>
                                 <ChevronDown className="h-4 w-4" />
                             </CollapsibleTrigger>
                             <CollapsibleContent className="space-y-2 pt-2">
-                                {allLocations.map(location => (
-                                    <label key={location} className="flex items-center gap-2">
+                                {allLocations.map((location) => (
+                                    <label
+                                        key={location}
+                                        className="flex items-center gap-2"
+                                    >
                                         <input
                                             type="checkbox"
-                                            checked={filters.locations.includes(location)}
-                                            onChange={() => toggleFilter("locations", location)}
+                                            checked={filters.locations.includes(
+                                                location
+                                            )}
+                                            onChange={() =>
+                                                toggleFilter(
+                                                    "locations",
+                                                    location
+                                                )
+                                            }
                                             className="rounded border-gray-300"
                                         />
-                                        <span className="text-sm">{location}</span>
+                                        <span className="text-sm">
+                                            {location}
+                                        </span>
                                     </label>
                                 ))}
                             </CollapsibleContent>
                         </Collapsible>
 
-                        <Collapsible open={openSections.budget} onOpenChange={() => toggleSection("budget")}>
+                        <Collapsible
+                            open={openSections.budget}
+                            onOpenChange={() => toggleSection("budget")}
+                        >
                             <CollapsibleTrigger className="flex w-full items-center justify-between">
-                                <p className="font-semibold text-muted-foreground">Budget Range</p>
+                                <p className="font-semibold text-muted-foreground">
+                                    Budget Range
+                                </p>
                                 <ChevronDown className="h-4 w-4" />
                             </CollapsibleTrigger>
                             <CollapsibleContent className="space-y-2 pt-2">
-                                {budgetRanges.map(range => (
-                                    <label key={range.label} className="flex items-center gap-2">
+                                {budgetRanges.map((range) => (
+                                    <label
+                                        key={range.label}
+                                        className="flex items-center gap-2"
+                                    >
                                         <input
                                             type="checkbox"
                                             checked={filters.budgetRanges.some(
-                                                r => r.min === range.min && r.max === range.max
+                                                (r) =>
+                                                    r.min === range.min &&
+                                                    r.max === range.max
                                             )}
-                                            onChange={() => toggleFilter("budgetRanges", range)}
+                                            onChange={() =>
+                                                toggleFilter(
+                                                    "budgetRanges",
+                                                    range
+                                                )
+                                            }
                                             className="rounded border-gray-300"
                                         />
-                                        <span className="text-sm">{range.label}</span>
+                                        <span className="text-sm">
+                                            {range.label}
+                                        </span>
                                     </label>
                                 ))}
                             </CollapsibleContent>

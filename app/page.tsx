@@ -4,7 +4,6 @@ import HeroSection from "@/components/homepage/hero-section";
 import BrowseAgencyGalleries from "@/components/homepage/Browse-agency";
 import Pricing from "@/components/homepage/pricing";
 import SideBySide from "@/components/homepage/side-by-side";
-import HowItWorks from "@/components/homepage/how-it-works";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import config from "@/config";
 
@@ -17,7 +16,6 @@ export default function Home() {
       <div className="flex my-[8rem] w-full justify-center items-center">
         <SideBySide />
       </div>
-      <HowItWorks />
       <div className="flex flex-col p-2 w-full justify-center items-center">
         <BrowseAgencyGalleries />
       </div>
