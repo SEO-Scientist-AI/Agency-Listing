@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { Agency } from "@/types/agency";
 
 import {
     Building2,
@@ -35,7 +36,9 @@ type PageProps = {
 };
 
 export default async function AgencyDetailPage({ params }: PageProps) {
-    const agency = await getAgencyBySlug(params.slug);
+    // Await params before using
+    const { slug } = await params;
+    const agency = await getAgencyBySlug(slug) as Agency | null;
     if (!agency) return notFound();
 
     return (
@@ -136,10 +139,12 @@ export default async function AgencyDetailPage({ params }: PageProps) {
                                     SEO Expertise
                                 </h3>
                                 <ul className="space-y-1 text-sm text-muted-foreground">
-                                    {agency.expertise.seo.map(
-                                        (item: string) => (
+                                    {agency.expertise && agency.expertise.seo ? (
+                                        agency.expertise.seo.map((item: string) => (
                                             <li key={item}>• {item}</li>
-                                        )
+                                        ))
+                                    ) : (
+                                        <li>No SEO expertise listed</li>
                                     )}
                                 </ul>
                             </div>
@@ -148,10 +153,14 @@ export default async function AgencyDetailPage({ params }: PageProps) {
                                     Marketing Expertise
                                 </h3>
                                 <ul className="space-y-1 text-sm text-muted-foreground">
-                                    {agency.expertise.marketing.map(
-                                        (item: string) => (
-                                            <li key={item}>• {item}</li>
+                                    {agency.expertise && agency.expertise.marketing ? (
+                                        agency.expertise.marketing.map(
+                                            (item: string) => (
+                                                <li key={item}>• {item}</li>
+                                            )
                                         )
+                                    ) : (
+                                        <li>No marketing expertise listed</li>
                                     )}
                                 </ul>
                             </div>
@@ -160,10 +169,14 @@ export default async function AgencyDetailPage({ params }: PageProps) {
                                     Development Expertise
                                 </h3>
                                 <ul className="space-y-1 text-sm text-muted-foreground">
-                                    {agency.expertise.development.map(
-                                        (item: string) => (
-                                            <li key={item}>• {item}</li>
+                                    {agency.expertise && agency.expertise.development ? (
+                                        agency.expertise.development.map(
+                                            (item: string) => (
+                                                <li key={item}>• {item}</li>
+                                            )
                                         )
+                                    ) : (
+                                        <li>No development expertise listed</li>
                                     )}
                                 </ul>
                             </div>
