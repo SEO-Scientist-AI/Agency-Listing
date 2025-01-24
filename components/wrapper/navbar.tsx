@@ -287,7 +287,7 @@ export default function NavbarCopy() {
           </Link>
         </NavigationMenuList>
         <NavigationMenuList>
-          <NavigationMenuItem className="max-[825px]:hidden ml-12">
+          <NavigationMenuItem className="max-[825px]:hidden ml-8">
             <Popover>
               <PopoverTrigger asChild>
                 <Button

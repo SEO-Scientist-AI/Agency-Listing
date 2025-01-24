@@ -7,7 +7,7 @@ export default function FindAgencies() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto max-w-7xl px-4 py-8">
+      <div className="container mx-auto max-w-6xl px-4 py-8">
         <div className="space-y-4 mb-8">
           <h1 className="text-3xl font-bold tracking-tight mt-[8vh]">
             TOP Professional APP Store Optimization Services

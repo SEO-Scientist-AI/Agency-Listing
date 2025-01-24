@@ -37,66 +37,67 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
     return (
         <>
             <NavBar />
-            <div className="container mx-auto max-w-7xl px-4 py-8 ">
+            <div className="container mx-auto max-w-6xl px-4 py-8">
                 <div className="space-y-8">
                     <div className="flex flex-col md:flex-row gap-8 items-start mt-[8vh]">
                         <Card className="w-full md:w-2/3 p-6 space-y-6">
-                            <div className="flex items-start gap-6">
-                                <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center">
-                                    <Building2 className="w-12 h-12 text-muted-foreground" />
-                                </div>
-                                <div className="flex-1">
-                                    <h1 className="text-3xl font-bold">
-                                        {agency.name}
-                                    </h1>
-                                    <p className="text-xl text-muted-foreground mt-2">
-                                        {agency.tagline}
-                                    </p>
-                                    <div className="flex flex-wrap items-center gap-4 mt-4">
-                                        <div className="flex items-center gap-1 bg-gray-100 rounded-full px-3 py-1">
-                                            <GoogleLogo />
-                                            <div className="flex items-center">
-                                                <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                                                <span className="font-medium ml-1">
-                                                    {agency.googleReview.rating}
-                                                </span>
-                                                <span className="text-muted-foreground ml-1">
-                                                    ({agency.googleReview.count} reviews)
-                                                </span>
+                            <Card className="p-6">
+                                <div className="flex items-start gap-6">
+                                    <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center">
+                                        <Building2 className="w-12 h-12 text-muted-foreground" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h1 className="text-3xl font-bold">
+                                            {agency.name}
+                                        </h1>
+                                        <p className="text-xl text-muted-foreground mt-2">
+                                            {agency.tagline}
+                                        </p>
+                                        <div className="flex flex-wrap items-center gap-4 mt-4">
+                                            <div className="flex items-center gap-1 bg-muted rounded-full px-3 py-1">
+                                                <GoogleLogo />
+                                                <div className="flex items-center">
+                                                    <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                                                    <span className="font-medium ml-1">
+                                                        {agency.googleReview.rating}
+                                                    </span>
+                                                    <span className="text-muted-foreground ml-1">
+                                                        ({agency.googleReview.count} reviews)
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-1 text-muted-foreground">
-                                            <MapPin className="w-4 h-4" />
-                                            {agency.location}
-                                        </div>
-                                        <div className="flex items-center gap-1 text-muted-foreground">
-                                            <Calendar className="w-4 h-4" />
-                                            Founded {agency.founded}
-                                        </div>
-                                        <div className="flex items-center gap-1 text-muted-foreground">
-                                            <Users className="w-4 h-4" />
-                                            {agency.teamSize} employees
+                                            <div className="flex items-center gap-1 text-muted-foreground">
+                                                <MapPin className="w-4 h-4" />
+                                                {agency.location}
+                                            </div>
+                                            <div className="flex items-center gap-1 text-muted-foreground">
+                                                <Calendar className="w-4 h-4" />
+                                                Founded {agency.founded}
+                                            </div>
+                                            <div className="flex items-center gap-1 text-muted-foreground">
+                                                <Users className="w-4 h-4" />
+                                                {agency.teamSize} employees
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Card>
 
-                            <div>
+                            <Card className="p-6">
                                 <h2 className="text-xl font-semibold mb-3">
                                     About {agency.name}
                                 </h2>
                                 <div className="prose prose-sm max-w-none text-muted-foreground">
-
                                     {agency.description.split("\n\n").map((paragraph: string, index: number) => (
                                         <p key={index} className="mb-4">
                                             {paragraph}
                                         </p>
                                     ))}
                                 </div>
-                            </div>
+                            </Card>
 
                             {agency.additionalLocations.length > 0 && (
-                                <div>
+                                <Card className="p-6">
                                     <h2 className="text-xl font-semibold mb-3">
                                         Additional Locations
                                     </h2>
@@ -108,10 +109,10 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                             </Badge>
                                         ))}
                                     </div>
-                                </div>
+                                </Card>
                             )}
 
-                            <div>
+                            <Card className="p-6">
                                 <h2 className="text-xl font-semibold mb-3">Services</h2>
                                 <div className="flex flex-wrap gap-2">
                                     {agency.services.map((service: string) => (
@@ -120,9 +121,9 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                         </Badge>
                                     ))}
                                 </div>
-                            </div>
+                            </Card>
 
-                            <div>
+                            <Card className="p-6">
                                 <h2 className="text-xl font-semibold mb-3">Industries</h2>
                                 <div className="flex flex-wrap gap-2">
                                     {agency.industries.map((industry: string) => (
@@ -131,37 +132,39 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                         </Badge>
                                     ))}
                                 </div>
-                            </div>
+                            </Card>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <h3 className="font-semibold mb-2">SEO Expertise</h3>
-                                    <ul className="space-y-1 text-sm text-muted-foreground">
-                                        {agency.expertise.seo.map((item: string) => (
-                                            <li key={item}>• {item}</li>
-                                        ))}
-                                    </ul>
+                            <Card className="p-6">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <h3 className="font-semibold mb-2">SEO Expertise</h3>
+                                        <ul className="space-y-1 text-sm text-muted-foreground">
+                                            {agency.expertise.seo.map((item: string) => (
+                                                <li key={item}>• {item}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold mb-2">Marketing Expertise</h3>
+                                        <ul className="space-y-1 text-sm text-muted-foreground">
+                                            {agency.expertise.marketing.map((item: string) => (
+                                                <li key={item}>• {item}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold mb-2">Development Expertise</h3>
+                                        <ul className="space-y-1 text-sm text-muted-foreground">
+                                            {agency.expertise.development.map((item: string) => (
+                                                <li key={item}>• {item}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-semibold mb-2">Marketing Expertise</h3>
-                                    <ul className="space-y-1 text-sm text-muted-foreground">
-                                        {agency.expertise.marketing.map((item: string) => (
-                                            <li key={item}>• {item}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold mb-2">Development Expertise</h3>
-                                    <ul className="space-y-1 text-sm text-muted-foreground">
-                                        {agency.expertise.development.map((item: string) => (
-                                            <li key={item}>• {item}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
+                            </Card>
                         </Card>
 
-                        <Card className="w-full md:w-1/3 p-6 space-y-6">
+                        <Card className="w-full md:w-1/3 p-6 space-y-6 md:sticky md:top-20">
                             <div className="space-y-4">
                                 <h2 className="text-xl font-semibold">Get in Touch</h2>
                                 <div className="space-y-3">
