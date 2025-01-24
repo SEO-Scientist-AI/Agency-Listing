@@ -2,7 +2,9 @@
 
 import { Search, Handshake, TrendingUp } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+
+import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 import { TITLE_TAILWIND_CLASS } from '@/utils/constants'
 
 const features = [
@@ -44,7 +46,7 @@ export default function SideBySide() {
 
   return (
     <div className="overflow-hidden">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 ">
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
           <div className="lg:pr-8">
             <div className="lg:max-w-lg">
@@ -89,13 +91,25 @@ export default function SideBySide() {
               </dl>
             </div>
           </div>
-          <div className="relative w-full h-[400px] transition-all duration-500 ease-in-out mt-6">
-            <img
+
+
+          <motion.div
+            key={selectedFeature.name}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="relative w-full h-[400px] transition-all duration-500 ease-in-out mt-28"
+          >
+            <Image
               src={selectedFeature.image}
               alt={selectedFeature.name}
-              className="object-cover rounded-lg w-full h-full mt-20"
+
+              fill
+              className="object-cover rounded-lg"
+              priority={true}
             />
-          </div>
+
+          </motion.div>
         </div>
       </div>
     </div>

@@ -37,6 +37,8 @@ export const metadata: Metadata = {
     },
 };
 
+import { LocomotiveScrollProvider } from "@/components/providers/locomotive-scroll-provider"
+
 export default function RootLayout({
     children,
 }: {
@@ -65,7 +67,9 @@ export default function RootLayout({
                             enableSystem
                             disableTransitionOnChange
                         >
-                            {children}
+                            <LocomotiveScrollProvider>
+                                {children}
+                            </LocomotiveScrollProvider>
                             <Toaster />
                         </ThemeProvider>
                     </Provider>
