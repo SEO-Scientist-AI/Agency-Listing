@@ -27,7 +27,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="flex flex-col justify-center items-center">
+    <section className="flex flex-col justify-center items-center" >
       <div className="flex flex-col justify-center items-center lg:w-[75%] px-4 py-24">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold tracking-tight mb-4">
