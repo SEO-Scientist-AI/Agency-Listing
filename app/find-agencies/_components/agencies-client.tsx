@@ -67,7 +67,7 @@ export function AgenciesClient({ initialAgencies }: { initialAgencies: any[] }) 
     }, [filters, initialAgencies])
 
     return (
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col md:flex-row-reverse gap-6">
             <div className="flex-1 space-y-6">
                 <Suspense fallback={<div>Loading...</div>}>
                     {filteredAgencies.length === 0 ? (

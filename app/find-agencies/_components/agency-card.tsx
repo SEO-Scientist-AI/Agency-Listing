@@ -112,7 +112,9 @@ export function AgencyCard({
                             >
                                 <h2 className="text-xl font-bold">{name}</h2>
                             </Link>
-                            <p className="text-sm text-muted-foreground">{tagline}</p>
+                            <p className="text-sm text-muted-foreground">
+                                {tagline}
+                            </p>
                         </div>
                         <div className="flex items-center space-x-1 bg-muted rounded-full px-2 py-1">
                             <GoogleLogo />
@@ -128,9 +130,17 @@ export function AgencyCard({
                         </div>
                     </div>
                     <p className="text-sm line-clamp-2">{description}</p>
-                    <div className="flex items-center space-x-2 text-sm">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span>{location}</span>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2 text-sm">
+                            <MapPin className="h-4 w-4 text-muted-foreground" />
+                            <span>{location}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                            <DollarSign className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">
+                                Starting Price: {startingPrice}
+                            </span>
+                        </div>
                     </div>
                     <div>
                         <h4 className="text-sm font-semibold mb-1">Services</h4>
@@ -152,28 +162,25 @@ export function AgencyCard({
                         <h4 className="text-sm font-semibold mb-1">
                             Industries
                         </h4>
-                        <div className="flex flex-wrap gap-1">
-                            {industries.map((industry) => (
-                                <Badge
-                                    key={industry}
-                                    variant="secondary"
-                                    className="text-xs"
-                                >
-                                    {industry}
-                                </Badge>
-                            ))}
+                        <div className="flex justify-between items-center">
+                            <div className="flex flex-wrap gap-1 flex-1">
+                                {industries.map((industry) => (
+                                    <Badge
+                                        key={industry}
+                                        variant="secondary"
+                                        className="text-xs"
+                                    >
+                                        {industry}
+                                    </Badge>
+                                ))}
+                            </div>
+                            <Link
+                                href={`/find-agencies/${id}`}
+                                className="ml-4"
+                            >
+                                <Button size="sm">View Details</Button>
+                            </Link>
                         </div>
-                    </div>
-                    <div className="flex items-center justify-between pt-2">
-                        <div className="flex items-center space-x-1">
-                            <DollarSign className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">
-                                Starting Price: {startingPrice}
-                            </span>
-                        </div>
-                        <Link href={`/find-agencies/${id}`}>
-                            <Button size="sm">View Details</Button>
-                        </Link>
                     </div>
                 </div>
             </CardContent>

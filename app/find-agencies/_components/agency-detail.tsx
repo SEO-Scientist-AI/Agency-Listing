@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
+import { ServiceBubble } from "./agency-card";
 import {
     Building2,
     MapPin,
@@ -18,6 +19,15 @@ import {
 import { ContactModal } from "@/components/ContactModal";
 import NavBar from "@/components/wrapper/navbar";
 import Footer from "@/components/wrapper/footer";
+import { ContactAgency } from "./contact-agency";
+
+const colorClasses = [
+    "border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300",
+    "border-green-300 dark:border-green-700 text-green-700 dark:text-green-300",
+    "border-yellow-300 dark:border-yellow-700 text-yellow-700 dark:text-yellow-300",
+    "border-red-300 dark:border-red-700 text-red-700 dark:text-red-300",
+    "border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300",
+];
 
 const GoogleLogo = () => (
     <Image
@@ -59,10 +69,18 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                                 <div className="flex items-center">
                                                     <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
                                                     <span className="font-medium ml-1">
-                                                        {agency.googleReview.rating}
+                                                        {
+                                                            agency.googleReview
+                                                                .rating
+                                                        }
                                                     </span>
                                                     <span className="text-muted-foreground ml-1">
-                                                        ({agency.googleReview.count} reviews)
+                                                        (
+                                                        {
+                                                            agency.googleReview
+                                                                .count
+                                                        }{" "}
+                                                        reviews)
                                                     </span>
                                                 </div>
                                             </div>
@@ -88,11 +106,18 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                     About {agency.name}
                                 </h2>
                                 <div className="prose prose-sm max-w-none text-muted-foreground">
-                                    {agency.description.split("\n\n").map((paragraph: string, index: number) => (
-                                        <p key={index} className="mb-4">
-                                            {paragraph}
-                                        </p>
-                                    ))}
+                                    {agency.description
+                                        .split("\n\n")
+                                        .map(
+                                            (
+                                                paragraph: string,
+                                                index: number
+                                            ) => (
+                                                <p key={index} className="mb-4">
+                                                    {paragraph}
+                                                </p>
+                                            )
+                                        )}
                                 </div>
                             </Card>
 
@@ -102,97 +127,105 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                         Additional Locations
                                     </h2>
                                     <div className="flex flex-wrap gap-2">
-                                        {agency.additionalLocations.map((location: string) => (
-                                            <Badge key={location} variant="secondary">
-                                                <MapPin className="w-3 h-3 mr-1" />
-                                                {location}
-                                            </Badge>
-                                        ))}
+                                        {agency.additionalLocations.map(
+                                            (location: string) => (
+                                                <Badge
+                                                    key={location}
+                                                    variant="secondary"
+                                                >
+                                                    <MapPin className="w-3 h-5 mr-1" />
+                                                    {location}
+                                                </Badge>
+                                            )
+                                        )}
                                     </div>
                                 </Card>
                             )}
 
                             <Card className="p-6">
-                                <h2 className="text-xl font-semibold mb-3">Services</h2>
+                                <h2 className="text-xl font-semibold mb-3">
+                                    Services
+                                </h2>
                                 <div className="flex flex-wrap gap-2">
-                                    {agency.services.map((service: string) => (
-                                        <Badge key={service} variant="secondary">
-                                            {service}
-                                        </Badge>
-                                    ))}
+                                    {(agency.services as string[]).map(
+                                        (service: string, index: number) => (
+                                            <ServiceBubble
+                                                key={service}
+                                                service={service}
+                                                color={
+                                                    colorClasses[
+                                                        index %
+                                                            colorClasses.length
+                                                    ]
+                                                }
+                                            />
+                                        )
+                                    )}
                                 </div>
                             </Card>
 
                             <Card className="p-6">
-                                <h2 className="text-xl font-semibold mb-3">Industries</h2>
+                                <h2 className="text-xl font-semibold mb-3">
+                                    Industries
+                                </h2>
                                 <div className="flex flex-wrap gap-2">
-                                    {agency.industries.map((industry: string) => (
-                                        <Badge key={industry} variant="outline">
-                                            {industry}
-                                        </Badge>
-                                    ))}
+                                    {agency.industries.map(
+                                        (industry: string) => (
+                                            <Badge
+                                                key={industry}
+                                                variant="outline"
+                                            >
+                                                {industry}
+                                            </Badge>
+                                        )
+                                    )}
                                 </div>
                             </Card>
 
                             <Card className="p-6">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
-                                        <h3 className="font-semibold mb-2">SEO Expertise</h3>
+                                        <h3 className="font-semibold mb-2">
+                                            SEO Expertise
+                                        </h3>
                                         <ul className="space-y-1 text-sm text-muted-foreground">
-                                            {agency.expertise.seo.map((item: string) => (
-                                                <li key={item}>• {item}</li>
-                                            ))}
+                                            {agency.expertise.seo.map(
+                                                (item: string) => (
+                                                    <li key={item}>• {item}</li>
+                                                )
+                                            )}
                                         </ul>
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold mb-2">Marketing Expertise</h3>
+                                        <h3 className="font-semibold mb-2">
+                                            Marketing Expertise
+                                        </h3>
                                         <ul className="space-y-1 text-sm text-muted-foreground">
-                                            {agency.expertise.marketing.map((item: string) => (
-                                                <li key={item}>• {item}</li>
-                                            ))}
+                                            {agency.expertise.marketing.map(
+                                                (item: string) => (
+                                                    <li key={item}>• {item}</li>
+                                                )
+                                            )}
                                         </ul>
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold mb-2">Development Expertise</h3>
+                                        <h3 className="font-semibold mb-2">
+                                            Development Expertise
+                                        </h3>
                                         <ul className="space-y-1 text-sm text-muted-foreground">
-                                            {agency.expertise.development.map((item: string) => (
-                                                <li key={item}>• {item}</li>
-                                            ))}
+                                            {agency.expertise.development.map(
+                                                (item: string) => (
+                                                    <li key={item}>• {item}</li>
+                                                )
+                                            )}
                                         </ul>
                                     </div>
                                 </div>
                             </Card>
-                        </Card>
-
-                        <Card className="w-full md:w-1/3 p-6 space-y-6 md:sticky md:top-20">
-                            <div className="space-y-4">
-                                <h2 className="text-xl font-semibold">Get in Touch</h2>
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-2">
-                                        <DollarSign className="w-5 h-5 text-muted-foreground" />
-                                        <span>Starting from {agency.startingPrice}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Globe2 className="w-5 h-5 text-muted-foreground" />
-                                        <span>{agency.geographicFocus.join(", ")}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Languages className="w-5 h-5 text-muted-foreground" />
-                                        <span>{agency.languages.join(", ")}</span>
-                                    </div>
-                                </div>
-                                <ContactModal
-                                    agency={agency}
-                                    trigger={
-                                        <Button className="w-full">Contact Agency</Button>
-                                    }
-                                />
-                            </div>
-
-                            <Separator />
-
-                            <div>
-                                <h3 className="font-medium mb-3">Client Business Size</h3>
+                            <Card className="p-6">
+                                <h3 className="font-semibold mb-3">
+                                    Client Business Size
+                                </h3>
                                 <div className="flex flex-wrap gap-2">
                                     {agency.clientSize.map((size: string) => (
                                         <Badge key={size} variant="outline">
@@ -200,10 +233,12 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                         </Badge>
                                     ))}
                                 </div>
-                            </div>
+                            </Card>
 
-                            <div>
-                                <h3 className="font-medium mb-3">Budget Ranges</h3>
+                            <Card className="p-6">
+                                <h3 className="font-semibold mb-3">
+                                    Budget Ranges
+                                </h3>
                                 <div className="flex flex-wrap gap-2">
                                     {agency.budgetRange.map((range: string) => (
                                         <Badge key={range} variant="outline">
@@ -211,23 +246,38 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                         </Badge>
                                     ))}
                                 </div>
-                            </div>
+                            </Card>
 
-                            <div>
-                                <h3 className="font-medium mb-3">Project Duration</h3>
+                            <Card className="p-6">
+                                <h3 className="font-semibold mb-3">
+                                    Project Duration
+                                </h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {agency.projectDuration.map((duration: string) => (
-                                        <Badge key={duration} variant="outline">
-                                            {duration}
-                                        </Badge>
-                                    ))}
+                                    {agency.projectDuration.map(
+                                        (duration: string) => (
+                                            <Badge
+                                                key={duration}
+                                                variant="outline"
+                                            >
+                                                {duration}
+                                            </Badge>
+                                        )
+                                    )}
                                 </div>
+                            </Card>
+                        </Card>
+
+                        <Card className="w-full md:w-1/3 p-6 space-y-6 md:sticky md:top-20">
+                            <div className="space-y-4">
+                                <h2 className="text-xl font-semibold">
+                                    Contact Agency
+                                </h2>
                             </div>
-
-                            <Separator />
-
+                            <ContactAgency agency={agency} />
                             <div>
-                                <h3 className="font-medium mb-2">Why work with us?</h3>
+                                <h3 className="font-medium mb-2">
+                                    Why work with us?
+                                </h3>
                                 <ul className="space-y-2 text-sm text-muted-foreground">
                                     <li>• Proven track record of success</li>
                                     <li>• Dedicated project manager</li>

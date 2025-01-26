@@ -211,7 +211,7 @@ export default function SideBarFilters({
                                 </p>
                                 <ChevronDown className="h-4 w-4" />
                             </CollapsibleTrigger>
-                            <CollapsibleContent className="space-y-2 pt-2">
+                            <CollapsibleContent className="space-y-2 pt-2 max-h-[200px] overflow-y-auto">
                                 {allServices.map((service) => (
                                     <label
                                         key={service}
@@ -238,7 +238,7 @@ export default function SideBarFilters({
                             </CollapsibleContent>
                         </Collapsible>
 
-                        <Collapsible
+                        {/* <Collapsible
                             open={openSections.industries}
                             onOpenChange={() => toggleSection("industries")}
                         >
@@ -248,7 +248,7 @@ export default function SideBarFilters({
                                 </p>
                                 <ChevronDown className="h-4 w-4" />
                             </CollapsibleTrigger>
-                            <CollapsibleContent className="space-y-2 pt-2">
+                            <CollapsibleContent className="space-y-2 pt-2 max-h-[200px] overflow-y-auto">
                                 {allIndustries.map((industry) => (
                                     <label
                                         key={industry}
@@ -273,7 +273,7 @@ export default function SideBarFilters({
                                     </label>
                                 ))}
                             </CollapsibleContent>
-                        </Collapsible>
+                        </Collapsible> */}
 
                         <Collapsible
                             open={openSections.location}
@@ -285,7 +285,7 @@ export default function SideBarFilters({
                                 </p>
                                 <ChevronDown className="h-4 w-4" />
                             </CollapsibleTrigger>
-                            <CollapsibleContent className="space-y-2 pt-2">
+                            <CollapsibleContent className="space-y-2 pt-2 max-h-[200px] overflow-y-auto">
                                 {allLocations.map((location) => (
                                     <label
                                         key={location}
@@ -312,7 +312,7 @@ export default function SideBarFilters({
                             </CollapsibleContent>
                         </Collapsible>
 
-                        <Collapsible
+                        {/* <Collapsible
                             open={openSections.budget}
                             onOpenChange={() => toggleSection("budget")}
                         >
@@ -322,7 +322,7 @@ export default function SideBarFilters({
                                 </p>
                                 <ChevronDown className="h-4 w-4" />
                             </CollapsibleTrigger>
-                            <CollapsibleContent className="space-y-2 pt-2">
+                            <CollapsibleContent className="space-y-2 pt-2 max-h-[200px] overflow-y-auto">
                                 {budgetRanges.map((range) => (
                                     <label
                                         key={range.label}
@@ -349,7 +349,7 @@ export default function SideBarFilters({
                                     </label>
                                 ))}
                             </CollapsibleContent>
-                        </Collapsible>
+                        </Collapsible> */}
                     </div>
                 </CardContent>
             </Card>
