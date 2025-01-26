@@ -1,11 +1,11 @@
-import { agencies } from './agency-data'
+import { getAllAgencies } from '@/lib/firebase/agencies'
 import { AgenciesClient } from './_components/agencies-client'
 import Navbar from "@/components/wrapper/navbar"
 import Footer from "@/components/wrapper/footer"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft } from "lucide-react"
 
-export default function FindAgencies() {
+export default async function FindAgencies() {
+  const agencies = await getAllAgencies()
+  
   return (
     <>
       <Navbar />
@@ -21,7 +21,9 @@ export default function FindAgencies() {
             strategy.
           </p>
         </div>
-        <AgenciesClient initialAgencies={agencies} />
+        <div className="container mx-auto max-w-6xl px-4 py-8">
+          <AgenciesClient initialAgencies={agencies} />
+        </div>
       </div>
       <Footer />
     </>

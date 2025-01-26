@@ -1,26 +1,14 @@
-import { agencies } from '../agency-data'
-import { notFound } from 'next/navigation'
-import { AgencyDetailComponent } from '../_components/agency-detail'
+import { getAgencyById } from "@/lib/firebase/agencies";
+import { AgencyDetailComponent } from "../_components/agency-detail";
+import { notFound } from "next/navigation";
 
-export function generateStaticParams() {
-  return agencies.map((agency) => ({
-    slug: agency.id,
-  }))
-}
-
-export const dynamicParams = false
-
-export default async function AgencyDetailPage({ 
-  params 
-}: { 
-  params: Promise<{ slug: string }> | { slug: string } 
-}) {
-  const resolvedParams = await params
-  const agency = agencies.find((a) => a.id === resolvedParams.slug)
+export default async function AgencyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const agency = await getAgencyById(resolvedParams.slug);
 
   if (!agency) {
-    notFound()
+    notFound();
   }
 
-  return <AgencyDetailComponent agency={agency} />
+  return <AgencyDetailComponent agency={agency} />;
 }
