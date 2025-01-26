@@ -5,6 +5,7 @@ import {
   CardFooter,
 } from "@/components/ui/card"
 import { HowItsWorksCards } from '@/components/homepage/how-it-works';
+
 import Image from 'next/image';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
 const HowItsWorksCard = ({card}:{card:HowItsWorksCards}) => {

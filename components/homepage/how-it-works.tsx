@@ -4,6 +4,13 @@ import { GridPatternCard, GridPatternCardBody } from "@/components/ui/card-with-
 import { cn } from "@/lib/utils";
 import { ClipboardList, MessageSquare, UserCheck } from "lucide-react";
 
+export interface HowItsWorksCards {
+  image: string;
+  heading: string;
+  description: string;
+  step: number;
+}
+
 const steps = [
   {
     title: "Define Your Needs",
