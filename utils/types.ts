@@ -45,3 +45,13 @@ const userUpdateSchema = z.object({
     .describe("user profile image URL"),
   user_id: z.string().describe("user ID"),
 });
+
+export type Agency = {
+  id: string;
+  name: string;
+  industries?: string[];
+  services?: string[];
+  location?: string;
+  minBudget?: number;
+  maxBudget?: number;
+};

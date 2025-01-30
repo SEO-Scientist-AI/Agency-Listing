@@ -1,7 +1,8 @@
 import { db } from './config';
 import { collection, getDocs, getDoc, doc, query, where } from 'firebase/firestore';
+import { Agency } from '@/utils/types';
 
-export async function getAllAgencies() {
+export async function getAllAgencies(): Promise<Agency[]> {
   const agenciesRef = collection(db, 'agencies');
   const snapshot = await getDocs(agenciesRef);
   return snapshot.docs.map(doc => ({

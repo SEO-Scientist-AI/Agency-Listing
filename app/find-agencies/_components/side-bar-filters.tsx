@@ -8,24 +8,8 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { agencies } from "../agency-data";
-
-// Utility function to extract unique values from an array
-const getUniqueValues = <T,>(array: T[]): T[] => Array.from(new Set(array));
-
-// Extract unique values from agencies data
-const allServices = getUniqueValues(
-    agencies.flatMap((agency) => agency.services)
-);
-const allIndustries = getUniqueValues(
-    agencies.flatMap((agency) => agency.industries)
-);
-const allLocations = getUniqueValues(agencies.map((agency) => agency.location));
-const budgetRanges = [
-    { label: "$1,000 - $5,000", min: 1000, max: 5000 },
-    { label: "$5,000 - $10,000", min: 5000, max: 10000 },
-    { label: "$10,000+", min: 10000, max: Infinity },
-];
+import { fetchAllAgencies } from "@/lib/api";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface FilterState {
     search: string;
@@ -39,16 +23,122 @@ interface SideBarFiltersProps {
     onFiltersChange: (filters: FilterState) => void;
 }
 
+interface Agency {
+    services: string[];
+    industries: string[];
+    location: string;
+}
+
+const budgetRanges = [
+    { label: "$1,000 - $5,000", min: 1000, max: 5000 },
+    { label: "$5,000 - $10,000", min: 5000, max: 10000 },
+    { label: "$10,000+", min: 10000, max: Infinity },
+];
+
 export default function SideBarFilters({
     onFiltersChange,
 }: SideBarFiltersProps) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
     const [filters, setFilters] = useState<FilterState>({
-        search: "",
-        services: [],
-        industries: [],
-        locations: [],
+        search: searchParams.get("search") || "",
+        services: searchParams.getAll("service") || [],
+        industries: searchParams.getAll("industry") || [],
+        locations: searchParams.getAll("location") || [],
         budgetRanges: [],
     });
+
+    const [metadata, setMetadata] = useState({
+        allServices: [] as string[],
+        allIndustries: [] as string[],
+        allLocations: [] as string[],
+    });
+
+    // Fetch initial metadata
+    useEffect(() => {
+        async function fetchMetadata() {
+            try {
+                const agencies = await fetchAllAgencies();
+                const getUniqueValues = <T,>(array: T[]): T[] => Array.from(new Set(array));
+                
+                setMetadata({
+                    allServices: getUniqueValues(agencies.flatMap((agency: Agency) => agency.services)),
+                    allIndustries: getUniqueValues(agencies.flatMap((agency: Agency) => agency.industries)),
+                    allLocations: getUniqueValues(agencies.map((agency: Agency) => agency.location)),
+                });
+            } catch (error) {
+                console.error('Error fetching metadata:', error);
+            }
+        }
+        fetchMetadata();
+    }, []);
+
+    // Update URL when filters change
+    const updateURL = useCallback((newFilters: FilterState) => {
+        const params = new URLSearchParams(window.location.search);
+        
+        // Update search parameter
+        if (newFilters.search) {
+            params.set("search", newFilters.search);
+        } else {
+            params.delete("search");
+        }
+        
+        // Update services
+        params.delete("service");
+        newFilters.services.forEach(service => {
+            params.append("service", service);
+        });
+        
+        // Update industries
+        params.delete("industry");
+        newFilters.industries.forEach(industry => {
+            params.append("industry", industry);
+        });
+        
+        // Update locations
+        params.delete("location");
+        newFilters.locations.forEach(location => {
+            params.append("location", location);
+        });
+        
+        // Update budget ranges
+        if (newFilters.budgetRanges.length > 0) {
+            const minBudget = Math.min(...newFilters.budgetRanges.map(r => r.min));
+            const maxBudget = Math.max(...newFilters.budgetRanges.map(r => r.max));
+            params.set("minBudget", minBudget.toString());
+            params.set("maxBudget", maxBudget.toString());
+        } else {
+            params.delete("minBudget");
+            params.delete("maxBudget");
+        }
+
+        const queryString = params.toString();
+        const currentPath = window.location.pathname;
+        router.push(`${currentPath}${queryString ? `?${queryString}` : ""}`);
+    }, [router]);
+
+    // Update filters and URL when filter state changes
+    const handleFilterChange = useCallback((newFilters: FilterState) => {
+        setFilters(newFilters);
+        onFiltersChange(newFilters);
+        updateURL(newFilters);
+    }, [onFiltersChange, updateURL]);
+
+    // Clear all filters
+    const clearFilters = useCallback(() => {
+        const emptyFilters = {
+            search: "",
+            services: [],
+            industries: [],
+            locations: [],
+            budgetRanges: [],
+        };
+        setFilters(emptyFilters);
+        onFiltersChange(emptyFilters);
+        updateURL(emptyFilters);
+    }, [onFiltersChange, updateURL]);
 
     const [openSections, setOpenSections] = useState({
         services: true,
@@ -65,24 +155,19 @@ export default function SideBarFilters({
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFilters((prev) => ({ ...prev, search: e.target.value }));
+        handleFilterChange({ ...filters, search: e.target.value });
     };
 
     const toggleFilter = (type: keyof FilterState, value: any) => {
-        setFilters((prev) => {
-            const currentValues = prev[type] as any[];
-            const newValues = currentValues.includes(value)
-                ? currentValues.filter((v) => v !== value)
-                : [...currentValues, value];
-            return { ...prev, [type]: newValues };
-        });
+        const currentValues = filters[type] as any[];
+        const newValues = currentValues.includes(value)
+            ? currentValues.filter((v) => v !== value)
+            : [...currentValues, value];
+        handleFilterChange({ ...filters, [type]: newValues });
     };
 
     const removeFilter = (type: keyof FilterState, value: any) => {
-        setFilters((prev) => ({
-            ...prev,
-            [type]: (prev[type] as any[]).filter((v) => v !== value),
-        }));
+        handleFilterChange({ ...filters, [type]: (filters[type] as any[]).filter((v) => v !== value) });
     };
 
     // Notify parent component when filters change
@@ -107,15 +192,7 @@ export default function SideBarFilters({
                     <CardTitle className="">Filters</CardTitle>
                     {appliedFiltersCount > 0 && (
                         <button
-                            onClick={() =>
-                                setFilters({
-                                    search: "",
-                                    services: [],
-                                    industries: [],
-                                    locations: [],
-                                    budgetRanges: [],
-                                })
-                            }
+                            onClick={clearFilters}
                             className="text-sm text-muted-foreground hover:text-foreground"
                         >
                             Clear all
@@ -148,10 +225,7 @@ export default function SideBarFilters({
                                             Search: {filters.search}
                                             <button
                                                 onClick={() =>
-                                                    setFilters((prev) => ({
-                                                        ...prev,
-                                                        search: "",
-                                                    }))
+                                                    handleFilterChange({ ...filters, search: "" })
                                                 }
                                                 className="hover:text-indigo-900"
                                             >
@@ -167,10 +241,7 @@ export default function SideBarFilters({
                                             {service}
                                             <button
                                                 onClick={() =>
-                                                    removeFilter(
-                                                        "services",
-                                                        service
-                                                    )
+                                                    removeFilter("services", service)
                                                 }
                                                 className="hover:text-indigo-900"
                                             >
@@ -186,10 +257,7 @@ export default function SideBarFilters({
                                             {industry}
                                             <button
                                                 onClick={() =>
-                                                    removeFilter(
-                                                        "industries",
-                                                        industry
-                                                    )
+                                                    removeFilter("industries", industry)
                                                 }
                                                 className="hover:text-indigo-900"
                                             >
@@ -212,7 +280,7 @@ export default function SideBarFilters({
                                 <ChevronDown className="h-4 w-4" />
                             </CollapsibleTrigger>
                             <CollapsibleContent className="space-y-2 pt-2 max-h-[200px] overflow-y-auto">
-                                {allServices.map((service) => (
+                                {metadata.allServices.map((service) => (
                                     <label
                                         key={service}
                                         className="flex items-center gap-2"
@@ -223,10 +291,7 @@ export default function SideBarFilters({
                                                 service
                                             )}
                                             onChange={() =>
-                                                toggleFilter(
-                                                    "services",
-                                                    service
-                                                )
+                                                toggleFilter("services", service)
                                             }
                                             className="rounded border-gray-300"
                                         />
@@ -238,7 +303,7 @@ export default function SideBarFilters({
                             </CollapsibleContent>
                         </Collapsible>
 
-                        {/* <Collapsible
+                        <Collapsible
                             open={openSections.industries}
                             onOpenChange={() => toggleSection("industries")}
                         >
@@ -249,7 +314,7 @@ export default function SideBarFilters({
                                 <ChevronDown className="h-4 w-4" />
                             </CollapsibleTrigger>
                             <CollapsibleContent className="space-y-2 pt-2 max-h-[200px] overflow-y-auto">
-                                {allIndustries.map((industry) => (
+                                {metadata.allIndustries.map((industry) => (
                                     <label
                                         key={industry}
                                         className="flex items-center gap-2"
@@ -260,10 +325,7 @@ export default function SideBarFilters({
                                                 industry
                                             )}
                                             onChange={() =>
-                                                toggleFilter(
-                                                    "industries",
-                                                    industry
-                                                )
+                                                toggleFilter("industries", industry)
                                             }
                                             className="rounded border-gray-300"
                                         />
@@ -273,7 +335,7 @@ export default function SideBarFilters({
                                     </label>
                                 ))}
                             </CollapsibleContent>
-                        </Collapsible> */}
+                        </Collapsible>
 
                         <Collapsible
                             open={openSections.location}
@@ -286,7 +348,7 @@ export default function SideBarFilters({
                                 <ChevronDown className="h-4 w-4" />
                             </CollapsibleTrigger>
                             <CollapsibleContent className="space-y-2 pt-2 max-h-[200px] overflow-y-auto">
-                                {allLocations.map((location) => (
+                                {metadata.allLocations.map((location) => (
                                     <label
                                         key={location}
                                         className="flex items-center gap-2"
@@ -297,10 +359,7 @@ export default function SideBarFilters({
                                                 location
                                             )}
                                             onChange={() =>
-                                                toggleFilter(
-                                                    "locations",
-                                                    location
-                                                )
+                                                toggleFilter("locations", location)
                                             }
                                             className="rounded border-gray-300"
                                         />
@@ -312,7 +371,7 @@ export default function SideBarFilters({
                             </CollapsibleContent>
                         </Collapsible>
 
-                        {/* <Collapsible
+                        <Collapsible
                             open={openSections.budget}
                             onOpenChange={() => toggleSection("budget")}
                         >
@@ -349,7 +408,7 @@ export default function SideBarFilters({
                                     </label>
                                 ))}
                             </CollapsibleContent>
-                        </Collapsible> */}
+                        </Collapsible>
                     </div>
                 </CardContent>
             </Card>

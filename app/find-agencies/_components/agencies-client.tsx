@@ -2,6 +2,7 @@
 
 import { Suspense, useState, useMemo } from "react"
 import { AgencyCard } from "./agency-card"
+import { AgencyCardSkeleton } from "./agency-card-skeleton"
 import SideBarFilters from "./side-bar-filters"
 
 interface FilterState {
@@ -66,27 +67,85 @@ export function AgenciesClient({ initialAgencies }: { initialAgencies: any[] }) 
         })
     }, [filters, initialAgencies])
 
+    const getTitle = () => {
+        const parts = []
+        if (filters.services.length === 1) {
+            parts.push(`TOP Professional ${filters.services[0]} Services`)
+        } else if (filters.services.length > 1) {
+            parts.push(`TOP Professional ${filters.services.slice(0, -1).join(", ")} & ${filters.services.slice(-1)} Services`)
+        } else {
+            parts.push("TOP Professional Digital Marketing Services")
+        }
+
+        if (filters.locations.length === 1) {
+            parts.push(`in ${filters.locations[0]}`)
+        } else if (filters.locations.length > 1) {
+            parts.push(`in ${filters.locations.slice(0, -1).join(", ")} & ${filters.locations.slice(-1)}`)
+        }
+
+        return parts.join(" ")
+    }
+
+    const getDescription = () => {
+        const parts = ["Discover the top"]
+        
+        if (filters.services.length > 0) {
+            parts.push(filters.services.join(", "))
+            parts.push("agencies")
+        } else {
+            parts.push("digital marketing agencies")
+        }
+
+        if (filters.locations.length > 0) {
+            parts.push(`in ${filters.locations.join(", ")}`)
+        } else {
+            parts.push("worldwide")
+        }
+
+        parts.push("Connect with skilled marketing agencies from our curated community to elevate your marketing strategy.")
+        
+        return parts.join(" ")
+    }
+
     return (
-        <div className="flex flex-col md:flex-row-reverse gap-6">
-            <div className="flex-1 space-y-6">
-                <Suspense fallback={<div>Loading...</div>}>
-                    {filteredAgencies.length === 0 ? (
-                        <div className="text-center py-8">
-                            <p className="text-lg text-muted-foreground">
-                                No agencies found matching your filters.
-                            </p>
-                            <p className="text-sm text-muted-foreground mt-2">
-                                Try adjusting your filters to see more results.
-                            </p>
-                        </div>
-                    ) : (
-                        filteredAgencies.map((agency) => (
-                            <AgencyCard key={agency.id} {...agency} />
-                        ))
-                    )}
-                </Suspense>
+        <>
+            <div className="space-y-4 mb-8">
+                <h1 className="text-3xl font-bold tracking-tight">
+                    {getTitle()}
+                </h1>
+                <p className="text-base text-muted-foreground">
+                    {getDescription()}
+                </p>
             </div>
-            <SideBarFilters onFiltersChange={setFilters} />
-        </div>
+            <div className="flex flex-col md:flex-row-reverse gap-6">
+                <div className="flex-1 space-y-6">
+                    <Suspense
+                        fallback={
+                            <>
+                                {[1, 2, 3].map((i) => (
+                                    <AgencyCardSkeleton key={i} />
+                                ))}
+                            </>
+                        }
+                    >
+                        {filteredAgencies.length === 0 ? (
+                            <div className="text-center py-8">
+                                <p className="text-lg text-muted-foreground">
+                                    No agencies found matching your filters.
+                                </p>
+                                <p className="text-sm text-muted-foreground mt-2">
+                                    Try adjusting your filters to see more results.
+                                </p>
+                            </div>
+                        ) : (
+                            filteredAgencies.map((agency) => (
+                                <AgencyCard key={agency.id} {...agency} />
+                            ))
+                        )}
+                    </Suspense>
+                </div>
+                <SideBarFilters onFiltersChange={setFilters} />
+            </div>
+        </>
     )
 }

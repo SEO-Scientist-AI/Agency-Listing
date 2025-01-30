@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
-import { ServiceBubble } from "./agency-card";
+import { ServiceBubble } from "@/components/ui/service-bubble";
 import {
     Building2,
     MapPin,
@@ -20,14 +20,6 @@ import { ContactModal } from "@/components/ContactModal";
 import NavBar from "@/components/wrapper/navbar";
 import Footer from "@/components/wrapper/footer";
 import { ContactAgency } from "./contact-agency";
-
-const colorClasses = [
-    "border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300",
-    "border-green-300 dark:border-green-700 text-green-700 dark:text-green-300",
-    "border-yellow-300 dark:border-yellow-700 text-yellow-700 dark:text-yellow-300",
-    "border-red-300 dark:border-red-700 text-red-700 dark:text-red-300",
-    "border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300",
-];
 
 const GoogleLogo = () => (
     <Image
@@ -152,12 +144,7 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                             <ServiceBubble
                                                 key={service}
                                                 service={service}
-                                                color={
-                                                    colorClasses[
-                                                        index %
-                                                            colorClasses.length
-                                                    ]
-                                                }
+                                                className="text-sm"
                                             />
                                         )
                                     )}
