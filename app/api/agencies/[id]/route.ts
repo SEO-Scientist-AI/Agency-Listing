@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAgencyById } from "@/lib/firebase/agencies";
+import { Agency } from "@/utils/types";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  context: { params: { id: string } }
+): Promise<NextResponse> {
   try {
-    const { id } = params;
-    const agency = await getAgencyById(id);
+    const { id } = context.params;
+    const agency: Agency | null = await getAgencyById(id);
 
     if (!agency) {
       return NextResponse.json(
@@ -20,7 +21,7 @@ export async function GET(
   } catch (error) {
     console.error("Error fetching agency:", error);
     return NextResponse.json(
-      { error: "Failed to fetch agency" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
