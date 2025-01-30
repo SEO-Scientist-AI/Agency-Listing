@@ -218,7 +218,7 @@ export default function HeroSection() {
                     </Card>
 
                     <div className="mt-8 flex justify-center">
-                        <Link href="/dashboard">
+                        <Link href="/list-agency">
                             <Button className="rounded-md bg-orange-500 hover:bg-orange-600 text-white px-8 py-3">
                                 List Your Agency
                                 <ArrowRight className="ml-2 h-4 w-4" />
