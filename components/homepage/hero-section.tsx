@@ -26,10 +26,10 @@ import { cities, services } from "../wrapper/location-data";
 import { useState } from "react";
 
 const avatarUrls = [
-    { id: 1, url: "/images/placeholder.svg" },
-    { id: 2, url: "/images/placeholder.svg" },
-    { id: 3, url: "/images/placeholder.svg" },
-    { id: 4, url: "/images/placeholder.svg" },
+    { id: 1, url: "/images/testimonials/testimonials_1.png" },
+    { id: 2, url: "/images/testimonials/testimonials_2.png" },
+    { id: 3, url: "/images/testimonials/testimonials_3.png" },
+    { id: 4, url: "/images/testimonials/testimonials_4.png" },
 ];
 
 const avatarElements = avatarUrls.map((avatar) => (
@@ -175,7 +175,7 @@ export default function HeroSection() {
                                 </SelectContent>
                             </Select>
 
-                            <Select value={selectedRegion} onValueChange={setSelectedRegion}>
+                            {/* <Select value={selectedRegion} onValueChange={setSelectedRegion}>
                                 <SelectTrigger className="h-12 bg-white/50 dark:bg-black/50">
                                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <SelectValue placeholder="Select Region" />
@@ -187,7 +187,7 @@ export default function HeroSection() {
                                     <SelectItem value="latam">Latin America</SelectItem>
                                     <SelectItem value="mea">Middle East & Africa</SelectItem>
                                 </SelectContent>
-                            </Select>
+                            </Select> */}
 
                             <Select value={selectedCity} onValueChange={setSelectedCity}>
                                 <SelectTrigger className="h-12 bg-white/50 dark:bg-black/50">
@@ -217,14 +217,14 @@ export default function HeroSection() {
                         </div>
                     </Card>
 
-                    <div className="mt-8 flex justify-center">
+                    {/* <div className="mt-8 flex justify-center">
                         <Link href="/dashboard">
                             <Button className="rounded-md bg-orange-500 hover:bg-orange-600 text-white px-8 py-3">
                                 List Your Agency
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </Link>
-                    </div>
+                    </div> */}
 
                     <div className="mt-12 flex items-center gap-4">
                         <div className="flex -space-x-4">

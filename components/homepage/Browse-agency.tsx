@@ -61,7 +61,7 @@ const BrowseAgencyGalleries = () => {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center lg:w-[75%]">
+        <div className="flex flex-col justify-center items-center lg:w-[75%] mt-[6rem]">
             <div className="flex flex-col mb-[3rem]">
                 <h2
                     className={`${TITLE_TAILWIND_CLASS} mt-2 font-semibold tracking-tight dark:text-white text-gray-900`}
@@ -79,37 +79,42 @@ const BrowseAgencyGalleries = () => {
                     <TabsList className="flex flex-wrap   w-full justify-center border-border mb-16 sm:mb-6 bg-white dark:bg-black">
                         <TabsTrigger
                             value="service"
-                            className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d]"
+
+                            className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d] hover:border-[#FF4405]"
                         >
                             By service
                         </TabsTrigger>
                         <TabsTrigger
                             value="industry"
-                            className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d]"
+
+                            className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d] hover:border-[#FF4405]"
                         >
                             By industry
                         </TabsTrigger>
                         <TabsTrigger
                             value="country"
-                            className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d]"
+
+                            className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d] hover:border-[#FF4405]"
                         >
                             By country
                         </TabsTrigger>
                         <TabsTrigger
                             value="state"
-                            className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d]"
+
+                            className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d] hover:border-[#FF4405]"
                         >
                             By state
                         </TabsTrigger>
                         <TabsTrigger
                             value="city"
-                            className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d]"
+
+                            className="inline font-semibold dark:text-gray-100 text-gray-900 border-b-2 border-transparent px-4 py-2 data-[state=active]:border-[#FF4405] data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-none hover:text-[#ff642d] hover:border-[#FF4405]"
                         >
                             By city
                         </TabsTrigger>
                         
-                    </TabsList>
 
+                    </TabsList>
                     <TabContent tabData={services} value="service" />
                     <TabContent tabData={industries} value="industry" />
                     <TabContent tabData={countries} value="country"/>

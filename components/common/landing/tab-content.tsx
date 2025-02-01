@@ -6,7 +6,7 @@ const TabContent = ({ tabData,value }: { tabData: any,value:string }) => {
     console.log(itemBasedOnTab);
   };
   return (
-    <TabsContent value={value} className="mt-6">
+    <TabsContent value={value} className="mt-6 ">
       <div className="flex flex-wrap gap-3 justify-center">
         {tabData.map((tabItem: { name: string } | string) => {
           let name = "";
