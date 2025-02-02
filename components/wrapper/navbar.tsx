@@ -405,7 +405,12 @@ export default function NavbarCopy() {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      <div className="flex items-center gap-2 max-[825px]:hidden">
+      <div className="flex items-center gap-6 max-[825px]:hidden">
+        <Link href="/listagency">
+                  <Button className="bg-[#ff642d] hover:bg-[#e55a28] text-white">
+                    List Your Agency
+                  </Button>
+                </Link>
         {userId && <UserProfile />}
         <ModeToggle />
       </div>

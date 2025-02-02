@@ -5,7 +5,25 @@ import { Badge } from "@/components/ui/badge";
 import { Building2, MapPin, DollarSign, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ServiceBubble } from "@/components/ui/service-bubble";
+
+interface ServiceBubbleProps {
+    service: string;
+    color: string;
+}
+
+export function ServiceBubble({ service, color }: ServiceBubbleProps) {
+    return (
+        <span
+            className={cn(
+                "inline-block px-3 py-1 rounded-full text-sm font-medium",
+                "border border-dashed",
+                color
+            )}
+        >
+            {service}
+        </span>
+    );
+}
 
 interface AgencyCardProps {
     id: string;
@@ -34,6 +52,14 @@ interface AgencyCardProps {
         development: string[];
     };
 }
+
+const colorClasses = [
+    "border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300",
+    "border-green-300 dark:border-green-700 text-green-700 dark:text-green-300",
+    "border-yellow-300 dark:border-yellow-700 text-yellow-700 dark:text-yellow-300",
+    "border-red-300 dark:border-red-700 text-red-700 dark:text-red-300",
+    "border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300",
+];
 
 const GoogleLogo = () => (
     <Image
@@ -118,11 +144,16 @@ export function AgencyCard({
                     </div>
                     <div>
                         <h4 className="text-sm font-semibold mb-1">Services</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {services.map((service) => (
+                        <div className="flex flex-wrap gap-1">
+                            {services.map((service, index) => (
                                 <ServiceBubble
                                     key={service}
                                     service={service}
+                                    color={
+                                        colorClasses[
+                                            index % colorClasses.length
+                                        ]
+                                    }
                                 />
                             ))}
                         </div>
