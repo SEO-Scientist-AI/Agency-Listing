@@ -4,10 +4,10 @@ import { Agency } from "@/utils/types";
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
     const agency: Agency | null = await getAgencyById(id);
 
     if (!agency) {
