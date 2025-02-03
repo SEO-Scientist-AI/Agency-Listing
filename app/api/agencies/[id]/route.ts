@@ -8,7 +8,7 @@ export async function GET(
 ): Promise<NextResponse> {
   try {
     const { id } = await context.params;
-    const agency: Agency | null = await getAgencyById(id);
+    const agency = await getAgencyById(id);
 
     if (!agency) {
       return NextResponse.json(
