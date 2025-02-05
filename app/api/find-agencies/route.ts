@@ -24,8 +24,8 @@ export async function GET(req: NextRequest) {
       const services = url.searchParams.get('services')?.split(' ').map(s => s.replace(/-/g, ' ')) || [];
       const locations = url.searchParams.get('location')?.split(' ').map(l => l.replace(/-/g, ' ')) || [];
       
-      console.log('Requested services:', services);
-      console.log('Requested locations:', locations);
+      // console.log('Requested services:', services);
+      // console.log('Requested locations:', locations);
       
       const agenciesRef = collection(db, 'agencies');
 

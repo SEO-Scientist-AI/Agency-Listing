@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/firebase/config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
-export async function GET(request: Request, { params }: { params: { slug: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const agenciesRef = collection(db, 'agencies');
-    const q = query(agenciesRef, where('slug', '==', params.slug));
+    const querysent = (await params).slug;
+    const q = query(agenciesRef, where('slug', '==', querysent ));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {

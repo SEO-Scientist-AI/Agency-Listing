@@ -24,7 +24,6 @@ import { Agency } from '@/types/agency';
 
 interface AgencyDetailComponentProps {
     agency: Agency;
-    onClose: () => void;
 }
 
 const colorClasses = [
@@ -45,7 +44,7 @@ const GoogleLogo = () => (
     />
 );
 
-export function AgencyDetailComponent({ agency, onClose }: AgencyDetailComponentProps) {
+export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
     if (!agency) {
         return <div>Loading...</div>;
     }

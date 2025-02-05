@@ -1,3 +1,4 @@
+import { Agency } from '@/types/agency';
 import { db } from './config';
 import { collection, getDocs, getDoc, doc, query, where, orderBy, limit, startAfter } from 'firebase/firestore';
 
@@ -66,7 +67,7 @@ export async function getAgencyById(slug: string) {
     return {
       id: agency.id,
       ...agency.data()
-    };
+    } as Agency;
   } catch (error) {
     console.error('Error fetching agency:', error);
     return null;
