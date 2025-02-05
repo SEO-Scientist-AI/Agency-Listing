@@ -54,7 +54,7 @@ export default function FindAgencies() {
   useEffect(() => {
     const fetchAgencies = async () => {
       try {
-        const response = await fetch('/api/find-agencies');
+        const response = await fetch('/api/agency');
         const data = await response.json();
         // Ensure we always set an array, even if empty
         setAgencies(Array.isArray(data.data) ? data.data : []);

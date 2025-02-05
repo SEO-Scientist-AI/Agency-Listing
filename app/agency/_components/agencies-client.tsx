@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useMemo } from "react"
-import { AgencyCard } from "./agency-card"
-import SideBarFilters from "./side-bar-filters"
-import { Agency } from '@/types/agency'
-import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { useState, useEffect, useMemo } from "react";
+import { AgencyCard } from "./agency-card";
+import SideBarFilters from "./side-bar-filters";
+import { Agency } from "@/types/agency";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     Pagination,
     PaginationContent,
@@ -14,14 +14,14 @@ import {
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
 
 interface FilterState {
-    search: string
-    services: string[]
-    industries: string[]
-    locations: string[]
-    budgetRanges: { min: number; max: number }[]
+    search: string;
+    services: string[];
+    industries: string[];
+    locations: string[];
+    budgetRanges: { min: number; max: number }[];
     min: number;
     max: number;
 }
@@ -54,7 +54,10 @@ export function LoadingAgencyCard() {
                         <Skeleton className="h-4 w-20" />
                         <div className="flex gap-2">
                             {[1, 2, 3].map((i) => (
-                                <Skeleton key={i} className="h-8 w-24 rounded-full" />
+                                <Skeleton
+                                    key={i}
+                                    className="h-8 w-24 rounded-full"
+                                />
                             ))}
                         </div>
                     </div>
@@ -65,7 +68,7 @@ export function LoadingAgencyCard() {
                 </div>
             </CardContent>
         </Card>
-    )
+    );
 }
 
 export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
@@ -87,23 +90,32 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
         async function fetchAgencies() {
             try {
                 setLoading(true);
-                const searchParams = new URLSearchParams(window.location.search);
-                const services = searchParams.get('services')?.split(' ') || [];
-                const locations = searchParams.get('location')?.split(' ') || [];
-                
-                const response = await fetch(`/api/find-agencies?${new URLSearchParams({
-                    page: '1',
-                    ...(services.length > 0 && { services: services.join(',') }),
-                    ...(locations.length > 0 && { locations: locations.join(',') })
-                })}`);
-                
+                const searchParams = new URLSearchParams(
+                    window.location.search
+                );
+                const services = searchParams.get("services")?.split(" ") || [];
+                const locations =
+                    searchParams.get("location")?.split(" ") || [];
+
+                const response = await fetch(
+                    `/api/agency?${new URLSearchParams({
+                        page: "1",
+                        ...(services.length > 0 && {
+                            services: services.join(","),
+                        }),
+                        ...(locations.length > 0 && {
+                            locations: locations.join(","),
+                        }),
+                    })}`
+                );
+
                 const data = await response.json();
                 if (data.success) {
                     setAgencies(data.data.agencies || []);
                     setTotalPages(data.data.totalPages);
                 }
             } catch (error) {
-                console.error('Fetch error:', error);
+                console.error("Fetch error:", error);
                 setAgencies([]);
             } finally {
                 setLoading(false);
@@ -118,23 +130,29 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
         try {
             setLoading(true);
             const searchParams = new URLSearchParams(window.location.search);
-            const services = searchParams.get('services')?.split(' ') || [];
-            const locations = searchParams.get('location')?.split(' ') || [];
-            
-            const response = await fetch(`/api/find-agencies?${new URLSearchParams({
-                page: page.toString(),
-                ...(services.length > 0 && { services: services.join(',') }),
-                ...(locations.length > 0 && { locations: locations.join(',') })
-            })}`);
-            
+            const services = searchParams.get("services")?.split(" ") || [];
+            const locations = searchParams.get("location")?.split(" ") || [];
+
+            const response = await fetch(
+                `/api/agency?${new URLSearchParams({
+                    page: page.toString(),
+                    ...(services.length > 0 && {
+                        services: services.join(","),
+                    }),
+                    ...(locations.length > 0 && {
+                        locations: locations.join(","),
+                    }),
+                })}`
+            );
+
             const data = await response.json();
-            
+
             if (data.success) {
                 setAgencies(data.data.agencies || []);
                 setCurrentPage(page);
             }
         } catch (error) {
-            console.error('Error changing page:', error);
+            console.error("Error changing page:", error);
             setAgencies([]);
         } finally {
             setLoading(false);
@@ -144,10 +162,10 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
     const renderPageNumbers = () => {
         const pages = [];
         const maxVisiblePages = 5;
-        
+
         let startPage = Math.max(1, currentPage - 2);
         let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-        
+
         if (endPage - startPage < maxVisiblePages - 1) {
             startPage = Math.max(1, endPage - maxVisiblePages + 1);
         }
@@ -176,27 +194,34 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
         const agencyArray = Array.isArray(agencies) ? agencies : [];
         return agencyArray.filter((agency) => {
             if (!agency) return false;
-            
+
             if (filters.search) {
                 const searchLower = filters.search.toLowerCase();
-                const nameMatch = agency.name?.toLowerCase().includes(searchLower);
-                const descriptionMatch = agency.description?.toLowerCase().includes(searchLower);
+                const nameMatch = agency.name
+                    ?.toLowerCase()
+                    .includes(searchLower);
+                const descriptionMatch = agency.description
+                    ?.toLowerCase()
+                    .includes(searchLower);
                 if (!nameMatch && !descriptionMatch) return false;
             }
 
             if (filters.services.length > 0) {
-                const hasService = filters.services.some(service =>
+                const hasService = filters.services.some((service) =>
                     agency.services?.includes(service)
                 );
                 if (!hasService) return false;
             }
 
             if (filters.locations.length > 0) {
-                const hasLocation = filters.locations.some(location =>
-                    agency.location?.toLowerCase().includes(location.toLowerCase()) ||
-                    agency.additionalLocations?.some(al =>
-                        al.toLowerCase().includes(location.toLowerCase())
-                    )
+                const hasLocation = filters.locations.some(
+                    (location) =>
+                        agency.location
+                            ?.toLowerCase()
+                            .includes(location.toLowerCase()) ||
+                        agency.additionalLocations?.some((al) =>
+                            al.toLowerCase().includes(location.toLowerCase())
+                        )
                 );
                 if (!hasLocation) return false;
             }
@@ -220,16 +245,20 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
                         </div>
                     ) : filteredAgencies.length === 0 ? (
                         <div className="text-center py-8">
-                            <p className="text-lg text-muted-foreground">No agencies found</p>
-                            <p className="text-sm text-muted-foreground mt-2">Try adjusting your filters</p>
+                            <p className="text-lg text-muted-foreground">
+                                No agencies found
+                            </p>
+                            <p className="text-sm text-muted-foreground mt-2">
+                                Try adjusting your filters
+                            </p>
                         </div>
                     ) : (
                         <>
                             {filteredAgencies.map((agency) => (
-                                <AgencyCard 
-                                    key={agency.id} 
+                                <AgencyCard
+                                    key={agency.id}
                                     agency={agency}
-                                    className="w-full" 
+                                    className="w-full"
                                 />
                             ))}
                             <Pagination>
@@ -240,12 +269,14 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 if (currentPage > 1) {
-                                                    handlePageChange(currentPage - 1);
+                                                    handlePageChange(
+                                                        currentPage - 1
+                                                    );
                                                 }
                                             }}
                                         />
                                     </PaginationItem>
-                                    
+
                                     {currentPage > 3 && (
                                         <>
                                             <PaginationItem>
@@ -264,9 +295,9 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
                                             </PaginationItem>
                                         </>
                                     )}
-                                    
+
                                     {renderPageNumbers()}
-                                    
+
                                     {currentPage < totalPages - 2 && (
                                         <>
                                             <PaginationItem>
@@ -277,7 +308,9 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
                                                     href="#"
                                                     onClick={(e) => {
                                                         e.preventDefault();
-                                                        handlePageChange(totalPages);
+                                                        handlePageChange(
+                                                            totalPages
+                                                        );
                                                     }}
                                                 >
                                                     {totalPages}
@@ -285,14 +318,16 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
                                             </PaginationItem>
                                         </>
                                     )}
-                                    
+
                                     <PaginationItem>
                                         <PaginationNext
                                             href="#"
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 if (currentPage < totalPages) {
-                                                    handlePageChange(currentPage + 1);
+                                                    handlePageChange(
+                                                        currentPage + 1
+                                                    );
                                                 }
                                             }}
                                         />
