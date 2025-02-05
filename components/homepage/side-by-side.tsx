@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Upload, Zap, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const HowItWorks = () => {
     const [selectedStep, setSelectedStep] = useState(0);
@@ -104,10 +105,12 @@ const HowItWorks = () => {
                             viewport={{ once: true }}
                             transition={{ duration: 0.5 }}
                         >
-                            <img
+                            <Image
                                 src={steps[selectedStep].image}
                                 alt={steps[selectedStep].title}
                                 className="h-full w-full rounded-xl border border-neutral-300/50 object-cover p-1 shadow-lg"
+                                width={500}
+                                height={350}
                             />
                         </motion.div>
                     </div>
