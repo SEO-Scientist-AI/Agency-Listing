@@ -3,7 +3,9 @@
 import { useState, useEffect, useMemo } from "react"
 import { AgencyCard } from "./agency-card"
 import SideBarFilters from "./side-bar-filters"
-import { Agency } from '@/types/agency';
+import { Agency } from '@/types/agency'
+import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
     Pagination,
     PaginationContent,
@@ -26,6 +28,44 @@ interface FilterState {
 
 interface AgenciesClientProps {
     initialAgencies: Agency[];
+}
+
+export function LoadingAgencyCard() {
+    return (
+        <Card>
+            <CardContent className="p-6 flex gap-6">
+                <div className="flex-shrink-0">
+                    <Skeleton className="w-[120px] h-[120px] rounded-lg" />
+                </div>
+                <div className="flex-grow space-y-4">
+                    <div className="flex justify-between items-start">
+                        <div className="space-y-2">
+                            <Skeleton className="h-7 w-48" />
+                            <Skeleton className="h-4 w-32" />
+                        </div>
+                        <Skeleton className="h-8 w-24 rounded-full" />
+                    </div>
+                    <Skeleton className="h-16 w-full" />
+                    <div className="flex justify-between">
+                        <Skeleton className="h-5 w-32" />
+                        <Skeleton className="h-5 w-32" />
+                    </div>
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-20" />
+                        <div className="flex gap-2">
+                            {[1, 2, 3].map((i) => (
+                                <Skeleton key={i} className="h-8 w-24 rounded-full" />
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex justify-end gap-4 mt-4">
+                        <Skeleton className="h-9 w-24" />
+                        <Skeleton className="h-9 w-24" />
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    )
 }
 
 export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
@@ -173,7 +213,11 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
             <div className="lg:w-3/4">
                 <div className="space-y-6">
                     {loading ? (
-                        <div className="text-center py-8">Loading...</div>
+                        <div className="space-y-6">
+                            {[1, 2, 3].map((i) => (
+                                <LoadingAgencyCard key={i} />
+                            ))}
+                        </div>
                     ) : filteredAgencies.length === 0 ? (
                         <div className="text-center py-8">
                             <p className="text-lg text-muted-foreground">No agencies found</p>

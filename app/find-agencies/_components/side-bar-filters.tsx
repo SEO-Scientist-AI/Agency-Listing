@@ -7,10 +7,20 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Agency } from '@/types/agency';
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface FilterSectionProps {
-  title: string;
-  children: React.ReactNode;
+function LoadingSidebarSection() {
+    return (
+        <div className="space-y-3">
+            <Skeleton className="h-6 w-24" />
+            {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-4" />
+                    <Skeleton className="h-4 w-32" />
+                </div>
+            ))}
+        </div>
+    );
 }
 
 interface SideBarFiltersProps {
@@ -43,7 +53,6 @@ const SideBarFilters = ({ onFiltersChange }: SideBarFiltersProps) => {
                 ]);
 
                 if (Array.isArray(servicesData)) {
-                    // Extract service names from the response
                     const serviceNames = servicesData.map((service: any) => service.serviceName)
                         .filter(Boolean)
                         .sort();
@@ -51,7 +60,6 @@ const SideBarFilters = ({ onFiltersChange }: SideBarFiltersProps) => {
                 }
 
                 if (Array.isArray(locationsData)) {
-                    // Extract unique country names from the response
                     const uniqueCountries = Array.from(new Set(
                         locationsData.map((location: any) => location.countryName)
                     )).filter(Boolean).sort();
@@ -67,12 +75,10 @@ const SideBarFilters = ({ onFiltersChange }: SideBarFiltersProps) => {
         fetchFilters();
     }, []);
 
-    // Initialize filters from URL params
     useEffect(() => {
         const servicesParam = searchParams.get('services')?.split(' ').filter(Boolean) || [];
         const locationsParam = searchParams.get('location')?.split(' ').filter(Boolean) || [];
         
-        // Find matching services and locations from the available options
         const matchedServices = services.filter(service => 
             servicesParam.some(param => 
                 formatUrlParam(service) === param
@@ -109,20 +115,31 @@ const SideBarFilters = ({ onFiltersChange }: SideBarFiltersProps) => {
         router.push(`${pathname}?${params.toString()}`);
     };
 
+    if (loading) {
+        return (
+            <div className="w-72 sticky top-28 self-start">
+                <Card className="max-h-[calc(100vh-8rem)] overflow-y-auto">
+                    <CardContent className="p-4 space-y-6">
+                        <LoadingSidebarSection />
+                        <LoadingSidebarSection />
+                        <Skeleton className="h-9 w-full" />
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
     return (
         <div className="w-72 sticky top-28 self-start">
             <Card className="max-h-[calc(100vh-8rem)] overflow-y-auto">
                 <CardContent className="p-4 space-y-6">
-                    {/* Services Filter Section */}
                     <Collapsible defaultOpen={true}>
                         <CollapsibleTrigger className="w-full flex justify-between items-center">
                             <span className="font-medium">Services</span>
                             <ChevronDown className="h-4 w-4" />
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-2 space-y-2">
-                            {loading ? (
-                                <div>Loading services...</div>
-                            ) : services.map((service) => (
+                            {services.map((service) => (
                                 <label key={service} className="flex items-center space-x-2">
                                     <input
                                         type="checkbox"
@@ -141,16 +158,13 @@ const SideBarFilters = ({ onFiltersChange }: SideBarFiltersProps) => {
                         </CollapsibleContent>
                     </Collapsible>
 
-                    {/* Locations Filter Section */}
                     <Collapsible defaultOpen={true}>
                         <CollapsibleTrigger className="w-full flex justify-between items-center">
                             <span className="font-medium">Locations</span>
                             <ChevronDown className="h-4 w-4" />
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-2 space-y-2">
-                            {loading ? (
-                                <div>Loading locations...</div>
-                            ) : locations.map((location) => (
+                            {locations.map((location) => (
                                 <label key={location} className="flex items-center space-x-2">
                                     <input
                                         type="checkbox"

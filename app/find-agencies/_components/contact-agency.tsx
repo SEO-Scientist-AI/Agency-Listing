@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar, Video } from "lucide-react"
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ContactAgencyProps {
   agency: {
@@ -17,9 +18,11 @@ interface ContactAgencyProps {
 
 export function ContactAgency({ agency }: ContactAgencyProps) {
   const [selectedMainService, setSelectedMainService] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    setLoading(true)
     // Handle form submission
   }
 
@@ -30,7 +33,8 @@ export function ContactAgency({ agency }: ContactAgencyProps) {
         Schedule a Call
       </Button>
       <p className="text-sm text-muted-foreground text-center mb-6">
-        Or fill in this form, and the agency will contact you.
+        {loading ? <Skeleton className="w-[100px] h-[20px] rounded-full" /> : 
+        <span>Or fill in this form, and the agency will contact you.</span>}
       </p>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
