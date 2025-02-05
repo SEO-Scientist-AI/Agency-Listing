@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Agency } from '@/types/agency';
+import { Button } from "@/components/ui/button";
 
 interface FilterSectionProps {
   title: string;
@@ -168,12 +169,12 @@ const SideBarFilters = ({ onFiltersChange }: SideBarFiltersProps) => {
                         </CollapsibleContent>
                     </Collapsible>
 
-                    <button
-                        onClick={handleApplyFilters}
-                        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors"
+                    <Button
+                        onClick={handleApplyFilters} 
+                        className="w-full"
                     >
                         Apply Filters
-                    </button>
+                    </Button>
                 </CardContent>
             </Card>
         </div>
