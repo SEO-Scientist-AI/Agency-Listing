@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Building2, MapPin, DollarSign, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { formatSlug } from "@/lib/firebase/agencies";
+import { Agency } from '@/types/agency';
 
 interface ServiceBubbleProps {
     service: string;
@@ -25,32 +27,9 @@ export function ServiceBubble({ service, color }: ServiceBubbleProps) {
     );
 }
 
-interface AgencyCardProps {
-    id: string;
-    name: string;
-    tagline: string;
-    description: string;
-    location: string;
-    additionalLocations: string[];
-    founded: number;
-    teamSize: string;
-    services: string[];
-    industries: string[];
-    clientSize: string[];
-    budgetRange: string[];
-    projectDuration: string[];
-    geographicFocus: string[];
-    languages: string[];
-    startingPrice: string;
-    googleReview: {
-        rating: number;
-        count: number;
-    };
-    expertise: {
-        seo: string[];
-        marketing: string[];
-        development: string[];
-    };
+export interface AgencyCardProps {
+    agency: Agency;
+    className?: string;
 }
 
 const colorClasses = [
@@ -72,32 +51,20 @@ const GoogleLogo = () => (
 );
 
 export function AgencyCard({
-    id,
-    name,
-    tagline,
-    description,
-    location,
-    additionalLocations,
-    founded,
-    teamSize,
-    services,
-    industries,
-    clientSize,
-    budgetRange,
-    projectDuration,
-    geographicFocus,
-    languages,
-    startingPrice,
-    googleReview,
-    expertise,
+    agency,
+    className,
 }: AgencyCardProps) {
+    if (!agency) {
+        return null;
+    }
+
     return (
-        <Card className="w-full">
+        <Card className={className}>
             <CardContent className="p-6 flex gap-6">
                 <div className="flex-shrink-0">
                     <Image
-                        src="/images/placeholder.svg"
-                        alt={`${name} logo`}
+                        src={agency.imageUrl || '/images/placeholder.jpg'}
+                        alt={`${agency.name || 'Agency'} logo`}
                         width={120}
                         height={120}
                         className="rounded-lg object-cover"
@@ -107,13 +74,13 @@ export function AgencyCard({
                     <div className="flex justify-between items-start">
                         <div>
                             <Link
-                                href={`/find-agencies/${id}`}
+                                href={`/find-agencies/${formatSlug(agency.name || '')}`}
                                 className="hover:underline"
                             >
-                                <h2 className="text-xl font-bold">{name}</h2>
+                                <h2 className="text-xl font-bold">{agency.name || 'Unnamed Agency'}</h2>
                             </Link>
                             <p className="text-sm text-muted-foreground">
-                                {tagline}
+                                {agency.tagline || 'No tagline available'}
                             </p>
                         </div>
                         <div className="flex items-center space-x-1 bg-muted rounded-full px-2 py-1">
@@ -121,66 +88,67 @@ export function AgencyCard({
                             <div className="flex items-center text-sm">
                                 <Star className="h-4 w-4 text-yellow-400 fill-current" />
                                 <span className="font-medium ml-1">
-                                    {googleReview.rating}
+                                    {agency.rating || '0.0'}
                                 </span>
                                 <span className="text-muted-foreground ml-1">
-                                    ({googleReview.count})
+                                    ({agency.reviewCount || '0'})
                                 </span>
                             </div>
                         </div>
                     </div>
-                    <p className="text-sm line-clamp-2">{description}</p>
+                    <p className="text-sm line-clamp-2">{agency.description || 'No description available'}</p>
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2 text-sm">
                             <MapPin className="h-4 w-4 text-muted-foreground" />
-                            <span>{location}</span>
+                            <span>{agency.location || 'Location not specified'}</span>
                         </div>
-                        <div className="flex items-center space-x-1">
-                            <DollarSign className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">
-                                Starting Price: {startingPrice}
-                            </span>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 className="text-sm font-semibold mb-1">Services</h4>
-                        <div className="flex flex-wrap gap-1">
-                            {services.map((service, index) => (
-                                <ServiceBubble
-                                    key={service}
-                                    service={service}
-                                    color={
-                                        colorClasses[
-                                            index % colorClasses.length
-                                        ]
-                                    }
-                                />
-                            ))}
-                        </div>
-                    </div>
-                    <div>
-                        <h4 className="text-sm font-semibold mb-1">
-                            Industries
-                        </h4>
-                        <div className="flex justify-between items-center">
-                            <div className="flex flex-wrap gap-1 flex-1">
-                                {industries.map((industry) => (
-                                    <Badge
-                                        key={industry}
-                                        variant="secondary"
-                                        className="text-xs"
-                                    >
-                                        {industry}
-                                    </Badge>
-                                ))}
+                        {agency.budgetRange && (
+                            <div className="flex items-center space-x-1">
+                                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm font-medium">
+                                    Price: {agency.budgetRange}
+                                </span>
                             </div>
-                            <Link
-                                href={`/find-agencies/${id}`}
-                                className="ml-4"
-                            >
-                                <Button size="sm">View Details</Button>
-                            </Link>
+                        )}
+                    </div>
+                    {agency.services?.length > 0 && (
+                        <div>
+                            <h4 className="text-sm font-semibold mb-1">Services</h4>
+                            <div className="flex flex-wrap gap-1">
+                                {agency.services.slice(0, 3).map((service, index) => (
+                                    <ServiceBubble
+                                        key={service}
+                                        service={service}
+                                        color={colorClasses[index % colorClasses.length]}
+                                    />
+                                ))}
+                                {agency.services.length > 3 && (
+                                    <ServiceBubble
+                                        key="more-services"
+                                        service={`+${agency.services.length - 3}`}
+                                        color={colorClasses[3 % colorClasses.length]}
+                                    />
+                                )}
+                            </div>
                         </div>
+                    )}
+                    <div className="flex justify-end mt-4 gap-4">
+                        {agency.websiteUrl && (
+                            <Link
+                                href={agency.websiteUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <Button variant="outline" size="sm">
+                                    Visit Site
+                                </Button>
+                            </Link>
+                        )}
+                        <Link
+                            href={`/find-agencies/${formatSlug(agency.name || '')}`}
+                        >
+                            <Button size="sm">View Details</Button>
+                        </Link>
                     </div>
                 </div>
             </CardContent>

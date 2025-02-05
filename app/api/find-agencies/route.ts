@@ -5,62 +5,99 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase/config";
 
 // libraries imports
-import { collection, getDocs, query, where ,orderBy, limit, startAfter, DocumentSnapshot} from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit, startAfter, where } from "firebase/firestore";
 
+import { Agency } from "@/types/agency";
+
+const ITEMS_PER_PAGE = 10;
+
+// Normalize string for comparison (lowercase and remove extra spaces)
+function normalizeString(str: string): string {
+  return str.toLowerCase().trim();
+}
 
 export async function GET(req: NextRequest) {
     
     try {
-      const { searchParams } = new URL(req.url);
-      // Get query parameters
-    const pageSize = Number(searchParams.get("limit")) || 2; // Number of docs per page (default: 10)
-    const location = searchParams.get("location"); // Filter for array field
-    const services = searchParams.get("services"); // Filter for normal field
-    const lastDocId = searchParams.get("lastDocId"); // Used for skipping docs
-    const sortBy = searchParams.get("sort") || "__name__"; // Used for sorting docs
+      const url = new URL(req.url);
+      const page = parseInt(url.searchParams.get('page') || '1');
+      const services = url.searchParams.get('services')?.split(' ').map(s => s.replace(/-/g, ' ')) || [];
+      const locations = url.searchParams.get('location')?.split(' ').map(l => l.replace(/-/g, ' ')) || [];
+      
+      console.log('Requested services:', services);
+      console.log('Requested locations:', locations);
+      
+      const agenciesRef = collection(db, 'agencies');
 
-    // Firestore collection reference
-    let agencyQuery = query(collection(db, "agenciesList"));
-
-    agencyQuery = query(agencyQuery, orderBy(sortBy as string), limit(pageSize));
-
-      // Apply filters based on query params
-
-
-      if(location){
-        const keywords = location.split(" ").map(keyword => keyword.toLowerCase());
-        agencyQuery = query(agencyQuery, where("location", "array-contains-any", keywords));
+      // Get all agencies first to debug
+      const allAgenciesQuery = query(agenciesRef);
+      const allAgenciesSnapshot = await getDocs(allAgenciesQuery);
+      
+      console.log('Total agencies in DB:', allAgenciesSnapshot.size);
+      
+      // Log the first agency's data to see its structure
+      if (allAgenciesSnapshot.docs.length > 0) {
+        const sampleData = allAgenciesSnapshot.docs[0].data();
+        console.log('Sample agency data - services:', sampleData.services);
+        console.log('Sample agency data - location:', sampleData.location);
       }
-      if(services){
-        const keywords = services.split(" ").map(keyword => keyword.toLowerCase());
-        agencyQuery = query(agencyQuery, where("slug", "array-contains-any", keywords));
+
+      let agencies: Agency[] = allAgenciesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Agency));
+
+      // Filter services in memory for case-insensitive matching
+      if (services.length > 0) {
+        const normalizedSearchServices = services.map(normalizeString);
+        agencies = agencies.filter(agency => {
+          const agencyServices = (agency.services || []).map(normalizeString);
+          return normalizedSearchServices.some(searchService => 
+            agencyServices.some((agencyService: string) => agencyService.includes(searchService))
+          );
+        });
+        console.log('Agencies after service filter:', agencies.length);
       }
-      // if it's not the first Page
-      let lastVisible: DocumentSnapshot | null = null;
-      if (lastDocId) {
-        const lastDocSnap = await getDocs(query(agencyQuery, where("__name__", "==", lastDocId)));
-        if (!lastDocSnap.empty) {
-          lastVisible = lastDocSnap.docs[0];
-          agencyQuery = query(agencyQuery, startAfter(lastVisible), limit(pageSize));
+
+      // Filter locations
+      if (locations.length > 0) {
+        const normalizedSearchLocations = locations.map(normalizeString);
+        agencies = agencies.filter(agency => {
+          const agencyLocation = normalizeString(agency.location || '');
+          const additionalLocations = (agency.additionalLocations || []).map(normalizeString);
+          return normalizedSearchLocations.some(searchLocation => 
+            agencyLocation.includes(searchLocation) || 
+            additionalLocations.some((loc: string) => loc.includes(searchLocation))
+          );
+        });
+        console.log('Agencies after location filter:', agencies.length);
+      }
+
+      // Sort by name
+      agencies.sort((a: Agency, b: Agency) => (a.name || '').localeCompare(b.name || ''));
+
+      const total = agencies.length;
+      console.log('Final filtered agencies count:', total);
+
+      // Apply pagination
+      const startIndex = (page - 1) * ITEMS_PER_PAGE;
+      agencies = agencies.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          agencies,
+          currentPage: page,
+          totalPages: Math.ceil(total / ITEMS_PER_PAGE),
+          totalAgencies: total
         }
-      }
+      });
 
-
-      const snapshot = await getDocs(agencyQuery);
-
-      // Format response
-    const agencies = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    lastVisible = snapshot.docs[snapshot.docs.length - 1] || null;
-  
-    return NextResponse.json({
-      agencies,
-      lastDocId: lastVisible ? lastVisible.id : null, // Sending lastDocId for next pagination request
-    });
     } catch (error) {
-      console.error("Error fetching agencies:", error);
-      return NextResponse.json({ error: "Failed to fetch data", details: error }, { status: 500 });
+      console.error('Error fetching agencies:', error);
+      return NextResponse.json({
+        success: false,
+        error: 'Failed to fetch agencies'
+      }, { status: 500 });
     }
-  }
+}

@@ -20,6 +20,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'media.designrush.com'
+      },
+      {
+        protocol: 'https',
         hostname: 'utfs.io'
       },
       {

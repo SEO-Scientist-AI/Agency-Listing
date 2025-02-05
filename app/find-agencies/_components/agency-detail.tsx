@@ -20,6 +20,12 @@ import { ContactModal } from "@/components/ContactModal";
 import NavBar from "@/components/wrapper/navbar";
 import Footer from "@/components/wrapper/footer";
 import { ContactAgency } from "./contact-agency";
+import { Agency } from '@/types/agency';
+
+interface AgencyDetailComponentProps {
+    agency: Agency;
+    onClose: () => void;
+}
 
 const colorClasses = [
     "border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300",
@@ -39,11 +45,37 @@ const GoogleLogo = () => (
     />
 );
 
-interface AgencyDetailComponentProps {
-    agency: any; // You can replace 'any' with your Agency type from Prisma
-}
+export function AgencyDetailComponent({ agency, onClose }: AgencyDetailComponentProps) {
+    if (!agency) {
+        return <div>Loading...</div>;
+    }
 
-export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
+    const {
+        name = '',
+        description = '',
+        services = [],
+        industries = [],
+        imageUrl = '',
+        tagline = '',
+        rating = 0,
+        reviewCount = 0,
+        location = '',
+        countryName = '',
+        additionalLocations = [],
+        websiteUrl = '',
+        budgetRange = '',
+        founded = '',
+        teamSize = '',
+        hourlyRate = '',
+        expertise = {
+            seo: [],
+            marketing: [],
+            development: [],
+        },
+        clientSize = [],
+        projectDuration = [],
+    } = agency;
+
     return (
         <>
             <NavBar />
@@ -53,15 +85,21 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                         <Card className="w-full md:w-2/3 p-6 space-y-6">
                             <Card className="p-6">
                                 <div className="flex items-start gap-6">
-                                    <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center">
-                                        <Building2 className="w-12 h-12 text-muted-foreground" />
+                                    <div className="flex-shrink-0">
+                                        <Image
+                                            src={imageUrl || '/images/placeholder.svg'}
+                                            alt={`${name} logo`}
+                                            width={120}
+                                            height={120}
+                                            className="rounded-lg object-cover"
+                                        />
                                     </div>
                                     <div className="flex-1">
                                         <h1 className="text-3xl font-bold">
-                                            {agency.name}
+                                            {name}
                                         </h1>
                                         <p className="text-xl text-muted-foreground mt-2">
-                                            {agency.tagline}
+                                            {tagline}
                                         </p>
                                         <div className="flex flex-wrap items-center gap-4 mt-4">
                                             <div className="flex items-center gap-1 bg-muted rounded-full px-3 py-1">
@@ -69,32 +107,24 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                                 <div className="flex items-center">
                                                     <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
                                                     <span className="font-medium ml-1">
-                                                        {
-                                                            agency.googleReview
-                                                                .rating
-                                                        }
+                                                        {rating}
                                                     </span>
                                                     <span className="text-muted-foreground ml-1">
-                                                        (
-                                                        {
-                                                            agency.googleReview
-                                                                .count
-                                                        }{" "}
-                                                        reviews)
+                                                        ({reviewCount})
                                                     </span>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-1 text-muted-foreground">
                                                 <MapPin className="w-4 h-4" />
-                                                {agency.location}
+                                                {location}
                                             </div>
                                             <div className="flex items-center gap-1 text-muted-foreground">
                                                 <Calendar className="w-4 h-4" />
-                                                Founded {agency.founded}
+                                                Founded {founded}
                                             </div>
                                             <div className="flex items-center gap-1 text-muted-foreground">
                                                 <Users className="w-4 h-4" />
-                                                {agency.teamSize} employees
+                                                {teamSize} employees
                                             </div>
                                         </div>
                                     </div>
@@ -103,10 +133,10 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
 
                             <Card className="p-6">
                                 <h2 className="text-xl font-semibold mb-3">
-                                    About {agency.name}
+                                    About {name}
                                 </h2>
                                 <div className="prose prose-sm max-w-none text-muted-foreground">
-                                    {agency.description
+                                    {description
                                         .split("\n\n")
                                         .map(
                                             (
@@ -121,13 +151,13 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                 </div>
                             </Card>
 
-                            {agency.additionalLocations.length > 0 && (
+                            {additionalLocations.length > 0 && (
                                 <Card className="p-6">
                                     <h2 className="text-xl font-semibold mb-3">
                                         Additional Locations
                                     </h2>
                                     <div className="flex flex-wrap gap-2">
-                                        {agency.additionalLocations.map(
+                                        {additionalLocations.map(
                                             (location: string) => (
                                                 <Badge
                                                     key={location}
@@ -147,20 +177,17 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                     Services
                                 </h2>
                                 <div className="flex flex-wrap gap-2">
-                                    {(agency.services as string[]).map(
-                                        (service: string, index: number) => (
-                                            <ServiceBubble
-                                                key={service}
-                                                service={service}
-                                                color={
-                                                    colorClasses[
-                                                        index %
-                                                            colorClasses.length
-                                                    ]
-                                                }
-                                            />
-                                        )
-                                    )}
+                                    {services.map((service: string, index: number) => (
+                                        <ServiceBubble
+                                            key={service}
+                                            service={service}
+                                            color={
+                                                colorClasses[
+                                                    index % colorClasses.length
+                                                ]
+                                            }
+                                        />
+                                    ))}
                                 </div>
                             </Card>
 
@@ -169,67 +196,12 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                     Industries
                                 </h2>
                                 <div className="flex flex-wrap gap-2">
-                                    {agency.industries.map(
-                                        (industry: string) => (
-                                            <Badge
-                                                key={industry}
-                                                variant="outline"
-                                            >
-                                                {industry}
-                                            </Badge>
-                                        )
-                                    )}
-                                </div>
-                            </Card>
-
-                            <Card className="p-6">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <h3 className="font-semibold mb-2">
-                                            SEO Expertise
-                                        </h3>
-                                        <ul className="space-y-1 text-sm text-muted-foreground">
-                                            {agency.expertise.seo.map(
-                                                (item: string) => (
-                                                    <li key={item}>• {item}</li>
-                                                )
-                                            )}
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold mb-2">
-                                            Marketing Expertise
-                                        </h3>
-                                        <ul className="space-y-1 text-sm text-muted-foreground">
-                                            {agency.expertise.marketing.map(
-                                                (item: string) => (
-                                                    <li key={item}>• {item}</li>
-                                                )
-                                            )}
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold mb-2">
-                                            Development Expertise
-                                        </h3>
-                                        <ul className="space-y-1 text-sm text-muted-foreground">
-                                            {agency.expertise.development.map(
-                                                (item: string) => (
-                                                    <li key={item}>• {item}</li>
-                                                )
-                                            )}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </Card>
-                            <Card className="p-6">
-                                <h3 className="font-semibold mb-3">
-                                    Client Business Size
-                                </h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {agency.clientSize.map((size: string) => (
-                                        <Badge key={size} variant="outline">
-                                            {size}
+                                    {industries.map((industry: string) => (
+                                        <Badge
+                                            key={industry}
+                                            variant="outline"
+                                        >
+                                            {industry}
                                         </Badge>
                                     ))}
                                 </div>
@@ -240,28 +212,10 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                     Budget Ranges
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {agency.budgetRange.map((range: string) => (
-                                        <Badge key={range} variant="outline">
-                                            {range}
+                                    {budgetRange && (
+                                        <Badge variant="outline">
+                                            {budgetRange}
                                         </Badge>
-                                    ))}
-                                </div>
-                            </Card>
-
-                            <Card className="p-6">
-                                <h3 className="font-semibold mb-3">
-                                    Project Duration
-                                </h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {agency.projectDuration.map(
-                                        (duration: string) => (
-                                            <Badge
-                                                key={duration}
-                                                variant="outline"
-                                            >
-                                                {duration}
-                                            </Badge>
-                                        )
                                     )}
                                 </div>
                             </Card>

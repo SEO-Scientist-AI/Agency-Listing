@@ -80,21 +80,6 @@ export function ContactModal({ agency, trigger }: ContactModalProps) {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="timeline" className="text-sm font-medium">
-              Project timeline
-            </Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select timeline" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1-3">1-3 months</SelectItem>
-                <SelectItem value="3-6">3-6 months</SelectItem>
-                <SelectItem value="6+">6+ months</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="message" className="text-sm font-medium">
               Project details
             </Label>
