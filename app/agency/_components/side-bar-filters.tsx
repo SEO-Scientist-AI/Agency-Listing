@@ -1,11 +1,15 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Agency } from '@/types/agency';
+import { Agency } from "@/types/agency";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -43,30 +47,37 @@ const SideBarFilters = ({ onFiltersChange }: SideBarFiltersProps) => {
             try {
                 setLoading(true);
                 const [servicesRes, locationsRes] = await Promise.all([
-                    fetch('/api/services'),
-                    fetch('/api/locations')
+                    fetch("/api/services"),
+                    fetch("/api/locations"),
                 ]);
 
                 const [servicesData, locationsData] = await Promise.all([
                     servicesRes.json(),
-                    locationsRes.json()
+                    locationsRes.json(),
                 ]);
 
                 if (Array.isArray(servicesData)) {
-                    const serviceNames = servicesData.map((service: any) => service.serviceName)
+                    const serviceNames = servicesData
+                        .map((service: any) => service.serviceName)
                         .filter(Boolean)
                         .sort();
                     setServices(serviceNames);
                 }
 
                 if (Array.isArray(locationsData)) {
-                    const uniqueCountries = Array.from(new Set(
-                        locationsData.map((location: any) => location.countryName)
-                    )).filter(Boolean).sort();
+                    const uniqueCountries = Array.from(
+                        new Set(
+                            locationsData.map(
+                                (location: any) => location.countryName
+                            )
+                        )
+                    )
+                        .filter(Boolean)
+                        .sort();
                     setLocations(uniqueCountries);
                 }
             } catch (error) {
-                console.error('Error fetching filters:', error);
+                console.error("Error fetching filters:", error);
             } finally {
                 setLoading(false);
             }
@@ -76,40 +87,41 @@ const SideBarFilters = ({ onFiltersChange }: SideBarFiltersProps) => {
     }, []);
 
     useEffect(() => {
-        const servicesParam = searchParams.get('services')?.split(' ').filter(Boolean) || [];
-        const locationsParam = searchParams.get('location')?.split(' ').filter(Boolean) || [];
-        
-        const matchedServices = services.filter(service => 
-            servicesParam.some(param => 
-                formatUrlParam(service) === param
-            )
+        const servicesParam =
+            searchParams.get("services")?.split(" ").filter(Boolean) || [];
+        const locationsParam =
+            searchParams.get("location")?.split(" ").filter(Boolean) || [];
+
+        const matchedServices = services.filter((service) =>
+            servicesParam.some((param) => formatUrlParam(service) === param)
         );
-        
-        const matchedLocations = locations.filter(location => 
-            locationsParam.some(param => 
-                formatUrlParam(location) === param
-            )
+
+        const matchedLocations = locations.filter((location) =>
+            locationsParam.some((param) => formatUrlParam(location) === param)
         );
-        
+
         setSelectedServices(matchedServices);
         setSelectedLocations(matchedLocations);
     }, [searchParams, services, locations]);
 
     const formatUrlParam = (param: string) => {
-        return param.toLowerCase().replace(/\s+/g, '-');
+        return param.toLowerCase().replace(/\s+/g, "-");
     };
 
     const handleApplyFilters = () => {
         const params = new URLSearchParams();
-        
+
         if (selectedServices.length > 0) {
             const formattedServices = selectedServices.map(formatUrlParam);
-            params.set('services', formattedServices.join(' '));
+            params.set("services", formattedServices.join(" "));
         }
-        
+
         if (selectedLocations.length > 0) {
-            const formattedLocations = selectedLocations.map(formatUrlParam);
-            params.set('location', formattedLocations.join(' '));
+            // Make sure this matches the format expected by the API
+            params.set(
+                "location",
+                selectedLocations.map(formatUrlParam).join(" ")
+            );
         }
 
         router.push(`${pathname}?${params.toString()}`);
@@ -140,15 +152,27 @@ const SideBarFilters = ({ onFiltersChange }: SideBarFiltersProps) => {
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-2 space-y-2">
                             {services.map((service) => (
-                                <label key={service} className="flex items-center space-x-2">
+                                <label
+                                    key={service}
+                                    className="flex items-center space-x-2"
+                                >
                                     <input
                                         type="checkbox"
-                                        checked={selectedServices.includes(service)}
+                                        checked={selectedServices.includes(
+                                            service
+                                        )}
                                         onChange={(e) => {
                                             if (e.target.checked) {
-                                                setSelectedServices([...selectedServices, service]);
+                                                setSelectedServices([
+                                                    ...selectedServices,
+                                                    service,
+                                                ]);
                                             } else {
-                                                setSelectedServices(selectedServices.filter(s => s !== service));
+                                                setSelectedServices(
+                                                    selectedServices.filter(
+                                                        (s) => s !== service
+                                                    )
+                                                );
                                             }
                                         }}
                                     />
@@ -165,15 +189,27 @@ const SideBarFilters = ({ onFiltersChange }: SideBarFiltersProps) => {
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-2 space-y-2">
                             {locations.map((location) => (
-                                <label key={location} className="flex items-center space-x-2">
+                                <label
+                                    key={location}
+                                    className="flex items-center space-x-2"
+                                >
                                     <input
                                         type="checkbox"
-                                        checked={selectedLocations.includes(location)}
+                                        checked={selectedLocations.includes(
+                                            location
+                                        )}
                                         onChange={(e) => {
                                             if (e.target.checked) {
-                                                setSelectedLocations([...selectedLocations, location]);
+                                                setSelectedLocations([
+                                                    ...selectedLocations,
+                                                    location,
+                                                ]);
                                             } else {
-                                                setSelectedLocations(selectedLocations.filter(l => l !== location));
+                                                setSelectedLocations(
+                                                    selectedLocations.filter(
+                                                        (l) => l !== location
+                                                    )
+                                                );
                                             }
                                         }}
                                     />
@@ -183,10 +219,7 @@ const SideBarFilters = ({ onFiltersChange }: SideBarFiltersProps) => {
                         </CollapsibleContent>
                     </Collapsible>
 
-                    <Button
-                        onClick={handleApplyFilters} 
-                        className="w-full"
-                    >
+                    <Button onClick={handleApplyFilters} className="w-full">
                         Apply Filters
                     </Button>
                 </CardContent>

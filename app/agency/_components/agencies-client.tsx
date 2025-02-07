@@ -95,21 +95,20 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
                 setLoading(true);
                 const searchParams = new URLSearchParams(window.location.search);
                 const services = searchParams.get("services")?.split(" ") || [];
-                const locations =
-                    searchParams.get("location")?.split(" ") || [];
-
+                const location = searchParams.get("location")?.split(" ") || [];
+        
                 const response = await fetch(
                     `/api/agency?${new URLSearchParams({
                         page: "1",
                         ...(services.length > 0 && {
-                            services: services.join(","),
+                            services: services.join(" "),
                         }),
-                        ...(locations.length > 0 && {
-                            locations: locations.join(","),
+                        ...(location.length > 0 && {
+                            location: location.join(" "),
                         }),
                     })}`
                 );
-
+        
                 const data = await response.json();
                 if (data.success) {
                     setAgencies(data.data.agencies || []);
