@@ -51,45 +51,35 @@ export default function HeroSection() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchInitialData = async () => {
             try {
                 setLoading(true);
-                const [servicesRes, locationsRes, agenciesRes] = await Promise.all([
-                    fetch('/api/services'),
-                    fetch('/api/locations'),
-                    fetch('/api/agency')
-                ]);
+                const response = await fetch('/api/initial-data');
+                const data = await response.json();
 
-                const servicesData = await servicesRes.json();
-                const locationsData = await locationsRes.json();
-                const agenciesData = await agenciesRes.json();
-
-                if (Array.isArray(servicesData)) {
-                    const serviceNames = servicesData
+                if (data.success) {
+                    const serviceNames = data.data.services
                         .map((service: any) => service.serviceName)
-                        .filter(Boolean)
+                        .filter((name: any): name is string => typeof name === 'string')
                         .sort();
                     setServices(serviceNames);
-                }
 
-                if (Array.isArray(locationsData)) {
                     const uniqueLocations = Array.from(new Set(
-                        locationsData.map((location: any) => location.countryName)
-                    )).filter(Boolean).sort();
+                        data.data.locations
+                            .map((location: any) => location.countryName)
+                    )).filter((name): name is string => typeof name === 'string').sort();
                     setLocations(uniqueLocations);
-                }
 
-                if (agenciesData.success) {
-                    setAgencyCount(agenciesData.data.totalAgencies);
+                    setAgencyCount(data.data.totalAgencies);
                 }
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching initial data:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchData();
+        fetchInitialData();
     }, []);
 
     const handleSearch = () => {
