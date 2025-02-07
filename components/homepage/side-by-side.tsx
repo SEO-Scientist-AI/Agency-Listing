@@ -148,7 +148,7 @@ const steps = [
             "Complete your agency profile with your expertise, portfolio, and services. Showcase what makes your agency unique.",
 
         icon: <Upload className="w-6 h-6 text-white" />,
-        image: "images/dashboard.png",
+        image: "/images/dashboard.png",
     },
     {
         title: "2. Get Listed",
@@ -156,7 +156,7 @@ const steps = [
             "Your agency profile goes live on our platform, making you visible to potential clients looking for your services.",
 
         icon: <Zap className="w-6 h-6 text-white" />,
-        image: "images/dashboard.png",
+        image: "/images/dashboard.png",
     },
     {
         title: "3. Accept Client Offers",
@@ -164,7 +164,7 @@ const steps = [
             "Receive and review project offers from interested clients. Choose the opportunities that best match your agency's capabilities.",
 
         icon: <Sparkles className="w-6 h-6 text-white" />,
-        image: "images/dashboard.png",
+        image: "/images/dashboard.png",
     },
 ];
 

@@ -22,8 +22,8 @@ import {
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import AnimatedShinyText from "../magicui/animated-shiny-text";
-import { cities, services } from "../wrapper/location-data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useAppStore from "@/lib/store/useAppStore"
 
 const avatarUrls = [
     { id: 1, url: "/images/testimonials/testimonials_1.png" },
@@ -45,6 +45,10 @@ const avatarElements = avatarUrls.map((avatar) => (
 ));
 
 export default function HeroSection() {
+    const { services ,cities} = useAppStore();
+   
+    
+
     const router = useRouter();
     const [selectedService, setSelectedService] = useState<string>("");
     const [selectedRegion, setSelectedRegion] = useState<string>("");
@@ -52,15 +56,17 @@ export default function HeroSection() {
 
     const handleSearch = () => {
         const searchParams = new URLSearchParams();
+        
 
         if (selectedService) {
-            searchParams.append("service", selectedService);
+            searchParams.append("services", selectedService);
+            console.log(selectedService);
         }
         if (selectedRegion) {
             searchParams.append("region", selectedRegion);
         }
         if (selectedCity) {
-            searchParams.append("city", selectedCity);
+            searchParams.append("location", selectedCity);
         }
 
         const queryString = searchParams.toString();
@@ -283,10 +289,10 @@ export default function HeroSection() {
                                 <SelectContent className="h-48">
                                     {services.map((service) => (
                                         <SelectItem
-                                            value={service.name}
-                                            key={service.name}
+                                            value={service.slug}
+                                            key={service.id}
                                         >
-                                            {service.name}
+                                            {service.serviceName}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -316,8 +322,8 @@ export default function HeroSection() {
                                 </SelectTrigger>
                                 <SelectContent className="h-48">
                                     {cities.map((city) => (
-                                        <SelectItem value={city} key={city}>
-                                            {city}
+                                        <SelectItem value={city.citySlug} key={city.id}>
+                                            {city.cityName}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
