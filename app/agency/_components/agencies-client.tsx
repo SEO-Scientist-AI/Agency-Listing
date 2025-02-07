@@ -6,6 +6,8 @@ import SideBarFilters from "./side-bar-filters";
 import { Agency } from "@/types/agency";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSearchParams } from "next/navigation";
+
 import {
     Pagination,
     PaginationContent,
@@ -72,6 +74,7 @@ export function LoadingAgencyCard() {
 }
 
 export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
+    const searchParams = useSearchParams();
     const [agencies, setAgencies] = useState<Agency[]>(initialAgencies || []);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -85,14 +88,12 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
         min: 0,
         max: 0,
     });
-
+    
     useEffect(() => {
         async function fetchAgencies() {
             try {
                 setLoading(true);
-                const searchParams = new URLSearchParams(
-                    window.location.search
-                );
+                const searchParams = new URLSearchParams(window.location.search);
                 const services = searchParams.get("services")?.split(" ") || [];
                 const locations =
                     searchParams.get("location")?.split(" ") || [];
@@ -122,7 +123,7 @@ export function AgenciesClient({ initialAgencies }: AgenciesClientProps) {
             }
         }
         fetchAgencies();
-    }, []);
+    }, [searchParams]);
 
     const handlePageChange = async (page: number) => {
         if (page === currentPage || loading) return;

@@ -26,8 +26,9 @@ const HowItWorks = () => {
                     Just 3 steps to get started
                 </h3>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Our simple process helps you find the perfect agency partner for your business needs
-          </p>
+                    Our simple process helps you find the perfect agency partner
+                    for your business needs
+                </p>
             </div>
             <section id="features">
                 <div className="max-w-6xl mx-auto">
@@ -76,11 +77,7 @@ const HowItWorks = () => {
                                             ></motion.div>
                                         </motion.div>
                                         <div className="flex items-center relative">
-                                            <motion.div
-
-                                                className="w-12 h-12 bg-primary/10 rounded-full sm:mx-6 mx-4 flex items-center justify-center p-2"
-                                            >
-
+                                            <motion.div className="w-12 h-12 bg-primary/10 rounded-full sm:mx-6 mx-4 flex items-center justify-center p-2">
                                                 <div className="bg-primary rounded-full p-2">
                                                     {step.icon}
                                                 </div>
@@ -148,7 +145,7 @@ const steps = [
             "Complete your agency profile with your expertise, portfolio, and services. Showcase what makes your agency unique.",
 
         icon: <Upload className="w-6 h-6 text-white" />,
-        image: "images/dashboard.png",
+        image: "/images/dashboard.png",
     },
     {
         title: "2. Get Listed",
@@ -156,7 +153,7 @@ const steps = [
             "Your agency profile goes live on our platform, making you visible to potential clients looking for your services.",
 
         icon: <Zap className="w-6 h-6 text-white" />,
-        image: "images/dashboard.png",
+        image: "/images/dashboard.png",
     },
     {
         title: "3. Accept Client Offers",
@@ -164,7 +161,7 @@ const steps = [
             "Receive and review project offers from interested clients. Choose the opportunities that best match your agency's capabilities.",
 
         icon: <Sparkles className="w-6 h-6 text-white" />,
-        image: "images/dashboard.png",
+        image: "/images/dashboard.png",
     },
 ];
 
