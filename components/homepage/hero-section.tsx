@@ -7,8 +7,10 @@ import {
     Briefcase,
     ArrowRightIcon,
 } from "lucide-react";
+import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { BorderBeam } from "../magicui/border-beam";
 import { Button } from "@/components/ui/button";
 import {
     Select,
@@ -18,9 +20,10 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-
-import { cities, services } from "../wrapper/location-data";
-import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import AnimatedShinyText from "../magicui/animated-shiny-text";
+import { useEffect, useState } from "react";
+import useAppStore from "@/lib/store/useAppStore"
 
 const avatarUrls = [
     { id: 1, url: "/images/testimonials/testimonials_1.png" },
@@ -42,54 +45,28 @@ const avatarElements = avatarUrls.map((avatar) => (
 ));
 
 export default function HeroSection() {
+    const { services ,cities} = useAppStore();
+   
+    
+
     const router = useRouter();
     const [selectedService, setSelectedService] = useState<string>("");
+    const [selectedRegion, setSelectedRegion] = useState<string>("");
     const [selectedCity, setSelectedCity] = useState<string>("");
-    const [services, setServices] = useState<string[]>([]);
-    const [locations, setLocations] = useState<string[]>([]);
-    const [agencyCount, setAgencyCount] = useState<number>(0);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchInitialData = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch('/api/initial-data');
-                const data = await response.json();
-
-                if (data.success) {
-                    const serviceNames = data.data.services
-                        .map((service: any) => service.serviceName)
-                        .filter((name: any): name is string => typeof name === 'string')
-                        .sort();
-                    setServices(serviceNames);
-
-                    const uniqueLocations = Array.from(new Set(
-                        data.data.locations
-                            .map((location: any) => location.countryName)
-                    )).filter((name): name is string => typeof name === 'string').sort();
-                    setLocations(uniqueLocations);
-
-                    setAgencyCount(data.data.totalAgencies);
-                }
-            } catch (error) {
-                console.error('Error fetching initial data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchInitialData();
-    }, []);
 
     const handleSearch = () => {
         const searchParams = new URLSearchParams();
+        
 
         if (selectedService) {
-            searchParams.append("services", selectedService.toLowerCase().replace(/\s+/g, '-'));
+            searchParams.append("services", selectedService);
+            console.log(selectedService);
+        }
+        if (selectedRegion) {
+            searchParams.append("region", selectedRegion);
         }
         if (selectedCity) {
-            searchParams.append("location", selectedCity.toLowerCase().replace(/\s+/g, '-'));
+            searchParams.append("location", selectedCity);
         }
 
         const queryString = searchParams.toString();
@@ -300,30 +277,53 @@ export default function HeroSection() {
                     </div>
 
                     <Card className="mt-12 w-full max-w-4xl border border-black/5 dark:border-white/5 bg-white/80 dark:bg-black/80 p-6 backdrop-blur-sm transition-colors duration-300">
-                        <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
-                            <Select value={selectedService} onValueChange={setSelectedService}>
+                        <div className="grid gap-4 md:grid-cols-[1fr_1fr_1fr_auto]">
+                            <Select
+                                value={selectedService}
+                                onValueChange={setSelectedService}
+                            >
                                 <SelectTrigger className="h-12 bg-white/50 dark:bg-black/50">
                                     <Briefcase className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <SelectValue placeholder="All Services" />
                                 </SelectTrigger>
                                 <SelectContent className="h-48">
                                     {services.map((service) => (
-                                        <SelectItem value={service} key={service}>
-                                            {service}
+                                        <SelectItem
+                                            value={service.slug}
+                                            key={service.id}
+                                        >
+                                            {service.serviceName}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
 
-                            <Select value={selectedCity} onValueChange={setSelectedCity}>
+                            {/* <Select value={selectedRegion} onValueChange={setSelectedRegion}>
                                 <SelectTrigger className="h-12 bg-white/50 dark:bg-black/50">
                                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
-                                    <SelectValue placeholder="All Locations" />
+                                    <SelectValue placeholder="Select Region" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="na">North America</SelectItem>
+                                    <SelectItem value="eu">Europe</SelectItem>
+                                    <SelectItem value="asia">Asia Pacific</SelectItem>
+                                    <SelectItem value="latam">Latin America</SelectItem>
+                                    <SelectItem value="mea">Middle East & Africa</SelectItem>
+                                </SelectContent>
+                            </Select> */}
+
+                            <Select
+                                value={selectedCity}
+                                onValueChange={setSelectedCity}
+                            >
+                                <SelectTrigger className="h-12 bg-white/50 dark:bg-black/50">
+                                    <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
+                                    <SelectValue placeholder="All Cities" />
                                 </SelectTrigger>
                                 <SelectContent className="h-48">
-                                    {locations.map((location) => (
-                                        <SelectItem value={location} key={location}>
-                                            {location}
+                                    {cities.map((city) => (
+                                        <SelectItem value={city.citySlug} key={city.id}>
+                                            {city.cityName}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

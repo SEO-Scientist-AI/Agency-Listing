@@ -19,8 +19,8 @@ export interface Agency {
     teamSize: string;
     hourlyRate: string;
     countryName: string;
-    expertise: string;
+    expertise?: string;
     clientSize: string;
-    projectDuration: string;
+    projectDuration?: string;
     
 }
