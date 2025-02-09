@@ -178,7 +178,7 @@ export function AgenciesClient() {
             </div>
           ) : (
             <>
-              {filteredAgencies.map((agency) => (
+              {filteredAgencies.map((agency: Agency) => (
                 <AgencyCard
                   key={agency.id}
                   agency={agency}
