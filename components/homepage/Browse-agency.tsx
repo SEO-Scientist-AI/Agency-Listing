@@ -6,8 +6,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cities, countries, services, states } from "../wrapper/location-data";
 import TabContent from "../common/landing/tab-content";
+import useAppStore from "@/lib/store/useAppStore";
 
 type Industry = {
     name: string;
@@ -15,50 +15,8 @@ type Industry = {
 };
 
 const BrowseAgencyGalleries = () => {
-    const [industries, setIndustries] = useState<Industry[]>([
-        { name: "Agriculture" },
-        { name: "Architecture" },
-        { name: "Automotive", selected: true },
-        { name: "B2B Services" },
-        { name: "Construction" },
-        { name: "Consumer Goods" },
-        { name: "Dental" },
-        { name: "Ecommerce" },
-        { name: "Education Institutions" },
-        { name: "Fashion Retail" },
-        { name: "Fintech" },
-        { name: "Food & Beverages" },
-        { name: "Gambling" },
-        { name: "Government" },
-        { name: "Health & Wellness" },
-        { name: "Healthcare & Hospital" },
-        { name: "Insurance" },
-        { name: "IT" },
-        { name: "Legal Services" },
-        { name: "Logistics" },
-        { name: "Manufacturing" },
-        { name: "Media & Entertainment" },
-        { name: "Non-profits" },
-        { name: "Oil & Gas" },
-        { name: "Real Estate" },
-        { name: "Restaurants" },
-        { name: "Sports & Fitness" },
-        { name: "Telecommunications" },
-        { name: "Transportation" },
-        { name: "Travel & Tourism" },
-    ]);
-
-    const handleIndustryClick = (clickedIndustry: string) => {
-        setIndustries(
-            industries.map((industry) => ({
-                ...industry,
-                selected:
-                    industry.name === clickedIndustry
-                        ? !industry.selected
-                        : industry.selected,
-            }))
-        );
-    };
+    const { services ,cities,industries} = useAppStore();
+  
 
     return (
         <div className="flex flex-col justify-center items-center lg:w-[75%] mt-[6rem]">
@@ -111,8 +69,7 @@ const BrowseAgencyGalleries = () => {
                     </TabsList>
                     <TabContent tabData={services} value="service" />
                     <TabContent tabData={industries} value="industry" />
-                    <TabContent tabData={countries} value="country" />
-                    <TabContent tabData={states} value="state" />
+                    <TabContent tabData={cities} value="country" />
                     <TabContent tabData={cities} value="city" />
 
                     {/* Other TabsContent components can be added here for service, country, state, city, and size */}
