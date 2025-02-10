@@ -296,20 +296,6 @@ export default function HeroSection() {
                                 </SelectContent>
                             </Select>
 
-                            {/* <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-                                <SelectTrigger className="h-12 bg-white/50 dark:bg-black/50">
-                                    <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
-                                    <SelectValue placeholder="Select Region" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="na">North America</SelectItem>
-                                    <SelectItem value="eu">Europe</SelectItem>
-                                    <SelectItem value="asia">Asia Pacific</SelectItem>
-                                    <SelectItem value="latam">Latin America</SelectItem>
-                                    <SelectItem value="mea">Middle East & Africa</SelectItem>
-                                </SelectContent>
-                            </Select> */}
-
                             <Select
                                 value={selectedCity}
                                 onValueChange={setSelectedCity}

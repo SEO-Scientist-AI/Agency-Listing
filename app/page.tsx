@@ -21,9 +21,9 @@ export default function Home() {
       <div>
         <HowItWorks />
       </div>
-      <div>
+      {/* <div>
         <OutSource />
-      </div>
+      </div> */}
       <div className="flex flex-col p-2 w-full justify-center items-center">
         <BrowseAgencyGalleries />
       </div>
