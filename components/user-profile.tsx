@@ -15,9 +15,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import config from "@/config"
 import { SignOutButton, useUser } from "@clerk/nextjs"
+import { DashboardIcon, DashIcon } from "@radix-ui/react-icons"
 import {
     CreditCard,
+    List,
     LogOut,
+    Pen,
     Settings,
     User
 } from "lucide-react"
@@ -43,11 +46,25 @@ export function UserProfile() {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <Link href="/user-profile">
+                    {/* <Link href="/user-profile">
                         <DropdownMenuItem>
                             <User className="mr-2 h-4 w-4" />
                             <span>Profile</span>
                             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </Link> */}
+                    <Link href="/dashboard/settings">
+                        <DropdownMenuItem>
+                            <Pen className="mr-2 h-4 w-4" />
+                            <span>My Listing</span>
+                            <DropdownMenuShortcut>⌘L</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </Link>
+                    <Link href="/dashboard">
+                        <DropdownMenuItem>
+                            <DashboardIcon className="mr-2 h-4 w-4" />
+                            <span>Dashboard</span>
+                            <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
                     <Link href="/dashboard/settings">

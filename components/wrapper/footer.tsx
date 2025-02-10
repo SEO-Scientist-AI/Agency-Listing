@@ -2,11 +2,11 @@
 
 import { type FC } from "react";
 import * as React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import {
     Tooltip,
     TooltipContent,
@@ -24,8 +24,8 @@ import {
 } from "lucide-react";
 
 const Footer: FC = () => {
-    const [isDarkMode, setIsDarkMode] = React.useState(true);
-    const [isChatOpen, setIsChatOpen] = React.useState(false);
+    const [isDarkMode, setIsDarkMode] = React.useState(false);
+
 
     React.useEffect(() => {
         if (isDarkMode) {
@@ -36,16 +36,15 @@ const Footer: FC = () => {
     }, [isDarkMode]);
 
     return (
-        <footer className="relative border-t bg-background text-foreground transition-colors duration-300 mt-8">
+        <footer className="relative border-t bg-background transition-colors duration-300 mt-8">
             <div className="container mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-8">
                 <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
                     <div className="relative">
-                        <h2 className="mb-4 text-3xl font-bold tracking-tight">
+                        <h2 className="mb-4 text-3xl font-semibold tracking-tight dark:text-white text-gray-900">
                             Stay Connected
                         </h2>
-                        <p className="mb-6 text-muted-foreground">
-                            Join our newsletter for the latest updates and
-                            exclusive offers.
+                        <p className="mb-6 text-gray-600 dark:text-gray-400">
+                            Join our newsletter for the latest updates and exclusive offers.
                         </p>
                         <form className="relative">
                             <Input
@@ -56,62 +55,42 @@ const Footer: FC = () => {
                             <Button
                                 type="submit"
                                 size="icon"
-                                className="absolute right-1 top-1 h-8 w-8 rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105"
+                                className="absolute right-1 top-1 h-8 w-8 rounded-full bg-[#FF4405] text-white transition-transform hover:scale-105 hover:bg-[#ff642d]"
                             >
                                 <Send className="h-4 w-4" />
                                 <span className="sr-only">Subscribe</span>
                             </Button>
                         </form>
-                        <div className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-primary/10 blur-2xl" />
+                        <div className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-[#FF4405]/10 blur-2xl" />
                     </div>
                     <div>
-                        <h3 className="mb-4 text-lg font-semibold">
+                        <h3 className="mb-4 text-lg font-semibold dark:text-gray-100 text-gray-900">
                             Quick Links
                         </h3>
                         <nav className="space-y-2 text-sm">
-                            <a
-                                href="/"
-                                className="block transition-colors hover:text-primary"
-                            >
-                                Home
-                            </a>
-                            <a
-                                href="https://seoscientist.agency/blog/"
-                                className="block transition-colors hover:text-primary"
-                            >
-                                Our Blog
-                            </a>
-                            <a
-                                href="https://www.seoscientist.ai/"
-                                className="block transition-colors hover:text-primary"
-                            >
-                                Our Tools
-                            </a>
-                            <a
-                                href="https://seoscientist.agency/get-quote/"
-                                className="block transition-colors hover:text-primary"
-                            >
-                                Get Quote
-                            </a>
-                            <a
-                                href="https://seoscientist.agency/contact/"
-                                className="block transition-colors hover:text-primary"
-                            >
-                                Contact Us
-                            </a>
-                            <a
-                                href="https://seoscientist.agency/case-studies/"
-                                className="block transition-colors hover:text-primary"
-                            >
-                                Case Studies
-                            </a>
+                            {[
+                                { href: "/", text: "Home" },
+                                { href: "https://seoscientist.agency/blog/", text: "Our Blog" },
+                                { href: "https://www.seoscientist.ai/", text: "Our Tools" },
+                                { href: "https://seoscientist.agency/get-quote/", text: "Get Quote" },
+                                { href: "https://seoscientist.agency/contact/", text: "Contact Us" },
+                                { href: "https://seoscientist.agency/case-studies/", text: "Case Studies" },
+                            ].map((link) => (
+                                <Link
+                                    key={link.text}
+                                    href={link.href}
+                                    className="block text-gray-600 dark:text-gray-400 transition-colors hover:text-[#ff642d]"
+                                >
+                                    {link.text}
+                                </Link>
+                            ))}
                         </nav>
                     </div>
                     <div>
-                        <h3 className="mb-4 text-lg font-semibold">
+                        <h3 className="mb-4 text-lg font-semibold dark:text-gray-100 text-gray-900">
                             Our Locations
                         </h3>
-                        <address className="space-y-4 text-sm not-italic">
+                        <address className="space-y-4 text-sm not-italic text-gray-600 dark:text-gray-400">
                             <div>
                                 <p className="font-semibold">UAE</p>
                                 <p>164, A1 Jaddaf Walk</p>
@@ -130,113 +109,41 @@ const Footer: FC = () => {
                         </address>
                     </div>
                     <div className="relative">
-                        <h3 className="mb-4 text-lg font-semibold">
+                        <h3 className="mb-4 text-lg font-semibold dark:text-gray-100 text-gray-900">
                             Follow Us
                         </h3>
                         <div className="mb-6 flex space-x-4">
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            className="rounded-full"
-                                            asChild
-                                        >
-                                            <a
-                                                href="https://www.facebook.com/seoscientistagency/"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
+                            {[
+                                { href: "https://www.facebook.com/seoscientistagency/", icon: Facebook, label: "Facebook" },
+                                { href: "https://twitter.com/iamseoscientist", icon: Twitter, label: "Twitter" },
+                                { href: "https://www.instagram.com/seoscientistuae/", icon: Instagram, label: "Instagram" },
+                                { href: "https://www.linkedin.com/company/seoscientistusa", icon: Linkedin, label: "LinkedIn" },
+                            ].map((social) => (
+                                <TooltipProvider key={social.label}>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="rounded-full hover:text-[#ff642d]"
+                                                asChild
                                             >
-                                                <Facebook className="h-4 w-4" />
-                                                <span className="sr-only">
-                                                    Facebook
-                                                </span>
-                                            </a>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Follow us on Facebook</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            className="rounded-full"
-                                            asChild
-                                        >
-                                            <a
-                                                href="https://twitter.com/iamseoscientist"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <Twitter className="h-4 w-4" />
-                                                <span className="sr-only">
-                                                    Twitter
-                                                </span>
-                                            </a>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Follow us on Twitter</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            className="rounded-full"
-                                            asChild
-                                        >
-                                            <a
-                                                href="https://www.instagram.com/seoscientistuae/"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <Instagram className="h-4 w-4" />
-                                                <span className="sr-only">
-                                                    Instagram
-                                                </span>
-                                            </a>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Follow us on Instagram</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            className="rounded-full"
-                                            asChild
-                                        >
-                                            <a
-                                                href="https://www.linkedin.com/company/seoscientistusa"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <Linkedin className="h-4 w-4" />
-                                                <span className="sr-only">
-                                                    LinkedIn
-                                                </span>
-                                            </a>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Connect with us on LinkedIn</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>{" "}
+                                                <a
+                                                    href={social.href}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    <social.icon className="h-4 w-4" />
+                                                    <span className="sr-only">{social.label}</span>
+                                                </a>
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Follow us on {social.label}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            ))}
                         </div>
                         <div className="flex items-center space-x-2">
                             <Sun className="h-4 w-4" />
@@ -253,28 +160,19 @@ const Footer: FC = () => {
                     </div>
                 </div>
                 <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-center md:flex-row">
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                         Copyright © 2024 SEO Scientist
                     </p>
                     <nav className="flex gap-4 text-sm">
-                        <a
-                            href="#"
-                            className="transition-colors hover:text-primary"
-                        >
-                            Privacy Policy
-                        </a>
-                        <a
-                            href="#"
-                            className="transition-colors hover:text-primary"
-                        >
-                            Terms of Service
-                        </a>
-                        <a
-                            href="#"
-                            className="transition-colors hover:text-primary"
-                        >
-                            Cookie Settings
-                        </a>
+                        {["Privacy Policy", "Terms of Service", "Cookie Settings"].map((item) => (
+                            <a
+                                key={item}
+                                href="#"
+                                className="text-gray-600 dark:text-gray-400 transition-colors hover:text-[#ff642d]"
+                            >
+                                {item}
+                            </a>
+                        ))}
                     </nav>
                 </div>
             </div>
