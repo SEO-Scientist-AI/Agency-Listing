@@ -77,7 +77,7 @@ export default function NavbarCopy() {
           </SheetTrigger>
           <SheetContent side="left">
             <SheetHeader>
-              <SheetTitle>Next Starter</SheetTitle>
+              <SheetTitle>Agency Spot</SheetTitle>
             </SheetHeader>
             <div className="flex flex-col space-y-3 mt-[1rem]">
               <SheetClose asChild>
@@ -406,18 +406,26 @@ export default function NavbarCopy() {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="flex items-center gap-6 max-[825px]:hidden">
+        <Link href="https://seoscientist.agency/case-studies/" target="_blank" rel="noopener noreferrer">
+          <Button variant="ghost">
+            Case Studies
+          </Button>
+        </Link>
+        <Link href="https://seoscientist.agency/" target="_blank" rel="noopener noreferrer">
+          <Button variant="ghost">
+            About Us
+          </Button>
+        </Link>
         <Link href="/listagency">
-                  <Button className="bg-[#ff642d] hover:bg-[#e55a28] text-white">
-                    List Your Agency
-                  </Button>
-                </Link>
+          <Button className="bg-[#ff642d] hover:bg-[#e55a28] text-white">
+            List Your Agency
+          </Button>
+        </Link>
         {userId && <UserProfile />}
-        <ModeToggle />
       </div>
     </div>
   );
 }
-
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
   React.ComponentPropsWithoutRef<"a">

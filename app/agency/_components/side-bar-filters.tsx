@@ -1,39 +1,52 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { X } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import useAppStore from "@/lib/store/useAppStore"
+import { Checkbox } from "@/components/ui/checkbox";
+import useAppStore from "@/lib/store/useAppStore";
 import axiosInstance from "@/lib/axios-instance";
-function LoadingSidebarSection() {
+import { Skeleton } from "@/components/ui/skeleton";
+
+function LoadingSkeleton() {
     return (
-        <div className="space-y-3">
-            <Skeleton className="h-6 w-24" />
-            {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-4" />
-                    <Skeleton className="h-4 w-32" />
-                </div>
-            ))}
-        </div>
+        <Card className="col-span-1 h-fit animate-pulse">
+            <CardHeader className="space-y-4">
+                <Skeleton className="h-8"></Skeleton>
+                <Separator />
+            </CardHeader>
+            <CardContent className="space-y-6">
+                {[1, 2].map((section) => (
+                    <div key={section} className="space-y-4">
+                        <Skeleton className="h-6 w-24"></Skeleton>
+                        <div className="space-y-2">
+                            {[1, 2, 3].map((item) => (
+                                <Skeleton key={item} className="h-4"></Skeleton>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </CardContent>
+        </Card>
     );
 }
 
-
-
 const SideBarFilters = () => {
-    const { services ,cities:locations,serviceLoading,citiesLoading,setAgencies} = useAppStore();
+    const { services, cities: locations, serviceLoading, citiesLoading, setAgencies } = useAppStore();
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
     const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredServices, setFilteredServices] = useState(services);
+    const [filteredLocations, setFilteredLocations] = useState(locations);
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-
-
 
     useEffect(() => {
         const servicesParam = searchParams.get('services')?.split(' ').filter(Boolean) || [];
@@ -41,97 +54,134 @@ const SideBarFilters = () => {
         setSelectedServices(servicesParam);
         setSelectedLocations(locationsParam);
     }, []);
+
+    useEffect(() => {
+        const filtered = services.filter(service => 
+            service.serviceName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredServices(filtered);
+
+        const filteredLocs = locations.filter(location =>
+            location.cityName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredLocations(filteredLocs);
+    }, [searchQuery, services, locations]);
+
+    const clearFilters = async () => {
+        setSelectedServices([]);
+        setSelectedLocations([]);
+        setSearchQuery("");
+        router.push(pathname);
+        const response = await axiosInstance.get('/agency');
+        setAgencies(response.data);
+    };
+
     const handleApplyFilters = async () => {
         const params = new URLSearchParams();
         if (selectedServices.length > 0) {
             params.set('services', selectedServices.join(' '));
-        } 
+        }
         if (selectedLocations.length > 0) {
             params.set('location', selectedLocations.join(' '));
         }
         router.push(`${pathname}?${params.toString()}`);
-       const response = await axiosInstance.get(`/agency?${params.toString()}`);
-       const data = await response.data;
-        setAgencies(data);
+        const response = await axiosInstance.get(`/agency?${params.toString()}`);
+        setAgencies(response.data);
     };
 
-    if (serviceLoading && citiesLoading) {
-        return (
-            <div className="w-72 sticky top-28 self-start">
-                <Card className="max-h-[calc(100vh-8rem)] overflow-y-auto">
-                    <CardContent className="p-4 space-y-6">
-                        <LoadingSidebarSection />
-                        <LoadingSidebarSection />
-                        <Skeleton className="h-9 w-full" />
-                    </CardContent>
-                </Card>
-            </div>
-        );
+    if (serviceLoading || citiesLoading) {
+        return <LoadingSkeleton />;
     }
 
     return (
-        <div className="w-72 sticky top-28 self-start">
-            <Card className="max-h-[calc(100vh-8rem)] overflow-y-auto">
-                <CardContent className="p-4 space-y-6">
-                    <Collapsible defaultOpen={true}>
-                        <CollapsibleTrigger className="w-full flex justify-between items-center">
-                            <span className="font-medium">Services</span>
-                            <ChevronDown className="h-4 w-4" />
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="mt-2 space-y-2">
-                            {services.map((service) => (
-                                <label key={service.id} className="flex items-center space-x-2">
-                                    <input
-                                        type="checkbox"
+        <Card className="col-span-1 h-fit">
+            <CardHeader className="space-y-4">
+                <div className="flex justify-between items-center">
+                    <CardTitle className="text-2xl font-semibold">Filter</CardTitle>
+                    <Button
+                        variant="destructive"
+                        size="sm"
+                        className="h-8"
+                        onClick={clearFilters}
+                    >
+                        <span className="mr-2">Clear all</span>
+                        <X className="h-4 w-4" />
+                    </Button>
+                </div>
+                <Input
+                    placeholder="Search filters..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full"
+                />
+                <Separator />
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+                <div className="space-y-4">
+                    <Label className="text-lg font-semibold">Services</Label>
+                    <ScrollArea className="h-[200px] rounded-md">
+                        <div className="grid grid-cols-1 gap-2 p-1">
+                            {filteredServices.map((service) => (
+                                <div key={service.id} className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id={service.slug}
                                         checked={selectedServices.includes(service.slug)}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
+                                        onCheckedChange={(checked) => {
+                                            if (checked) {
                                                 setSelectedServices([...selectedServices, service.slug]);
                                             } else {
                                                 setSelectedServices(selectedServices.filter(s => s !== service.slug));
                                             }
                                         }}
                                     />
-                                    <span>{service.serviceName}</span>
-                                </label>
+                                    <Label htmlFor={service.slug} className="text-sm font-medium">
+                                        {service.serviceName}
+                                    </Label>
+                                </div>
                             ))}
-                        </CollapsibleContent>
-                    </Collapsible>
+                        </div>
+                    </ScrollArea>
+                </div>
 
-                    <Collapsible defaultOpen={true}>
-                        <CollapsibleTrigger className="w-full flex justify-between items-center">
-                            <span className="font-medium">Locations</span>
-                            <ChevronDown className="h-4 w-4" />
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="mt-2 space-y-2">
-                            {locations.map((location) => (
-                                <label key={location.id} className="flex items-center space-x-2">
-                                    <input
-                                        type="checkbox"
+                <Separator />
+
+                <div className="space-y-4">
+                    <Label className="text-lg font-semibold">Locations</Label>
+                    <ScrollArea className="h-[200px] rounded-md">
+                        <div className="grid grid-cols-1 gap-2 p-1">
+                            {filteredLocations.map((location) => (
+                                <div key={location.id} className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id={location.citySlug}
                                         checked={selectedLocations.includes(location.citySlug)}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
+                                        onCheckedChange={(checked) => {
+                                            if (checked) {
                                                 setSelectedLocations([...selectedLocations, location.citySlug]);
                                             } else {
                                                 setSelectedLocations(selectedLocations.filter(l => l !== location.citySlug));
                                             }
                                         }}
                                     />
-                                    <span>{location.cityName}</span>
-                                </label>
+                                    <Label htmlFor={location.citySlug} className="text-sm font-medium">
+                                        {location.cityName}
+                                    </Label>
+                                </div>
                             ))}
-                        </CollapsibleContent>
-                    </Collapsible>
+                        </div>
+                    </ScrollArea>
+                </div>
 
-                    <Button
-                        onClick={handleApplyFilters} 
-                        className="w-full"
-                    >
-                        Apply Filters
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
+                <Separator />
+
+                <Button
+                    onClick={handleApplyFilters}
+                    className="w-full"
+                >
+                    Apply Filters
+                </Button>
+            </CardContent>
+        </Card>
     );
 };
 

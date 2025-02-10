@@ -7,10 +7,8 @@ import {
     Briefcase,
     ArrowRightIcon,
 } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { BorderBeam } from "../magicui/border-beam";
 import { Button } from "@/components/ui/button";
 import {
     Select,

@@ -56,7 +56,7 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
     }
 
     return (
-        <Card className={className}>
+        <Card className={cn("hover:shadow-lg transition-all duration-300 hover:border-primary/50 relative", className)}>
             <CardContent className="p-6 flex gap-6">
                 <div className="flex-shrink-0">
                     <Image
@@ -118,7 +118,7 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
                     </div>
                     {agency.services?.length > 0 && (
                         <div>
-                            <h4 className="text-sm font-semibold mb-1">
+                            <h4 className="text-sm font-semibold mb-2">
                                 Services
                             </h4>
                             <div className="flex flex-wrap gap-1">

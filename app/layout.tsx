@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://starter.rasmic.xyz"),
+    metadataBase: new URL("https://seoscientist.agency/"),
     title: {
         default: "SEO Scientist Agency Spot",
         template: `%s | Connecting You Effortlessly`,
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
         images: [
             "https://utfs.io/f/8a428f85-ae83-4ca7-9237-6f8b65411293-eun6ii.png",
         ],
-        url: "https://starter.rasmic.xyz/",
+        url: "https://seoscientist.agency/",
     },
     twitter: {
         card: "summary_large_image",

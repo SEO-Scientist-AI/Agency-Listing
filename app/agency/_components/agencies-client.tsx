@@ -157,7 +157,7 @@ export function AgenciesClient() {
     return pages;
   };
   return (
-    <div className="flex flex-col lg:flex-row gap-8 container mx-auto max-w-7xl px-4">
+    <div className="container flex flex-col lg:flex-row gap-8 mx-auto max-w-6xl px-4">
       <div className="lg:w-1/4">
         <SideBarFilters />
       </div>
