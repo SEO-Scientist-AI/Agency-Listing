@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://seoscientist.agency/"),
+    metadataBase: new URL("https://agencyspot.seoscientist.ai/"),
     title: {
         default: "SEO Scientist Agency Spot",
         template: `%s | Connecting You Effortlessly`,
@@ -18,10 +18,8 @@ export const metadata: Metadata = {
     openGraph: {
         description:
             "Find a perfect digital marketing partner for your next project: agencies, freelancers, and many more. Get several proposals right in your inbox in 2 days.",
-        images: [
-            "https://utfs.io/f/8a428f85-ae83-4ca7-9237-6f8b65411293-eun6ii.png",
-        ],
-        url: "https://seoscientist.agency/",
+        images: ["/opengraph.png"],
+        url: "https://agencyspot.seoscientist.ai/",
     },
     twitter: {
         card: "summary_large_image",
@@ -31,13 +29,9 @@ export const metadata: Metadata = {
         siteId: "",
         creator: "@udaydev",
         creatorId: "",
-        images: [
-            "https://utfs.io/f/8a428f85-ae83-4ca7-9237-6f8b65411293-eun6ii.png",
-        ],
+        images: ["/opengraph.png"],
     },
 };
-
-
 
 export default function RootLayout({
     children,
@@ -50,12 +44,12 @@ export default function RootLayout({
                 <head>
                     <link
                         rel="preload"
-                        href="https://utfs.io/f/31dba2ff-6c3b-4927-99cd-b928eaa54d5f-5w20ij.png"
+                        href="/images/dashboard.png"
                         as="image"
                     />
                     <link
                         rel="preload"
-                        href="https://utfs.io/f/69a12ab1-4d57-4913-90f9-38c6aca6c373-1txg2.png"
+                        href="/images/dashboard.png"
                         as="image"
                     />
                 </head>
@@ -67,9 +61,8 @@ export default function RootLayout({
                             enableSystem
                             disableTransitionOnChange
                         >
-                            
-                                {children}
-                            
+                            {children}
+
                             <Toaster />
                         </ThemeProvider>
                     </Provider>
