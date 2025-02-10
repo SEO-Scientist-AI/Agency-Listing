@@ -42,8 +42,16 @@ export default function RootLayout({
         <AuthWrapper>
             <html lang="en" suppressHydrationWarning>
                 <head>
-                    <link rel="preload" href="/images/dashbor.png" as="image" />
-                    <link rel="preload" href="/images/dashbor.png" as="image" />
+                    <link
+                        rel="preload"
+                        href="/images/dashboard.png"
+                        as="image"
+                    />
+                    <link
+                        rel="preload"
+                        href="/images/dashboard.png"
+                        as="image"
+                    />
                 </head>
                 <body className={GeistSans.className}>
                     <Provider>
