@@ -58,7 +58,7 @@ export default function HeroSection() {
 
         if (selectedService) {
             searchParams.append("services", selectedService);
-            console.log(selectedService);
+            // console.log(selectedService);
         }
         if (selectedRegion) {
             searchParams.append("region", selectedRegion);

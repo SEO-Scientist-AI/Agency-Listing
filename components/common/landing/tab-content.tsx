@@ -3,9 +3,9 @@ import { TabsContent } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import {Service,Industry,City} from "@/types/filtering-data";
 import { getUniqueValuesFromArray } from "@/lib/utils";
-
+import { useRouter } from "next/navigation";
 type TabContentProp = Service[] | Industry[] | City[]
-
+import Link from 'next/link'
 
 // ensuring services ,industries and cities are not empty and corret Data
 const isServiceArray = (data: TabContentProp): data is Service[] => {
@@ -21,9 +21,25 @@ const isCityArray = (data: TabContentProp): data is City[] => {
 };
 
 const TabContent = ({ tabData,value }: { tabData: TabContentProp, value:string }) => {
-  const handleClick = (itemBasedOnTab: any) => {
-    console.log(itemBasedOnTab);
-  };
+    // const router = useRouter();
+  // const handleClick = (itemBasedOnTab:string,value:string) => {
+  //   const searchParams = new URLSearchParams();
+        
+
+  //       if (value ==="service") {
+  //           searchParams.append("services", itemBasedOnTab);
+            
+  //       }
+  //       if (value ==="country" || value ==="city") {
+  //           searchParams.append("location", itemBasedOnTab);
+  //       }
+  //       // if (value ==="industry" ) {
+  //       //     searchParams.append("industry", itemBasedOnTab);
+  //       // }
+
+  //       const queryString = searchParams.toString();
+  //       router.push(`/agency${queryString ? `?${queryString}` : ""}`);
+  // };
 
 
   if(isServiceArray(tabData)){
@@ -31,14 +47,15 @@ const TabContent = ({ tabData,value }: { tabData: TabContentProp, value:string }
     <TabsContent value={value} className="mt-6 ">
       <div className="flex flex-wrap gap-3 justify-center">
         {tabData.slice(0, 20).map((tabItem) =>  (
+          <Link href={`/agency?services=${tabItem.slug}`}  key={tabItem.id}>
             <motion.button
-              key={tabItem.id}
-              onClick={() => handleClick(tabItem.slug)}
+             
               className={`rounded-full border px-4 py-2 text-sm transition-colors hover:text-signature hover:border-signature`}
               whileTap={{ scale: 0.95 }}
             >
               {tabItem.serviceName}
             </motion.button>
+            </Link>
           )
         )}
       </div>
@@ -53,10 +70,11 @@ const TabContent = ({ tabData,value }: { tabData: TabContentProp, value:string }
         {tabData.slice(0, 20).map((tabItem) =>  (
             <motion.button
               key={tabItem.id}
-              onClick={() => handleClick(tabItem.slug)}
+              // onClick={() => handleClick(tabItem.slug)}
               className={`rounded-full border px-4 py-2 text-sm transition-colors hover:text-signature hover:border-signature`}
               whileTap={{ scale: 0.95 }}
             >
+               {/* <Link href={`/agency?services=${tabItem.slug}`}>{tabItem.serviceName}</Link> */}
               {tabItem.industryName}
             </motion.button>
           )
@@ -74,14 +92,17 @@ const TabContent = ({ tabData,value }: { tabData: TabContentProp, value:string }
         <TabsContent value={value} className="mt-6 ">
           <div className="flex flex-wrap gap-3 justify-center">
             {uniqueCountry.slice(0, 20).map((tabItem) =>  (
+              <Link href={`/agency?location=${tabItem.countrySlug}`} key={tabItem.id}>
                 <motion.button
-                  key={tabItem.id}
-                  onClick={() => handleClick(tabItem.countrySlug)}
+                  
                   className={`rounded-full border px-4 py-2 text-sm transition-colors hover:text-signature hover:border-signature`}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {tabItem.countryName}
+                   {tabItem.countryName}
+                 
+                  
                 </motion.button>
+                  </Link>
               )
             )}
           </div>
@@ -95,14 +116,15 @@ const TabContent = ({ tabData,value }: { tabData: TabContentProp, value:string }
     <TabsContent value={value} className="mt-6 ">
       <div className="flex flex-wrap gap-3 justify-center">
         {uniqueCity.slice(0, 20).map((tabItem) =>  (
+           <Link href={`/agency?location=${tabItem.citySlug}`} key={tabItem.id}>
             <motion.button
-              key={tabItem.id}
-              onClick={() => handleClick(tabItem.citySlug)}
+              
               className={`rounded-full border px-4 py-2 text-sm transition-colors hover:text-signature hover:border-signature`}
               whileTap={{ scale: 0.95 }}
             >
               {tabItem.cityName}
             </motion.button>
+            </Link>
           )
         )}
       </div>
