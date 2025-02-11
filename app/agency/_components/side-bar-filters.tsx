@@ -89,6 +89,10 @@ const SideBarFilters = () => {
         setAgencies(response.data);
     };
 
+    const hasActiveFilters = () => {
+        return selectedServices.length > 0 || selectedLocations.length > 0 || searchQuery.length > 0;
+    };
+
     if (serviceLoading || citiesLoading) {
         return <LoadingSkeleton />;
     }
@@ -99,13 +103,11 @@ const SideBarFilters = () => {
                 <div className="flex justify-between items-center">
                     <CardTitle className="text-2xl font-semibold">Filter</CardTitle>
                     <Button
-                        variant="destructive"
+                        onClick={handleApplyFilters}
                         size="sm"
                         className="h-8"
-                        onClick={clearFilters}
                     >
-                        <span className="mr-2">Clear all</span>
-                        <X className="h-4 w-4" />
+                        Apply Filters
                     </Button>
                 </div>
                 <Input
@@ -174,12 +176,16 @@ const SideBarFilters = () => {
 
                 <Separator />
 
-                <Button
-                    onClick={handleApplyFilters}
-                    className="w-full"
-                >
-                    Apply Filters
-                </Button>
+                {hasActiveFilters() && (
+                    <Button
+                        variant="destructive"
+                        className="w-full"
+                        onClick={clearFilters}
+                    >
+                        <span className="mr-2">Clear all filters</span>
+                        <X className="h-4 w-4" />
+                    </Button>
+                )}
             </CardContent>
         </Card>
     );
