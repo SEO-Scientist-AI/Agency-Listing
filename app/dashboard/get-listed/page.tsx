@@ -269,7 +269,7 @@ export default function GetListed() {
                                                 name="budgetRange"
                                                 value={formData.budgetRange}
                                                 onChange={handleChange}
-                                                placeholder="e.g., $1,000 - $10,000"
+                                                placeholder={'e.g., $1,000 - $10,000'}
                                             />
                                         </div>
                                     </div>
