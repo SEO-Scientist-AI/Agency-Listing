@@ -100,7 +100,7 @@ export function ServiceSelect({ value, onChange }: ServiceSelectProps) {
                                     onClick={handleAddCustom}
                                 >
                                     <Plus className="mr-2 h-4 w-4" />
-                                    Add &quot;{inputValue}&quot;
+                                    Add "{inputValue}"
                                 </Button>
                             </CommandEmpty>
                             <CommandGroup heading="Available Services">

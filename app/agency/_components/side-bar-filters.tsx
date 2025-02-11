@@ -53,7 +53,7 @@ const SideBarFilters = () => {
         const locationsParam = searchParams.get('location')?.split(' ').filter(Boolean) || [];
         setSelectedServices(servicesParam);
         setSelectedLocations(locationsParam);
-    }, [searchParams]);
+    }, []);
 
     useEffect(() => {
         const filtered = services.filter(service => 

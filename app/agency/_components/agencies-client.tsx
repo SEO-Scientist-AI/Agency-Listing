@@ -120,7 +120,7 @@ export function AgenciesClient() {
   };
   useEffect(() => {
     handleAgencies();
-  }, [handleAgencies]);
+  }, []);
   const handlePageChange = async (page: number) => {
     if (page === currentPage || loading) return;
     handleAgencies(page.toString());
