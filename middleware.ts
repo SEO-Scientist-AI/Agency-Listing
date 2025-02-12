@@ -32,26 +32,22 @@ export function middleware(request: NextRequest) {
     }
   }
   
-  // Handle /agency/list/[city] routes
-  if (pathname.startsWith('/agency/list/')) {
+  // Handle /agency/list/[city] routes - only redirect if there are query params
+  if (pathname.startsWith('/agency/list/') && searchParams.size > 0) {
     const city = pathname.split('/').pop()!;
+    const newUrl = new URL('/agency', request.url);
     
-    // If there are any query parameters, redirect to main agency page
-    if (searchParams.size > 0) {
-      const newUrl = new URL('/agency', request.url);
-      
-      // Add the city as a location parameter
-      newUrl.searchParams.set('location', city);
-      
-      // Copy all existing query parameters
-      searchParams.forEach((value, key) => {
-        if (key !== 'location') {
-          newUrl.searchParams.set(key, value);
-        }
-      });
-      
-      return NextResponse.redirect(newUrl);
-    }
+    // Add the city as a location parameter
+    newUrl.searchParams.set('location', city);
+    
+    // Copy all existing query parameters
+    searchParams.forEach((value, key) => {
+      if (key !== 'location') {
+        newUrl.searchParams.set(key, value);
+      }
+    });
+    
+    return NextResponse.redirect(newUrl);
   }
 
   return NextResponse.next();

@@ -121,19 +121,51 @@ export async function getAllLocations() {
 
 export async function validateCitySlug(citySlug: string) {
   try {
+    console.log('Validating city slug:', citySlug);
     const agenciesRef = collection(db, 'agencies');
     const snapshot = await getDocs(agenciesRef);
     
-    return snapshot.docs.some(doc => {
+    // First, try to find the city in the cities collection
+    const citiesRef = collection(db, 'cities');
+    const citiesSnapshot = await getDocs(citiesRef);
+    const cityExists = citiesSnapshot.docs.some(doc => {
       const data = doc.data();
-      const location: string = data.location || '';
-      const additionalLocations: string[] = data.additionalLocations || [];
-      
-      const locationSlug = formatSlug(location);
-      const additionalLocationSlugs = additionalLocations.map((loc: string) => formatSlug(loc));
-      
-      return locationSlug === citySlug || additionalLocationSlugs.includes(citySlug);
+      return formatSlug(data.cityName) === citySlug;
     });
+
+    if (cityExists) {
+      console.log('City found in cities collection');
+      return true;
+    }
+
+    // If not found in cities, check agencies
+    const isValid = snapshot.docs.some(doc => {
+      const data = doc.data();
+      
+      // Check main location
+      if (data.location) {
+        const locationParts = data.location.split(',').map((part: string) => part.trim());
+        const locationSlugs = locationParts.map((part: string) => formatSlug(part));
+        if (locationSlugs.includes(citySlug)) {
+          return true;
+        }
+      }
+      
+      // Check additional locations
+      if (Array.isArray(data.additionalLocations)) {
+        return data.additionalLocations.some((loc: string) => {
+          const locationParts = loc.split(',').map((part: string) => part.trim());
+          const locationSlugs = locationParts.map((part: string) => formatSlug(part));
+          return locationSlugs.includes(citySlug);
+        });
+      }
+      
+      return false;
+    });
+
+    console.log('Validation result:', isValid);
+    return isValid;
+
   } catch (error) {
     console.error('Error validating city slug:', error);
     return false;
