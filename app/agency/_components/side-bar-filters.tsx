@@ -37,7 +37,11 @@ function LoadingSkeleton() {
     );
 }
 
-const SideBarFilters = () => {
+interface SideBarFiltersProps {
+  initialLocation?: string;
+}
+
+const SideBarFilters = ({ initialLocation }: SideBarFiltersProps = {}) => {
     const { services, cities: locations, serviceLoading, citiesLoading, setAgencies } = useAppStore();
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
     const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
@@ -48,12 +52,23 @@ const SideBarFilters = () => {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
+    // Get city from URL if we're on a city-specific page
+    const cityFromPath = pathname.startsWith('/agency/list/') 
+        ? pathname.split('/').pop() 
+        : null;
+
     useEffect(() => {
         const servicesParam = searchParams.get('services')?.split(' ').filter(Boolean) || [];
         const locationsParam = searchParams.get('location')?.split(' ').filter(Boolean) || [];
+        
+        // If we're on a city-specific page, include the city from the URL
+        const locationsList = cityFromPath 
+            ? [cityFromPath, ...locationsParam]
+            : locationsParam;
+
         setSelectedServices(servicesParam);
-        setSelectedLocations(locationsParam);
-    }, []);
+        setSelectedLocations(locationsList);
+    }, [searchParams, cityFromPath]);
 
     useEffect(() => {
         const filtered = services.filter(service => 
@@ -69,9 +84,17 @@ const SideBarFilters = () => {
 
     const clearFilters = async () => {
         setSelectedServices([]);
-        setSelectedLocations([]);
+        setSelectedLocations([]); // Clear all locations, including the city from path
         setSearchQuery("");
-        router.push(pathname);
+        
+        if (cityFromPath) {
+            // If on city-specific page, redirect to main agency page
+            router.push('/agency');
+        } else {
+            router.push('/agency');
+        }
+        
+        // Always fetch without location filter
         const response = await axiosInstance.get('/agency');
         setAgencies(response.data);
     };
@@ -81,16 +104,30 @@ const SideBarFilters = () => {
         if (selectedServices.length > 0) {
             params.set('services', selectedServices.join(' '));
         }
-        if (selectedLocations.length > 0) {
-            params.set('location', selectedLocations.join(' '));
+        
+        // Only set location params for locations other than the current city page
+        const additionalLocations = selectedLocations.filter(loc => loc !== cityFromPath);
+        if (additionalLocations.length > 0) {
+            params.set('location', additionalLocations.join(' '));
         }
-        router.push(`${pathname}?${params.toString()}`);
+
+        // If we're on a city-specific page and selecting additional locations,
+        // redirect to the main agency page with all locations
+        if (cityFromPath && additionalLocations.length > 0) {
+            const allLocations = [cityFromPath, ...additionalLocations];
+            params.set('location', allLocations.join(' '));
+            router.push(`/agency?${params.toString()}`);
+        } else {
+            router.push(`${pathname}?${params.toString()}`);
+        }
+
         const response = await axiosInstance.get(`/agency?${params.toString()}`);
         setAgencies(response.data);
     };
 
     const hasActiveFilters = () => {
-        return selectedServices.length > 0 || selectedLocations.length > 0 || searchQuery.length > 0;
+        // Always return true to show the clear filter button
+        return true;
     };
 
     if (serviceLoading || citiesLoading) {
@@ -176,16 +213,14 @@ const SideBarFilters = () => {
 
                 <Separator />
 
-                {hasActiveFilters() && (
-                    <Button
-                        variant="destructive"
-                        className="w-full"
-                        onClick={clearFilters}
-                    >
-                        <span className="mr-2">Clear all filters</span>
-                        <X className="h-4 w-4" />
-                    </Button>
-                )}
+                <Button
+                    variant="destructive"
+                    className="w-full"
+                    onClick={clearFilters}
+                >
+                    <span className="mr-2">Clear all filters</span>
+                    <X className="h-4 w-4" />
+                </Button>
             </CardContent>
         </Card>
     );

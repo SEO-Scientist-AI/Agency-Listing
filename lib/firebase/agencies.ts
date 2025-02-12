@@ -118,3 +118,24 @@ export async function getAllLocations() {
         return [];
     }
 }
+
+export async function validateCitySlug(citySlug: string) {
+  try {
+    const agenciesRef = collection(db, 'agencies');
+    const snapshot = await getDocs(agenciesRef);
+    
+    return snapshot.docs.some(doc => {
+      const data = doc.data();
+      const location = data.location || '';
+      const additionalLocations = data.additionalLocations || [];
+      
+      const locationSlug = formatSlug(location);
+      const additionalLocationSlugs = additionalLocations.map(loc => formatSlug(loc));
+      
+      return locationSlug === citySlug || additionalLocationSlugs.includes(citySlug);
+    });
+  } catch (error) {
+    console.error('Error validating city slug:', error);
+    return false;
+  }
+}

@@ -18,6 +18,7 @@ import {
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import useAppStore from "@/lib/store/useAppStore";
 import axiosInstance from "@/lib/axios-instance";
+
 interface FilterState {
   search: string;
   services: string[];
@@ -26,6 +27,10 @@ interface FilterState {
   budgetRanges: { min: number; max: number }[];
   min: number;
   max: number;
+}
+
+interface AgenciesClientProps {
+  initialLocation?: string;
 }
 
 export function LoadingAgencyCard() {
@@ -66,51 +71,48 @@ export function LoadingAgencyCard() {
   );
 }
 
-export function AgenciesClient() {
-  const { agencies: filteredAgencies, setAgencies,fetchAgencies,currentPage,totalPages } = useAppStore();
+export function AgenciesClient({ initialLocation }: AgenciesClientProps = {}) {
+  const { agencies: filteredAgencies, setAgencies, fetchAgencies, currentPage, totalPages } = useAppStore();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
-  const handleAgencies = async (page = "1") => {
+
+  useEffect(() => {
+    if (initialLocation) {
+      handleAgencies("1", initialLocation);
+    } else {
+      handleAgencies();
+    }
+  }, [initialLocation]);
+
+  const handleAgencies = async (page = "1", location?: string) => {
     try {
       setLoading(true);
+      const params = new URLSearchParams();
+      
       if (searchParams.size !== 0) {
-        const servicesParam =
-          searchParams.get("services")?.split(" ").filter(Boolean) || [];
-        const locationsParam =
-          searchParams.get("location")?.split(" ").filter(Boolean) || [];
-        const pageParam = searchParams.get("page") || page;
-        const params = new URLSearchParams();
+        const servicesParam = searchParams.get('services')?.split(" ").filter(Boolean) || [];
+        const locationsParam = location 
+          ? [location]
+          : searchParams.get('location')?.split(" ").filter(Boolean) || [];
+        
         if (servicesParam.length > 0) {
           params.set("services", servicesParam.join(" "));
         }
         if (locationsParam.length > 0) {
           params.set("location", locationsParam.join(" "));
         }
-        if (pageParam) {
-          params.set("page", pageParam);
-        }
-        
-        const response = await axiosInstance.get(
-          `/agency?${params.toString()}`
-        );
-        const data = await response.data;
-        if (data.success) {
-          setAgencies(data);
-        }
-      } else {
-        const pageParam = page || "1";
-        const params = new URLSearchParams();
-        if (pageParam) {
-            params.set("page", pageParam);
-          }
+      } else if (location) {
+        params.set("location", location);
+      }
+      
+      if (page) {
+        params.set("page", page);
+      }
 
-        const response = await axiosInstance.get(
-          `/agency?${params.toString()}`
-        );
-        const data = await response.data;
-        if (data.success) {
-          setAgencies(data);
-        }
+      const response = await axiosInstance.get(`/agency?${params.toString()}`);
+      const data = await response.data;
+      if (data.success) {
+        setAgencies(data);
       }
     } catch (error) {
       console.error("Fetch error:", error);
@@ -118,9 +120,7 @@ export function AgenciesClient() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    handleAgencies();
-  }, []);
+
   const handlePageChange = async (page: number) => {
     if (page === currentPage || loading) return;
     handleAgencies(page.toString());
@@ -156,6 +156,7 @@ export function AgenciesClient() {
 
     return pages;
   };
+
   return (
     <div className="container flex flex-col lg:flex-row gap-8 mx-auto max-w-6xl px-4">
       <div className="lg:w-1/4">
