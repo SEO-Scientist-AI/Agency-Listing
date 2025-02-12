@@ -27,7 +27,10 @@ interface FilterState {
   min: number;
   max: number;
 }
-
+interface AgenciesClientProps {
+  servicesSlug?: string;
+  locationSlug?:string;
+}
 export function LoadingAgencyCard() {
   return (
     <Card>
@@ -66,7 +69,7 @@ export function LoadingAgencyCard() {
   );
 }
 
-export function AgenciesClient() {
+export function AgenciesClient({servicesSlug,locationSlug}:AgenciesClientProps) {
   const { agencies: filteredAgencies, setAgencies,fetchAgencies,currentPage,totalPages } = useAppStore();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -97,6 +100,38 @@ export function AgenciesClient() {
         if (data.success) {
           setAgencies(data);
         }
+      } 
+      else if (servicesSlug || locationSlug) {
+        let servicesParam:Array<string> = [];
+        let locationsParam:Array<string> = [];
+        if(servicesSlug){
+           servicesParam =
+          searchParams.get("services")?.split(" ").filter(Boolean) || [];
+        }
+        if(locationSlug){
+          locationsParam =
+          searchParams.get("location")?.split(" ").filter(Boolean) || [];
+        }
+        const pageParam = page || "1";
+        const params = new URLSearchParams();
+        if (servicesParam.length > 0) {
+          params.set("services", servicesParam.join(" "));
+        }
+        if (locationsParam.length > 0) {
+          params.set("location", locationsParam.join(" "));
+        }
+        if (pageParam) {
+          params.set("page", pageParam);
+        }
+        
+        const response = await axiosInstance.get(
+          `/agency?${params.toString()}`
+        );
+        const data = await response.data;
+        if (data.success) {
+          setAgencies(data);
+        }
+        
       } else {
         const pageParam = page || "1";
         const params = new URLSearchParams();
@@ -159,7 +194,7 @@ export function AgenciesClient() {
   return (
     <div className="container flex flex-col lg:flex-row gap-8 mx-auto max-w-6xl px-4">
       <div className="lg:w-1/4">
-        <SideBarFilters />
+        <SideBarFilters servicesSlug={servicesSlug} locationSlug={locationSlug} />
       </div>
       <div className="lg:w-3/4">
         <div className="space-y-6">

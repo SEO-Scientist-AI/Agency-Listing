@@ -56,9 +56,13 @@ export default function HeroSection() {
         const searchParams = new URLSearchParams();
         
 
-        if (selectedService) {
-            searchParams.append("services", selectedService);
-            // console.log(selectedService);
+        if (selectedService && selectedCity) {
+            router.push(`/agency/list/${selectedService}/${selectedCity}`);
+            return;
+        
+        } else if (selectedService){
+            router.push(`/agency/list/${selectedService}`);
+            return;
         }
         if (selectedRegion) {
             searchParams.append("region", selectedRegion);
