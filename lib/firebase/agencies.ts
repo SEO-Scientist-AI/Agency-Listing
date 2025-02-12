@@ -126,11 +126,11 @@ export async function validateCitySlug(citySlug: string) {
     
     return snapshot.docs.some(doc => {
       const data = doc.data();
-      const location = data.location || '';
-      const additionalLocations = data.additionalLocations || [];
+      const location: string = data.location || '';
+      const additionalLocations: string[] = data.additionalLocations || [];
       
       const locationSlug = formatSlug(location);
-      const additionalLocationSlugs = additionalLocations.map(loc => formatSlug(loc));
+      const additionalLocationSlugs = additionalLocations.map((loc: string) => formatSlug(loc));
       
       return locationSlug === citySlug || additionalLocationSlugs.includes(citySlug);
     });
