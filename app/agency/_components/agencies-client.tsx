@@ -73,7 +73,7 @@ export function AgenciesClient() {
   const handleAgencies = async (page = "1") => {
     try {
       setLoading(true);
-<<<<<<< Updated upstream
+
       if (searchParams.size !== 0) {
         const servicesParam =
           searchParams.get("services")?.split(" ").filter(Boolean) || [];
@@ -104,9 +104,7 @@ export function AgenciesClient() {
         if (pageParam) {
             params.set("page", pageParam);
           }
-=======
       const params = new URLSearchParams();
->>>>>>> Stashed changes
 
       // Add page parameter
       params.set("page", page);
