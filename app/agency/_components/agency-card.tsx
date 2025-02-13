@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, MapPin, DollarSign, Star } from "lucide-react";
+import { Building2, MapPin, DollarSign, Star, Facebook, Linkedin, Instagram, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatSlug } from "@/lib/firebase/agencies";
@@ -151,21 +151,65 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
                             </div>
                         </div>
                     )}
-                    <div className="flex justify-end mt-4 gap-4">
-                        {agency.websiteUrl && (
-                            <Link
-                                href={agency.websiteUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <Button variant="outline" size="sm">
-                                    Visit Site
-                                </Button>
+                    <div className="flex justify-between items-center mt-4">
+                        <div className="flex gap-2">
+                            {agency.socialLinks?.facebook && (
+                                <Link 
+                                    href={agency.socialLinks.facebook}
+                                    target="_blank"
+                                    rel="noopener noreferrer" 
+                                    className="p-1.5 border border-dashed border-[#1877F2]/20 rounded-lg text-[#1877F2] dark:text-[#1877F2]/80 hover:text-primary hover:border-primary/50 hover:bg-[#1877F2]/5 transition-all"
+                                >
+                                    <Facebook className="h-4 w-4" />
+                                </Link>
+                            )}
+                            {agency.socialLinks?.linkedin && (
+                                <Link 
+                                    href={agency.socialLinks.linkedin}
+                                    target="_blank"
+                                    rel="noopener noreferrer" 
+                                    className="p-1.5 border border-dashed border-[#0A66C2]/20 rounded-lg text-[#0A66C2] dark:text-[#0A66C2]/80 hover:text-primary hover:border-primary/50 hover:bg-[#0A66C2]/5 transition-all"
+                                >
+                                    <Linkedin className="h-4 w-4" />
+                                </Link>
+                            )}
+                            {agency.socialLinks?.instagram && (
+                                <Link 
+                                    href={agency.socialLinks.instagram}
+                                    target="_blank"
+                                    rel="noopener noreferrer" 
+                                    className="p-1.5 border border-dashed border-[#E4405F]/20 rounded-lg text-[#E4405F] dark:text-[#E4405F]/80 hover:text-primary hover:border-primary/50 hover:bg-[#E4405F]/5 transition-all"
+                                >
+                                    <Instagram className="h-4 w-4" />
+                                </Link>
+                            )}
+                            {agency.socialLinks?.youtube && (
+                                <Link 
+                                    href={agency.socialLinks.youtube}
+                                    target="_blank"
+                                    rel="noopener noreferrer" 
+                                    className="p-1.5 border border-dashed border-[#FF0000]/20 rounded-lg text-[#FF0000] dark:text-[#FF0000]/80 hover:text-primary hover:border-primary/50 hover:bg-[#FF0000]/5 transition-all"
+                                >
+                                    <Youtube className="h-4 w-4" />
+                                </Link>
+                            )}
+                        </div>
+                        <div className="flex gap-4">
+                            {agency.websiteUrl && (
+                                <Link
+                                    href={agency.websiteUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Button variant="outline" size="sm">
+                                        Visit Site
+                                    </Button>
+                                </Link>
+                            )}
+                            <Link href={`/agency/${formatSlug(agency.name || "")}`}>
+                                <Button size="sm">View Details</Button>
                             </Link>
-                        )}
-                        <Link href={`/agency/${formatSlug(agency.name || "")}`}>
-                            <Button size="sm">View Details</Button>
-                        </Link>
+                        </div>
                     </div>
                 </div>
             </CardContent>
