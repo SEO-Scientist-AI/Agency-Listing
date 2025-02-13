@@ -53,22 +53,27 @@ export default function HeroSection() {
     const [selectedCity, setSelectedCity] = useState<string>("");
 
     const handleSearch = () => {
+<<<<<<< Updated upstream
         const searchParams = new URLSearchParams();
         
 
         if (selectedService) {
             searchParams.append("services", selectedService);
             // console.log(selectedService);
-        }
-        if (selectedRegion) {
-            searchParams.append("region", selectedRegion);
-        }
-        if (selectedCity) {
-            searchParams.append("location", selectedCity);
+=======
+        if (selectedService && selectedCity) {
+            router.push(`/agency/list/${selectedService}/${selectedCity}`);
+            return;
+        } else if (selectedCity) {
+            router.push(`/agency/list/${selectedCity}`);
+            return;
+        } else if (selectedService) {
+            router.push(`/agency/list/${selectedService}`);
+            return;
+>>>>>>> Stashed changes
         }
 
-        const queryString = searchParams.toString();
-        router.push(`/agency${queryString ? `?${queryString}` : ""}`);
+        router.push('/agency');
     };
 
     return (

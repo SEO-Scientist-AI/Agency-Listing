@@ -73,6 +73,7 @@ export function AgenciesClient() {
   const handleAgencies = async (page = "1") => {
     try {
       setLoading(true);
+<<<<<<< Updated upstream
       if (searchParams.size !== 0) {
         const servicesParam =
           searchParams.get("services")?.split(" ").filter(Boolean) || [];
@@ -103,14 +104,40 @@ export function AgenciesClient() {
         if (pageParam) {
             params.set("page", pageParam);
           }
+=======
+      const params = new URLSearchParams();
+>>>>>>> Stashed changes
 
-        const response = await axiosInstance.get(
-          `/agency?${params.toString()}`
-        );
-        const data = await response.data;
-        if (data.success) {
-          setAgencies(data);
+      // Add page parameter
+      params.set("page", page);
+
+      // Add service filter if exists
+      if (servicesSlug) {
+        params.set("services", servicesSlug);
+      }
+
+      // Add location filter if exists
+      if (locationSlug) {
+        params.set("location", locationSlug);
+      }
+
+      // Add any additional search params from the URL
+      if (searchParams.size !== 0) {
+        const servicesParam = searchParams.get("services")?.split(" ").filter(Boolean) || [];
+        const locationsParam = searchParams.get("location")?.split(" ").filter(Boolean) || [];
+        
+        if (servicesParam.length > 0) {
+          params.set("services", servicesParam.join(" "));
         }
+        if (locationsParam.length > 0) {
+          params.set("location", locationsParam.join(" "));
+        }
+      }
+
+      const response = await axiosInstance.get(`/agency?${params.toString()}`);
+      const data = await response.data;
+      if (data.success) {
+        setAgencies(data);
       }
     } catch (error) {
       console.error("Fetch error:", error);
