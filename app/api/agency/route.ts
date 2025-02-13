@@ -9,7 +9,6 @@ import {
   startAfter,
   where,
   DocumentSnapshot,
-  
 } from "firebase/firestore";
 
 export async function GET(req: NextRequest) {
@@ -19,11 +18,15 @@ export async function GET(req: NextRequest) {
     const ITEMS_PER_PAGE = Number(searchParams.get("limit")) || 10;
     const services = searchParams.get("services");
     const location = searchParams.get("location");
-    const sortBy = searchParams.get("sort") ?? "name"; // Default sorting field
+    const sort = searchParams.get('sort') || 'rating_desc';
 
-    // console.log("Received Query Params:", { page, services, location, sortBy });
+    // Initialize base query
+    let baseQuery = collection(db, "agencies");
+    let queryConstraints = [];
 
-    let agencyQuery = query(collection(db, "agencies"), orderBy(sortBy));
+    // Add sorting
+    const [field, direction] = sort.split('_');
+    queryConstraints.push(orderBy(field, direction as 'asc' | 'desc'));
 
     // Apply Filters (services/location)
     const keywords: string[] = [];
@@ -34,17 +37,19 @@ export async function GET(req: NextRequest) {
       keywords.push(...services.split(" ").map(keyword => keyword.toLowerCase()));
     }
     if (keywords.length > 0) {
-      agencyQuery = query(agencyQuery, where("combinedSlug", "array-contains-any", keywords));
+      queryConstraints.push(where("combinedSlug", "array-contains-any", keywords));
     }
+
+    // Create the query with all constraints
+    let agencyQuery = query(baseQuery, ...queryConstraints);
 
     // Fetch total count for pagination
     const totalSnapshot = await getDocs(agencyQuery);
     const totalDocuments = totalSnapshot.size;
     const totalPages = Math.ceil(totalDocuments / ITEMS_PER_PAGE);
 
-    // Handle Page Jumping
+    // Handle pagination
     let lastVisible: DocumentSnapshot | null = null;
-
     if (page > 1) {
       const offset = (page - 1) * ITEMS_PER_PAGE;
       const offsetQuery = query(agencyQuery, limit(offset));
@@ -55,7 +60,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Apply Pagination
+    // Apply final pagination
     if (lastVisible) {
       agencyQuery = query(agencyQuery, startAfter(lastVisible), limit(ITEMS_PER_PAGE));
     } else {
