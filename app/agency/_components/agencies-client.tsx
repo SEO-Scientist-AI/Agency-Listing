@@ -18,8 +18,6 @@ import {
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import useAppStore from "@/lib/store/useAppStore";
 import axiosInstance from "@/lib/axios-instance";
-import { SortOptions } from "./sort-options";
-
 interface FilterState {
   search: string;
   services: string[];
@@ -75,18 +73,14 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
   const { agencies: filteredAgencies, setAgencies, currentPage, totalPages } = useAppStore();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
-  const [currentSort, setCurrentSort] = useState("rating_desc");
 
-  const handleAgencies = async (page = "1", sort = currentSort) => {
+  const handleAgencies = async (page = "1") => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
 
       // Add page parameter
       params.set("page", page);
-
-      // Add sorting parameter
-      params.set("sort", sort);
 
       // Add service filter if provided either through URL or search params
       const services = servicesSlug || searchParams.get("services");
@@ -114,14 +108,10 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
     }
   };
 
-  // Update agencies when URL parameters or sort option changes
+  // Update agencies when URL parameters change
   useEffect(() => {
-    handleAgencies("1", currentSort);
-  }, [servicesSlug, locationSlug, searchParams, currentSort]);
-
-  const handleSortChange = (value: string) => {
-    setCurrentSort(value);
-  };
+    handleAgencies();
+  }, [servicesSlug, locationSlug, searchParams]);
 
   const handlePageChange = async (page: number) => {
     if (page === currentPage || loading) return;
@@ -164,15 +154,6 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
         <SideBarFilters servicesSlug={servicesSlug} locationSlug={locationSlug} />
       </div>
       <div className="lg:w-3/4">
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Showing <span className="font-medium text-foreground">10</span> Agencies
-          </p>
-          <SortOptions 
-            onSortChange={handleSortChange}
-            currentSort={currentSort}
-          />
-        </div>
         <div className="space-y-6">
           {loading ? (
             <div className="space-y-6">

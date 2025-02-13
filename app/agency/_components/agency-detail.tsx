@@ -32,7 +32,6 @@ import { ContactAgency } from "./contact-agency";
 import { Agency } from '@/types/agency';
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 interface AgencyDetailComponentProps {
     agency: Agency;
@@ -87,8 +86,6 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
         projectDuration = [],
         socialLinks,
     } = agency;
-
-    const [showAllIndustries, setShowAllIndustries] = useState(false);
 
     return (
         <>
@@ -378,7 +375,7 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                             </Badge>
                                         </div>
                                         <div className="grid gap-3 sm:grid-cols-2">
-                                            {industries.slice(0, showAllIndustries ? industries.length : 8).map((industry: string) => (
+                                            {industries.map((industry: string) => (
                                                 <div
                                                     key={industry}
                                                     className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/40 transition-colors"
@@ -394,15 +391,6 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                                 </div>
                                             ))}
                                         </div>
-                                        {industries.length > 8 && (
-                                            <Button
-                                                variant="ghost"
-                                                onClick={() => setShowAllIndustries(!showAllIndustries)}
-                                                className="w-full text-sm"
-                                            >
-                                                {showAllIndustries ? 'Show Less' : `Show ${industries.length - 8} More Industries`}
-                                            </Button>
-                                        )}
                                         <p className="text-sm text-muted-foreground">
                                             Our team has extensive experience working across these industries, 
                                             delivering tailored solutions for each sector's unique challenges.
