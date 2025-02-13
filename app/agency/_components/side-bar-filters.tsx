@@ -14,6 +14,10 @@ import useAppStore from "@/lib/store/useAppStore";
 import axiosInstance from "@/lib/axios-instance";
 import { Skeleton } from "@/components/ui/skeleton";
 
+interface SideBarFiltersProps {
+    servicesSlug?: string;
+    locationSlug?: string;
+  }
 function LoadingSkeleton() {
     return (
         <Card className="col-span-1 h-fit animate-pulse">
@@ -37,7 +41,7 @@ function LoadingSkeleton() {
     );
 }
 
-const SideBarFilters = () => {
+const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
     const { services, cities: locations, serviceLoading, citiesLoading, setAgencies } = useAppStore();
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
     const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
@@ -49,8 +53,8 @@ const SideBarFilters = () => {
     const searchParams = useSearchParams();
 
     useEffect(() => {
-        const servicesParam = searchParams.get('services')?.split(' ').filter(Boolean) || [];
-        const locationsParam = searchParams.get('location')?.split(' ').filter(Boolean) || [];
+        const servicesParam = (servicesSlug || searchParams.get('services'))?.split(' ').filter(Boolean) || [];
+        const locationsParam = (locationSlug || searchParams.get('location'))?.split(' ').filter(Boolean) || [];
         setSelectedServices(servicesParam);
         setSelectedLocations(locationsParam);
     }, []);
@@ -84,7 +88,8 @@ const SideBarFilters = () => {
         if (selectedLocations.length > 0) {
             params.set('location', selectedLocations.join(' '));
         }
-        router.push(`${pathname}?${params.toString()}`);
+       
+        router.replace(`/agency?${params.toString()}`);
         const response = await axiosInstance.get(`/agency?${params.toString()}`);
         setAgencies(response.data);
     };

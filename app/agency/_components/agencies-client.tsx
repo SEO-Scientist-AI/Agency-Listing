@@ -27,7 +27,10 @@ interface FilterState {
   min: number;
   max: number;
 }
-
+interface AgenciesClientProps {
+  servicesSlug?: string;
+  locationSlug?:string;
+}
 export function LoadingAgencyCard() {
   return (
     <Card>
@@ -66,74 +69,35 @@ export function LoadingAgencyCard() {
   );
 }
 
-export function AgenciesClient() {
-  const { agencies: filteredAgencies, setAgencies,fetchAgencies,currentPage,totalPages } = useAppStore();
+export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientProps) {
+  const { agencies: filteredAgencies, setAgencies, currentPage, totalPages } = useAppStore();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+
   const handleAgencies = async (page = "1") => {
     try {
       setLoading(true);
-
-      if (searchParams.size !== 0) {
-        const servicesParam =
-          searchParams.get("services")?.split(" ").filter(Boolean) || [];
-        const locationsParam =
-          searchParams.get("location")?.split(" ").filter(Boolean) || [];
-        const pageParam = searchParams.get("page") || page;
-        const params = new URLSearchParams();
-        if (servicesParam.length > 0) {
-          params.set("services", servicesParam.join(" "));
-        }
-        if (locationsParam.length > 0) {
-          params.set("location", locationsParam.join(" "));
-        }
-        if (pageParam) {
-          params.set("page", pageParam);
-        }
-        
-        const response = await axiosInstance.get(
-          `/agency?${params.toString()}`
-        );
-        const data = await response.data;
-        if (data.success) {
-          setAgencies(data);
-        }
-      } else {
-        const pageParam = page || "1";
-        const params = new URLSearchParams();
-        if (pageParam) {
-            params.set("page", pageParam);
-          }
       const params = new URLSearchParams();
 
       // Add page parameter
       params.set("page", page);
 
-      // Add service filter if exists
-      if (servicesSlug) {
-        params.set("services", servicesSlug);
+      // Add service filter if provided either through URL or search params
+      const services = servicesSlug || searchParams.get("services");
+      if (services) {
+        params.set("services", services);
       }
 
-      // Add location filter if exists
-      if (locationSlug) {
-        params.set("location", locationSlug);
+      // Add location filter if provided either through URL or search params
+      const location = locationSlug || searchParams.get("location");
+      if (location) {
+        params.set("location", location);
       }
 
-      // Add any additional search params from the URL
-      if (searchParams.size !== 0) {
-        const servicesParam = searchParams.get("services")?.split(" ").filter(Boolean) || [];
-        const locationsParam = searchParams.get("location")?.split(" ").filter(Boolean) || [];
-        
-        if (servicesParam.length > 0) {
-          params.set("services", servicesParam.join(" "));
-        }
-        if (locationsParam.length > 0) {
-          params.set("location", locationsParam.join(" "));
-        }
-      }
-
+      // Make API request with constructed params
       const response = await axiosInstance.get(`/agency?${params.toString()}`);
       const data = await response.data;
+      
       if (data.success) {
         setAgencies(data);
       }
@@ -143,9 +107,12 @@ export function AgenciesClient() {
       setLoading(false);
     }
   };
+
+  // Update agencies when URL parameters change
   useEffect(() => {
     handleAgencies();
-  }, []);
+  }, [servicesSlug, locationSlug, searchParams]);
+
   const handlePageChange = async (page: number) => {
     if (page === currentPage || loading) return;
     handleAgencies(page.toString());
@@ -184,7 +151,7 @@ export function AgenciesClient() {
   return (
     <div className="container flex flex-col lg:flex-row gap-8 mx-auto max-w-6xl px-4">
       <div className="lg:w-1/4">
-        <SideBarFilters />
+        <SideBarFilters servicesSlug={servicesSlug} locationSlug={locationSlug} />
       </div>
       <div className="lg:w-3/4">
         <div className="space-y-6">
