@@ -14,15 +14,15 @@ export async function GET(req: NextRequest) {
     console.log('Starting agencies seeding process...');
 
     let successCount = 0;
-    for (const agency of data.agencies) {
-      try {
-        await addDoc(agenciesRef, agency);
-        successCount++;
-        console.log(`Added agency: ${agency.name || 'Unknown'}`);
-      } catch (error) {
-        console.error(`Failed to add agency: ${agency.name || 'Unknown'}`, error);
-      }
-    }
+    // for (const agency of data.agencies) {
+    //   try {
+    //     await addDoc(agenciesRef, agency);
+    //     successCount++;
+    //     console.log(`Added agency: ${agency.name || 'Unknown'}`);
+    //   } catch (error) {
+    //     console.error(`Failed to add agency: ${agency.name || 'Unknown'}`, error);
+    //   }
+    // }
 
     console.log(`Seeding complete! Successfully added ${successCount} agencies`);
     return NextResponse.json({ 
