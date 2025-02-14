@@ -225,6 +225,35 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                 </div>
                             </Card>
 
+                            <Card className="p-6">
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h2 className="text-xl font-semibold">
+                                            Our Services
+                                        </h2>
+                                        <Badge variant="secondary" className="font-medium">
+                                            {services.length} Services
+                                        </Badge>
+                                    </div>
+
+                                    <div className="grid gap-4">
+                                        <div className="flex flex-wrap gap-2">
+                                            {services.map((service: string, index: number) => (
+                                                <ServiceBubble
+                                                    key={service}
+                                                    service={service}
+                                                    color={
+                                                        colorClasses[
+                                                            index % colorClasses.length
+                                                        ]
+                                                    }
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+
                             {additionalLocations.length > 0 && (
                                 <Card className="p-6">
                                     <div className="space-y-4">
@@ -272,96 +301,6 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                     </div>
                                 </Card>
                             )}
-
-                            <Card className="p-6">
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="text-xl font-semibold">
-                                            Our Services
-                                        </h2>
-                                        <Badge variant="secondary" className="font-medium">
-                                            {services.length} Services
-                                        </Badge>
-                                    </div>
-
-                                    <div className="grid gap-4">
-                                        <div className="flex flex-wrap gap-2">
-                                            {services.map((service: string, index: number) => (
-                                                <ServiceBubble
-                                                    key={service}
-                                                    service={service}
-                                                    color={
-                                                        colorClasses[
-                                                            index % colorClasses.length
-                                                        ]
-                                                    }
-                                                />
-                                            ))}
-                                        </div>
-
-                                        {expertise && (
-                                            <div className="grid gap-4 sm:grid-cols-3 mt-4">
-                                                {expertise.seo?.length > 0 && (
-                                                    <div className="p-4 rounded-lg border bg-card">
-                                                        <h3 className="font-medium mb-2 flex items-center gap-2">
-                                                            <div className="p-1.5 rounded-md bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                                                                <Search className="w-4 h-4" />
-                                                            </div>
-                                                            SEO Expertise
-                                                        </h3>
-                                                        <ul className="space-y-1">
-                                                            {expertise.seo.map((item) => (
-                                                                <li key={item} className="text-sm text-muted-foreground flex items-center gap-2">
-                                                                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
-                                                                    {item}
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-                                                )}
-
-                                                {expertise.marketing?.length > 0 && (
-                                                    <div className="p-4 rounded-lg border bg-card">
-                                                        <h3 className="font-medium mb-2 flex items-center gap-2">
-                                                            <div className="p-1.5 rounded-md bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                                                <BarChart3 className="w-4 h-4" />
-                                                            </div>
-                                                            Marketing Skills
-                                                        </h3>
-                                                        <ul className="space-y-1">
-                                                            {expertise.marketing.map((item) => (
-                                                                <li key={item} className="text-sm text-muted-foreground flex items-center gap-2">
-                                                                    <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
-                                                                    {item}
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-                                                )}
-
-                                                {expertise.development?.length > 0 && (
-                                                    <div className="p-4 rounded-lg border bg-card">
-                                                        <h3 className="font-medium mb-2 flex items-center gap-2">
-                                                            <div className="p-1.5 rounded-md bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
-                                                                <Code2 className="w-4 h-4" />
-                                                            </div>
-                                                            Development
-                                                        </h3>
-                                                        <ul className="space-y-1">
-                                                            {expertise.development.map((item) => (
-                                                                <li key={item} className="text-sm text-muted-foreground flex items-center gap-2">
-                                                                    <CheckCircle2 className="w-3.5 h-3.5 text-purple-500" />
-                                                                    {item}
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </Card>
 
                             {industries.length > 0 && (
                                 <Card className="p-6">

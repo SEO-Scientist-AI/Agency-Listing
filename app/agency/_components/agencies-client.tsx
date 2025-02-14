@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { AgencyCard } from "./agency-card";
 import SideBarFilters from "./side-bar-filters";
 import { Agency } from "@/types/agency";
@@ -74,7 +74,7 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
 
-  const handleAgencies = async (page = "1") => {
+  const handleAgencies = useCallback(async (page = "1") => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -106,19 +106,19 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
     } finally {
       setLoading(false);
     }
-  };
+  }, [servicesSlug, locationSlug, searchParams, setAgencies]);
 
   // Update agencies when URL parameters change
   useEffect(() => {
     handleAgencies();
-  }, [servicesSlug, locationSlug, searchParams]);
+  }, [handleAgencies]);
 
-  const handlePageChange = async (page: number) => {
+  const handlePageChange = useCallback(async (page: number) => {
     if (page === currentPage || loading) return;
     handleAgencies(page.toString());
-  };
+  }, [currentPage, loading, handleAgencies]);
 
-  const renderPageNumbers = () => {
+  const renderPageNumbers = useCallback(() => {
     const pages = [];
     const maxVisiblePages = 5;
 
@@ -147,7 +147,8 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
     }
 
     return pages;
-  };
+  }, [currentPage, totalPages, handlePageChange]);
+
   return (
     <div className="container flex flex-col lg:flex-row gap-8 mx-auto max-w-6xl px-4">
       <div className="lg:w-1/4">

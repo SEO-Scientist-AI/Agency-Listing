@@ -22,5 +22,10 @@ export interface Agency {
     expertise?: string;
     clientSize: string;
     projectDuration?: string;
-    
+    socialLinks: {
+        facebook?: string;
+        linkedin?: string;
+        instagram?: string;
+        youtube?: string;
+    };
 }
