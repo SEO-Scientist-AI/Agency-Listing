@@ -70,20 +70,12 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
         rating = 0,
         reviewCount = 0,
         location = '',
-        countryName = '',
         additionalLocations = [],
         websiteUrl = '',
         budgetRange = '',
         founded = '',
         teamSize = '',
         hourlyRate = '',
-        expertise = {
-            seo: [],
-            marketing: [],
-            development: [],
-        },
-        clientSize = [],
-        projectDuration = [],
         socialLinks,
     } = agency;
 
@@ -275,7 +267,7 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                                 <div>
                                                     <h3 className="font-medium">Headquarters</h3>
                                                     <p className="text-sm text-muted-foreground mt-1">
-                                                        {location}, {countryName}
+                                                        {location}
                                                     </p>
                                                 </div>
                                             </div>

@@ -81,47 +81,25 @@ export function LoadingAgencyCard() {
 
 export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientProps) {
   const { agencies: filteredAgencies, setAgencies, currentPage, totalPages } = useAppStore();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
 
   const handleAgencies = useCallback(async (page = "1") => {
     try {
       setLoading(true);
-      
-      // Create a cache key based on current filters and page
-      const cacheKey = `${servicesSlug || ''}-${locationSlug || ''}-${page}`;
-      const now = Date.now();
-
-      // Check cache for this specific page and filters
-      if (
-        clientCache.data[cacheKey] && 
-        clientCache.timestamp[cacheKey] && 
-        (now - clientCache.timestamp[cacheKey]) < clientCache.CACHE_DURATION
-      ) {
-        setAgencies(clientCache.data[cacheKey]);
-        return;
-      }
-
       const params = new URLSearchParams();
       params.set("page", page);
+      params.set("limit", "12"); // Set consistent page size
 
       if (servicesSlug) {
         params.set("services", servicesSlug);
       }
-
       if (locationSlug) {
         params.set("location", locationSlug);
       }
 
       const response = await axiosInstance.get(`/agency?${params.toString()}`);
-      const data = await response.data;
-      
-      if (data.success) {
-        // Update cache for this specific page and filters
-        clientCache.data[cacheKey] = data;
-        clientCache.timestamp[cacheKey] = now;
-        
-        setAgencies(data);
+      if (response.data.success) {
+        setAgencies(response.data);
       }
     } catch (error) {
       console.error("Fetch error:", error);
@@ -130,16 +108,16 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
     }
   }, [servicesSlug, locationSlug, setAgencies]);
 
-  // Clear cache when filters change
+  // Reset to page 1 when filters change
   useEffect(() => {
-    clientCache.data = {};
-    clientCache.timestamp = {};
-    handleAgencies("1"); // Reset to first page when filters change
+    handleAgencies("1");
   }, [servicesSlug, locationSlug, handleAgencies]);
 
   const handlePageChange = useCallback(async (page: number) => {
     if (page === currentPage || loading) return;
     handleAgencies(page.toString());
+    // Scroll to top of results
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage, loading, handleAgencies]);
 
   const renderPageNumbers = useCallback(() => {

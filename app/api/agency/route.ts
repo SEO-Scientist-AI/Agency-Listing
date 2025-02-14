@@ -55,47 +55,66 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
-    const ITEMS_PER_PAGE = Number(searchParams.get("limit")) || 10;
+    const ITEMS_PER_PAGE = Number(searchParams.get("limit")) || 12; // Changed to 12 items per page
     const services = searchParams.get("services");
     const location = searchParams.get("location");
 
-    // Get cached or fetch new agencies
-    const allAgencies = await fetchAndCacheAgencies();
+    // Create a cache key that includes filter parameters
+    const cacheKey = `${services || ''}-${location || ''}`;
+    const now = Date.now();
 
-    // Apply filters to cached data
-    let filteredAgencies = [...allAgencies];
-
-    // Apply service and location filters
-    if (services || location) {
-      const keywords: string[] = [];
-      if (location) {
-        keywords.push(...location.split(" ").map(keyword => keyword.toLowerCase()));
-      }
-      if (services) {
-        keywords.push(...services.split(" ").map(keyword => keyword.toLowerCase()));
-      }
-
-      filteredAgencies = filteredAgencies.filter(agency => {
-        const combinedSlug = agency.combinedSlug || [];
-        return keywords.some(keyword => combinedSlug.includes(keyword));
+    // Check if we have filtered data cached
+    if (
+      agenciesCache.data[cacheKey] && 
+      agenciesCache.timestamp[cacheKey] && 
+      (now - agenciesCache.timestamp[cacheKey]) < agenciesCache.CACHE_DURATION
+    ) {
+      const cachedData = agenciesCache.data[cacheKey];
+      // Apply pagination to cached filtered data
+      const startIndex = (page - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      return NextResponse.json({
+        success: true,
+        agencies: cachedData.slice(startIndex, endIndex),
+        currentPage: page,
+        totalPages: Math.ceil(cachedData.length / ITEMS_PER_PAGE),
+        totalAgencies: cachedData.length,
       });
     }
 
+    // Fetch and filter data
+    const agenciesRef = collection(db, "agencies");
+    let baseQuery = query(agenciesRef, limit(FETCH_LIMIT));
+
+    // Apply filters at query level if provided
+    if (services || location) {
+      const keywords: string[] = [];
+      if (location) keywords.push(...location.split(" ").map(k => k.toLowerCase()));
+      if (services) keywords.push(...services.split(" ").map(k => k.toLowerCase()));
+      
+      baseQuery = query(baseQuery, where("combinedSlug", "array-contains-any", keywords));
+    }
+
+    const snapshot = await getDocs(baseQuery);
+    const allAgencies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
     // Calculate pagination
-    const totalDocuments = filteredAgencies.length;
-    const totalPages = Math.ceil(totalDocuments / ITEMS_PER_PAGE);
+    const totalAgencies = allAgencies.length;
+    const totalPages = Math.ceil(totalAgencies / ITEMS_PER_PAGE);
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
+    const paginatedAgencies = allAgencies.slice(startIndex, endIndex);
 
-    // Get current page data
-    const paginatedAgencies = filteredAgencies.slice(startIndex, endIndex);
+    // Cache the filtered results
+    agenciesCache.data[cacheKey] = allAgencies;
+    agenciesCache.timestamp[cacheKey] = now;
 
     return NextResponse.json({
       success: true,
       agencies: paginatedAgencies,
       currentPage: page,
       totalPages,
-      totalAgencies: totalDocuments,
+      totalAgencies,
     });
 
   } catch (error) {
