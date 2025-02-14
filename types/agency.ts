@@ -11,21 +11,22 @@ export interface Agency {
     services: string[];
     industries: string[];
     websiteUrl: string;
-    logoUrl: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
     imageUrl: string;
     founded: string;
     teamSize: string;
     hourlyRate: string;
-    countryName: string;
-    expertise?: string;
-    clientSize: string;
+    socialLinks:{
+        facebook:string;
+        linkedin:string;
+        instagram:string;
+        youtube:string;
+    }
+    slug:string[];
+    slugLocation:string[];
+    combinedSlug:string[];
+    email:string;
+    gmbLink:string;
     projectDuration?: string;
-    socialLinks: {
-        facebook?: string;
-        linkedin?: string;
-        instagram?: string;
-        youtube?: string;
-    };
 }
