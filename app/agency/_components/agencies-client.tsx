@@ -18,6 +18,7 @@ import {
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import useAppStore from "@/lib/store/useAppStore";
 import axiosInstance from "@/lib/axios-instance";
+
 interface FilterState {
   search: string;
   services: string[];
@@ -27,10 +28,19 @@ interface FilterState {
   min: number;
   max: number;
 }
+
 interface AgenciesClientProps {
   servicesSlug?: string;
   locationSlug?:string;
 }
+
+// Modify the cache structure to store data by page
+let clientCache = {
+  data: {} as Record<string, any>,
+  timestamp: {} as Record<string, number>,
+  CACHE_DURATION: 5 * 60 * 1000, // 5 minutes
+};
+
 export function LoadingAgencyCard() {
   return (
     <Card>
@@ -77,28 +87,40 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
   const handleAgencies = useCallback(async (page = "1") => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
+      
+      // Create a cache key based on current filters and page
+      const cacheKey = `${servicesSlug || ''}-${locationSlug || ''}-${page}`;
+      const now = Date.now();
 
-      // Add page parameter
+      // Check cache for this specific page and filters
+      if (
+        clientCache.data[cacheKey] && 
+        clientCache.timestamp[cacheKey] && 
+        (now - clientCache.timestamp[cacheKey]) < clientCache.CACHE_DURATION
+      ) {
+        setAgencies(clientCache.data[cacheKey]);
+        return;
+      }
+
+      const params = new URLSearchParams();
       params.set("page", page);
 
-      // Add service filter if provided either through URL or search params
-      const services = servicesSlug || searchParams.get("services");
-      if (services) {
-        params.set("services", services);
+      if (servicesSlug) {
+        params.set("services", servicesSlug);
       }
 
-      // Add location filter if provided either through URL or search params
-      const location = locationSlug || searchParams.get("location");
-      if (location) {
-        params.set("location", location);
+      if (locationSlug) {
+        params.set("location", locationSlug);
       }
 
-      // Make API request with constructed params
       const response = await axiosInstance.get(`/agency?${params.toString()}`);
       const data = await response.data;
       
       if (data.success) {
+        // Update cache for this specific page and filters
+        clientCache.data[cacheKey] = data;
+        clientCache.timestamp[cacheKey] = now;
+        
         setAgencies(data);
       }
     } catch (error) {
@@ -106,12 +128,14 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
     } finally {
       setLoading(false);
     }
-  }, [servicesSlug, locationSlug, searchParams, setAgencies]);
+  }, [servicesSlug, locationSlug, setAgencies]);
 
-  // Update agencies when URL parameters change
+  // Clear cache when filters change
   useEffect(() => {
-    handleAgencies();
-  }, [handleAgencies]);
+    clientCache.data = {};
+    clientCache.timestamp = {};
+    handleAgencies("1"); // Reset to first page when filters change
+  }, [servicesSlug, locationSlug, handleAgencies]);
 
   const handlePageChange = useCallback(async (page: number) => {
     if (page === currentPage || loading) return;
@@ -120,15 +144,44 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
 
   const renderPageNumbers = useCallback(() => {
     const pages = [];
-    const maxVisiblePages = 5;
+    const maxVisiblePages = 5; // Number of page buttons to show
+    const halfVisible = Math.floor(maxVisiblePages / 2);
 
-    let startPage = Math.max(1, currentPage - 2);
+    let startPage = Math.max(1, currentPage - halfVisible);
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
+    // Adjust startPage if we're near the end
     if (endPage - startPage < maxVisiblePages - 1) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
 
+    // Always show first page
+    if (startPage > 1) {
+      pages.push(
+        <PaginationItem key={1}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              handlePageChange(1);
+            }}
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+
+      // Add ellipsis if there's a gap
+      if (startPage > 2) {
+        pages.push(
+          <PaginationItem key="start-ellipsis">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+    }
+
+    // Add middle pages
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <PaginationItem key={i}>
@@ -141,6 +194,32 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
             isActive={currentPage === i}
           >
             {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Always show last page
+    if (endPage < totalPages) {
+      // Add ellipsis if there's a gap
+      if (endPage < totalPages - 1) {
+        pages.push(
+          <PaginationItem key="end-ellipsis">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+
+      pages.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              handlePageChange(totalPages);
+            }}
+          >
+            {totalPages}
           </PaginationLink>
         </PaginationItem>
       );
@@ -189,48 +268,11 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
                           handlePageChange(currentPage - 1);
                         }
                       }}
+                      className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
                     />
                   </PaginationItem>
 
-                  {currentPage > 3 && (
-                    <>
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handlePageChange(1);
-                          }}
-                        >
-                          1
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    </>
-                  )}
-
                   {renderPageNumbers()}
-
-                  {currentPage < totalPages - 2 && (
-                    <>
-                      <PaginationItem>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handlePageChange(totalPages);
-                          }}
-                        >
-                          {totalPages}
-                        </PaginationLink>
-                      </PaginationItem>
-                    </>
-                  )}
 
                   <PaginationItem>
                     <PaginationNext
@@ -241,6 +283,7 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
                           handlePageChange(currentPage + 1);
                         }
                       }}
+                      className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
                     />
                   </PaginationItem>
                 </PaginationContent>
