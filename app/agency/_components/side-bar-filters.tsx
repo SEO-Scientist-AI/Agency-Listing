@@ -51,12 +51,18 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const [filtersApplied, setFiltersApplied] = useState(false);
 
     useEffect(() => {
         const servicesParam = (servicesSlug || searchParams.get('services'))?.split(' ').filter(Boolean) || [];
         const locationsParam = (locationSlug || searchParams.get('location'))?.split(' ').filter(Boolean) || [];
         setSelectedServices(servicesParam);
         setSelectedLocations(locationsParam);
+        
+        // Set filtersApplied to true if there are any initial filters from the URL
+        if (servicesParam.length > 0 || locationsParam.length > 0) {
+            setFiltersApplied(true);
+        }
     }, [servicesSlug, locationSlug, searchParams]);
 
     useEffect(() => {
@@ -75,6 +81,7 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
         setSelectedServices([]);
         setSelectedLocations([]);
         setSearchQuery("");
+        setFiltersApplied(false);
         router.push(pathname);
         const response = await axiosInstance.get('/agency');
         setAgencies(response.data);
@@ -88,7 +95,50 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
         if (selectedLocations.length > 0) {
             params.set('location', selectedLocations.join(' '));
         }
-       
+        
+        setFiltersApplied(true);
+        router.replace(`/agency?${params.toString()}`);
+        const response = await axiosInstance.get(`/agency?${params.toString()}`);
+        setAgencies(response.data);
+    };
+
+    const removeServiceAndApply = async (serviceSlug: string) => {
+        const newServices = selectedServices.filter(s => s !== serviceSlug);
+        setSelectedServices(newServices);
+        
+        const params = new URLSearchParams();
+        if (newServices.length > 0) {
+            params.set('services', newServices.join(' '));
+        }
+        if (selectedLocations.length > 0) {
+            params.set('location', selectedLocations.join(' '));
+        }
+        
+        if (newServices.length === 0 && selectedLocations.length === 0) {
+            setFiltersApplied(false);
+        }
+        
+        router.replace(`/agency?${params.toString()}`);
+        const response = await axiosInstance.get(`/agency?${params.toString()}`);
+        setAgencies(response.data);
+    };
+
+    const removeLocationAndApply = async (locationSlug: string) => {
+        const newLocations = selectedLocations.filter(l => l !== locationSlug);
+        setSelectedLocations(newLocations);
+        
+        const params = new URLSearchParams();
+        if (selectedServices.length > 0) {
+            params.set('services', selectedServices.join(' '));
+        }
+        if (newLocations.length > 0) {
+            params.set('location', newLocations.join(' '));
+        }
+        
+        if (newLocations.length === 0 && selectedServices.length === 0) {
+            setFiltersApplied(false);
+        }
+        
         router.replace(`/agency?${params.toString()}`);
         const response = await axiosInstance.get(`/agency?${params.toString()}`);
         setAgencies(response.data);
@@ -115,12 +165,52 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
                         Apply Filters
                     </Button>
                 </div>
+
                 <Input
                     placeholder="Search filters..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full"
                 />
+
+                {filtersApplied && (selectedServices.length > 0 || selectedLocations.length > 0) && (
+                    <div className="flex flex-wrap gap-2 mt-4">
+                        {selectedServices.map((serviceSlug) => {
+                            const service = services.find(s => s.slug === serviceSlug);
+                            return (
+                                <div
+                                    key={serviceSlug}
+                                    className="flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-sm"
+                                >
+                                    {service?.serviceName}
+                                    <button
+                                        onClick={() => removeServiceAndApply(serviceSlug)}
+                                        className="hover:bg-blue-200 rounded-full p-1"
+                                    >
+                                        <X className="h-3 w-3" />
+                                    </button>
+                                </div>
+                            );
+                        })}
+                        {selectedLocations.map((locSlug) => {
+                            const location = locations.find(l => l.citySlug === locSlug);
+                            return (
+                                <div
+                                    key={locSlug}
+                                    className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-sm"
+                                >
+                                    {location?.cityName}
+                                    <button
+                                        onClick={() => removeLocationAndApply(locSlug)}
+                                        className="hover:bg-green-200 rounded-full p-1"
+                                    >
+                                        <X className="h-3 w-3" />
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
                 <Separator />
             </CardHeader>
 
