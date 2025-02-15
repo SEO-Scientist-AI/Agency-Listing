@@ -115,14 +115,14 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
       .join(', ');
 
     if (serviceNames && locationNames) {
-      return `Top Professional ${serviceNames} Services in ${locationNames}`;
+      return `Trusted ${serviceNames} Agency  in ${locationNames}`;
     } else if (serviceNames) {
-      return `Top Professional ${serviceNames} Services Worldwide`;
+      return `Top Professional ${serviceNames} Agency  Worldwide`;
     } else if (locationNames) {
-      return `Top Professional Services in ${locationNames}`;
+      return `Trusted Agency in ${locationNames}`;
     }
     
-    return "Top Professional Services Worldwide";
+    return "Top Professional Agency Worldwide";
   };
 
   const getDisplayDescription = () => {    
