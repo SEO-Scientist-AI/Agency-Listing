@@ -47,7 +47,7 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
     
     // Create city pages
     const cityPages: SitemapEntry[] = cities.map(city => ({
-      url: `${baseUrl}/agency/${city}`,
+      url: `${baseUrl}/agency/list/${city}`,
       lastModified: new Date().toISOString(),
       changeFrequency: "weekly",
       priority: 0.8,
@@ -61,7 +61,7 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
       // Add service+city combinations
       cities.forEach(city => {
         combinationPages.push({
-          url: `${baseUrl}/agency/${serviceData.slug}/${city}`,
+          url: `${baseUrl}/agency/list/${serviceData.slug}/${city}`,
           lastModified: new Date().toISOString(),
           changeFrequency: "weekly",
           priority: 0.7,
