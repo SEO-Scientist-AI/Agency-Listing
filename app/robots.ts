@@ -15,6 +15,8 @@ export default function robots(): MetadataRoute.Robots {
           '/sign-in',
           '/sign-up',
           '/user-profile',
+          '/marketing',
+          '/marketing/*',
           '/*'  // Disallow all other routes
         ]
       }
