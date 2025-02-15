@@ -46,14 +46,4 @@ package.json
 
 
 
-lib/firebase/seed.ts
-lib/firebase/firebase-config.ts
-app/api/seed/route.ts
-app/seed/page.tsx
-lib/firebase/seed.ts
-lib/firebase/data/agencies.json
-lib/firebase/data/industries.json
-lib/firebase/data/locations.json
-lib/firebase/data/services.json
-lib/firebase/seed.ts
-lib/firebase/seed.ts
+
