@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
+  // Make sure there's no generateRobotsTxt with noindex
+  // Make sure there's no headers configuration blocking indexing
   typescript: {
     ignoreBuildErrors: false,
   },
