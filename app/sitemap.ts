@@ -11,14 +11,21 @@ type SitemapEntry = {
 export default async function sitemap(): Promise<SitemapEntry[]> {
   const baseUrl = "https://agencyspot.seoscientist.ai";
 
+  // Define the cities we want to index
+  const cities = [
+    'delhi',
+    'pune',
+    'mumbai',
+    'gurugram',
+    'bangalore',
+    'hyderabad',
+    'chennai',
+    'kolkata',
+    'jaipur'
+  ];
+
   // Static pages
   const staticPages: SitemapEntry[] = [
-    {
-      url: baseUrl,
-      lastModified: new Date().toISOString(),
-      changeFrequency: "monthly",
-      priority: 1,
-    },
     {
       url: `${baseUrl}/agency`,
       lastModified: new Date().toISOString(),
@@ -34,92 +41,38 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
   ];
 
   try {
-    // Fetch all agencies
-    const agenciesRef = collection(db, "agencies");
-    const agenciesSnapshot = await getDocs(agenciesRef);
-    
     // Fetch all services
     const servicesRef = collection(db, "services");
     const servicesSnapshot = await getDocs(servicesRef);
     
-    // Fetch all locations
-    const locationsRef = collection(db, "locations");
-    const locationsSnapshot = await getDocs(locationsRef);
-    
-    // Map agencies to sitemap entries (each agency gets its own URL)
-    const agencyPages: SitemapEntry[] = agenciesSnapshot.docs.map((doc) => {
-      const data = doc.data();
-      const agencySlug = data.slug || doc.id;
-      
-      return {
-        url: `${baseUrl}/agency/${agencySlug}`,
-        lastModified: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-        changeFrequency: "weekly",
-        priority: 0.8,
-      };
-    });
+    // Create city pages
+    const cityPages: SitemapEntry[] = cities.map(city => ({
+      url: `${baseUrl}/agency/list/${city}`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    }));
 
-    // Create individual service pages
-    const servicePages: SitemapEntry[] = [];
-    servicesSnapshot.docs.forEach((doc) => {
-      const data = doc.data();
-      // Add direct service page
-      servicePages.push({
-        url: `${baseUrl}/agency/${data.slug}`,
-        lastModified: new Date().toISOString(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
-      // Add service list page
-      servicePages.push({
-        url: `${baseUrl}/agency/list/${data.slug}`,
-        lastModified: new Date().toISOString(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
-    });
-
-    // Create individual location pages
-    const locationPages: SitemapEntry[] = [];
-    locationsSnapshot.docs.forEach((doc) => {
-      const data = doc.data();
-      // Add direct location page
-      locationPages.push({
-        url: `${baseUrl}/agency/${data.citySlug}`,
-        lastModified: new Date().toISOString(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
-      // Add location list page
-      locationPages.push({
-        url: `${baseUrl}/agency/list/${data.citySlug}`,
-        lastModified: new Date().toISOString(),
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
-    });
-
-    // Create service+location combination pages
+    // Create service+city combination pages
     const combinationPages: SitemapEntry[] = [];
     servicesSnapshot.docs.forEach((serviceDoc) => {
       const serviceData = serviceDoc.data();
-      locationsSnapshot.docs.forEach((locationDoc) => {
-        const locationData = locationDoc.data();
+
+      // Add service+city combinations
+      cities.forEach(city => {
         combinationPages.push({
-          url: `${baseUrl}/agency/list/${serviceData.slug}/${locationData.citySlug}`,
+          url: `${baseUrl}/agency/list/${serviceData.slug}/${city}`,
           lastModified: new Date().toISOString(),
           changeFrequency: "weekly",
-          priority: 0.6,
+          priority: 0.7,
         });
       });
     });
 
-    // Combine all pages and remove duplicates
+    // Combine all pages
     const allPages = [
       ...staticPages,
-      ...agencyPages,
-      ...servicePages,
-      ...locationPages,
+      ...cityPages,
       ...combinationPages
     ];
 

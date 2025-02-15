@@ -6,17 +6,16 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: [
-          '/',
           '/agency',
           '/agency/list',
-          '/agency/list/*',
-          '/agency/*'
+          '/agency/list/*'  // For city pages and service+city combinations
         ],
         disallow: [
           '/dashboard/',
           '/sign-in',
           '/sign-up',
-          '/user-profile'
+          '/user-profile',
+          '/*'  // Disallow all other routes
         ]
       }
     ],
