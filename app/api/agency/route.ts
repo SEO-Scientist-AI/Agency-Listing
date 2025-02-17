@@ -33,6 +33,16 @@ export async function GET(req: NextRequest) {
     const services = searchParams.get("services");
     const location = searchParams.get("location");
     
+    // Add validation
+    if (isNaN(page) || page < 1) {
+      return NextResponse.json({ error: "Invalid page number" }, { status: 400 });
+    }
+
+    // Add error boundary
+    if (page > 100) { // Reasonable limit
+      return NextResponse.json({ error: "Page number too high" }, { status: 400 });
+    }
+
     // Create base query
     let baseQuery = query(collection(db, "agencies"));
     
@@ -117,9 +127,9 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(responseData);
   } catch (error) {
-    console.error("Error fetching agencies:", error);
+    console.error('API Error:', error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch agencies" },
+      { error: "Internal server error", message: "Please try again later" },
       { status: 500 }
     );
   }
