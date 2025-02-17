@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import useAppStore from "@/lib/store/useAppStore";
 import axiosInstance from "@/lib/axios-instance";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAgencies } from "@/lib/hooks/use-agencies";
 
 interface SideBarFiltersProps {
     servicesSlug?: string;
@@ -53,6 +54,13 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
     const searchParams = useSearchParams();
     const [filtersApplied, setFiltersApplied] = useState(false);
 
+    // Create params object once
+    const params = new URLSearchParams(searchParams.toString());
+    if (servicesSlug) params.set("services", servicesSlug);
+    if (locationSlug) params.set("location", locationSlug);
+    
+    const { mutate } = useAgencies(params);
+
     useEffect(() => {
         const servicesParam = (servicesSlug || searchParams.get('services'))?.split(' ').filter(Boolean) || [];
         const locationsParam = (locationSlug || searchParams.get('location'))?.split(' ').filter(Boolean) || [];
@@ -88,18 +96,17 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
     };
 
     const handleApplyFilters = async () => {
-        const params = new URLSearchParams();
+        const newParams = new URLSearchParams();
         if (selectedServices.length > 0) {
-            params.set('services', selectedServices.join(' '));
+            newParams.set('services', selectedServices.join(' '));
         }
         if (selectedLocations.length > 0) {
-            params.set('location', selectedLocations.join(' '));
+            newParams.set('location', selectedLocations.join(' '));
         }
         
         setFiltersApplied(true);
-        router.replace(`/agency?${params.toString()}`);
-        const response = await axiosInstance.get(`/agency?${params.toString()}`);
-        setAgencies(response.data);
+        router.replace(`/agency?${newParams.toString()}`);
+        // No need to make API call - the hook will handle it
     };
 
     const removeServiceAndApply = async (serviceSlug: string) => {

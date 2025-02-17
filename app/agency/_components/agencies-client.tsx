@@ -18,6 +18,8 @@ import {
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import useAppStore from "@/lib/store/useAppStore";
 import axiosInstance from "@/lib/axios-instance";
+import { useAgencies } from "@/lib/hooks/use-agencies";
+
 interface FilterState {
   search: string;
   services: string[];
@@ -27,10 +29,12 @@ interface FilterState {
   min: number;
   max: number;
 }
+
 interface AgenciesClientProps {
   servicesSlug?: string;
   locationSlug?:string;
 }
+
 export function LoadingAgencyCard() {
   return (
     <Card>
@@ -70,53 +74,39 @@ export function LoadingAgencyCard() {
 }
 
 export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientProps) {
-  const { agencies: filteredAgencies, setAgencies, currentPage, totalPages } = useAppStore();
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(false);
 
-  const handleAgencies = useCallback(async (page = "1") => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams();
-
-      // Add page parameter
-      params.set("page", page);
-
-      // Add service filter if provided either through URL or search params
-      const services = servicesSlug || searchParams.get("services");
-      if (services) {
-        params.set("services", services);
-      }
-
-      // Add location filter if provided either through URL or search params
-      const location = locationSlug || searchParams.get("location");
-      if (location) {
-        params.set("location", location);
-      }
-
-      // Make API request with constructed params
-      const response = await axiosInstance.get(`/agency?${params.toString()}`);
-      const data = await response.data;
-      
-      if (data.success) {
-        setAgencies(data);
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
-    } finally {
-      setLoading(false);
+  // Memoize the params construction
+  const params = useMemo(() => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    
+    if (servicesSlug || searchParams.get("services")) {
+      newParams.set("services", servicesSlug || searchParams.get("services") || "");
     }
-  }, [servicesSlug, locationSlug, searchParams, setAgencies]);
-
-  // Update agencies when URL parameters change
-  useEffect(() => {
-    handleAgencies();
-  }, [handleAgencies]);
+    if (locationSlug || searchParams.get("location")) {
+      newParams.set("location", locationSlug || searchParams.get("location") || "");
+    }
+    
+    return newParams;
+  }, [searchParams, servicesSlug, locationSlug]);
+  
+  const { agencies, totalPages, currentPage, isLoading, mutate } = useAgencies(params);
 
   const handlePageChange = useCallback(async (page: number) => {
-    if (page === currentPage || loading) return;
-    handleAgencies(page.toString());
-  }, [currentPage, loading, handleAgencies]);
+    if (page === currentPage || isLoading) return;
+    
+    // Update URL with new page number
+    const newParams = new URLSearchParams(params);
+    newParams.set("page", page.toString());
+    
+    // Update URL without refresh
+    router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
+    
+    // Trigger refetch with new params
+    await mutate();
+  }, [currentPage, isLoading, params, pathname, router, mutate]);
 
   const renderPageNumbers = useCallback(() => {
     const pages = [];
@@ -156,13 +146,13 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
       </div>
       <div className="lg:w-3/4">
         <div className="space-y-6">
-          {loading ? (
+          {isLoading ? (
             <div className="space-y-6">
               {[1, 2, 3].map((i) => (
                 <LoadingAgencyCard key={i} />
               ))}
             </div>
-          ) : filteredAgencies.length === 0 ? (
+          ) : agencies.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-lg text-muted-foreground">No agencies found</p>
               <p className="text-sm text-muted-foreground mt-2">
@@ -171,80 +161,88 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
             </div>
           ) : (
             <>
-              {filteredAgencies.map((agency: Agency) => (
+              {agencies.map((agency: Agency) => (
                 <AgencyCard
                   key={agency.id}
                   agency={agency}
                   className="w-full"
                 />
               ))}
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (currentPage > 1) {
-                          handlePageChange(currentPage - 1);
-                        }
-                      }}
-                    />
-                  </PaginationItem>
+              {agencies.length > 0 && totalPages > 1 && (
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) {
+                            handlePageChange(currentPage - 1);
+                          }
+                        }}
+                        className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
 
-                  {currentPage > 3 && (
-                    <>
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handlePageChange(1);
-                          }}
-                        >
-                          1
-                        </PaginationLink>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    </>
-                  )}
+                    {currentPage > 3 && (
+                      <>
+                        <PaginationItem>
+                          <PaginationLink
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handlePageChange(1);
+                            }}
+                          >
+                            1
+                          </PaginationLink>
+                        </PaginationItem>
+                        {currentPage > 4 && (
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        )}
+                      </>
+                    )}
 
-                  {renderPageNumbers()}
+                    {renderPageNumbers()}
 
-                  {currentPage < totalPages - 2 && (
-                    <>
-                      <PaginationItem>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handlePageChange(totalPages);
-                          }}
-                        >
-                          {totalPages}
-                        </PaginationLink>
-                      </PaginationItem>
-                    </>
-                  )}
+                    {currentPage < totalPages - 2 && (
+                      <>
+                        {currentPage < totalPages - 3 && (
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        )}
+                        <PaginationItem>
+                          <PaginationLink
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handlePageChange(totalPages);
+                            }}
+                          >
+                            {totalPages}
+                          </PaginationLink>
+                        </PaginationItem>
+                      </>
+                    )}
 
-                  <PaginationItem>
-                    <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (currentPage < totalPages) {
-                          handlePageChange(currentPage + 1);
-                        }
-                      }}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages) {
+                            handlePageChange(currentPage + 1);
+                          }
+                        }}
+                        className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
             </>
           )}
         </div>

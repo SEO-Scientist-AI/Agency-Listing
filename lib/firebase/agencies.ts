@@ -7,7 +7,11 @@ const AGENCIES_PER_PAGE = 10;
 export async function getAllAgencies(lastDocId?: string) {
   try {
     const agenciesRef = collection(db, 'agencies');
-    let q = query(agenciesRef, orderBy('name'), limit(AGENCIES_PER_PAGE));
+    let q = query(
+      agenciesRef,
+      orderBy('name'),
+      limit(AGENCIES_PER_PAGE)
+    );
 
     if (lastDocId) {
       const lastDoc = await getDoc(doc(agenciesRef, lastDocId));
@@ -24,11 +28,21 @@ export async function getAllAgencies(lastDocId?: string) {
     const snapshot = await getDocs(q);
     const lastVisible = snapshot.docs[snapshot.docs.length - 1];
     
+    // Instead of using select, we'll manually pick the fields we need
     return {
-      agencies: snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })),
+      agencies: snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name,
+          description: data.description,
+          location: data.location,
+          services: data.services,
+          rating: data.rating,
+          reviewCount: data.reviewCount,
+          // Add any other essential fields you need
+        };
+      }),
       lastDocId: lastVisible?.id || null,
       hasMore: snapshot.docs.length === AGENCIES_PER_PAGE
     };

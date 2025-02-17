@@ -12,83 +12,110 @@ import {
   getCountFromServer
 } from "firebase/firestore";
 
+// Simple in-memory cache
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const cache = new Map<string, { data: any; timestamp: number; totalDocs?: number }>();
+
 export async function GET(req: NextRequest) {
   try {
+    const cacheKey = req.url;
+    const now = Date.now();
+    const cached = cache.get(cacheKey);
+
+    // Return cached data if valid
+    if (cached && now - cached.timestamp < CACHE_DURATION) {
+      return NextResponse.json(cached.data);
+    }
+
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
-    const ITEMS_PER_PAGE = 10; // Fixed page size for better performance
+    const ITEMS_PER_PAGE = 10;
     const services = searchParams.get("services");
     const location = searchParams.get("location");
-    const sortBy = searchParams.get("sort") ?? "name";
-
-    // Base query
+    
+    // Create base query
     let baseQuery = query(collection(db, "agencies"));
-
-    // Apply Filters
-    const keywords: string[] = [];
+    
+    // Apply filters
+    const filters = [];
     if (location) {
-      keywords.push(...location.split(" ").map(keyword => keyword.toLowerCase()));
+      filters.push(...location.split(" ").map(loc => loc.toLowerCase()));
     }
     if (services) {
-      keywords.push(...services.split(" ").map(keyword => keyword.toLowerCase()));
+      filters.push(...services.split(" ").map(service => service.toLowerCase()));
     }
-    if (keywords.length > 0) {
-      baseQuery = query(baseQuery, where("combinedSlug", "array-contains-any", keywords));
+    
+    if (filters.length > 0) {
+      baseQuery = query(baseQuery, where("combinedSlug", "array-contains-any", filters));
     }
 
-    // Get total count efficiently
-    const countSnapshot = await getCountFromServer(baseQuery);
-    const totalDocuments = countSnapshot.data().count;
+    // Get total count from cache or fetch
+    const cacheKeyBase = `${services || ''}-${location || ''}`;
+    const cachedCount = cache.get(cacheKeyBase)?.totalDocs;
+
+    let totalDocuments: number;
+    if (cachedCount !== undefined) {
+      totalDocuments = cachedCount;
+    } else {
+      const countSnapshot = await getCountFromServer(baseQuery);
+      totalDocuments = countSnapshot.data().count;
+      cache.set(cacheKeyBase, { 
+        timestamp: now,
+        totalDocs: totalDocuments,
+        data: null 
+      });
+    }
+
     const totalPages = Math.ceil(totalDocuments / ITEMS_PER_PAGE);
 
-    // Apply sorting and pagination
-    let paginatedQuery = query(
-      baseQuery,
-      orderBy(sortBy),
-      limit(ITEMS_PER_PAGE)
-    );
+    // Apply initial sorting
+    let paginatedQuery = query(baseQuery, orderBy('name'));
 
-    // Handle pagination
+    // Handle pagination using cursor
     if (page > 1) {
-      const previousPageQuery = query(
-        baseQuery,
-        orderBy(sortBy),
+      // Get the last document of the previous page
+      const prevPageQuery = query(
+        paginatedQuery,
         limit((page - 1) * ITEMS_PER_PAGE)
       );
-      const previousPageSnapshot = await getDocs(previousPageQuery);
-      const lastVisible = previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1];
-      
-      if (lastVisible) {
-        paginatedQuery = query(
-          baseQuery,
-          orderBy(sortBy),
-          startAfter(lastVisible),
-          limit(ITEMS_PER_PAGE)
-        );
-      }
+      const prevPageDocs = await getDocs(prevPageQuery);
+      const lastDoc = prevPageDocs.docs[prevPageDocs.docs.length - 1];
+
+      // Start after the last document
+      paginatedQuery = query(
+        paginatedQuery,
+        startAfter(lastDoc),
+        limit(ITEMS_PER_PAGE)
+      );
+    } else {
+      // First page
+      paginatedQuery = query(
+        paginatedQuery,
+        limit(ITEMS_PER_PAGE)
+      );
     }
 
-    // Fetch the current page data
     const snapshot = await getDocs(paginatedQuery);
     const agencies = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
 
-    return NextResponse.json(
-      {
-        success: true,
-        agencies,
-        currentPage: page,
-        totalPages,
-        totalAgencies: totalDocuments,
-      },
-      {
-        headers: {
-          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
-        },
-      }
-    );
+    const responseData = {
+      success: true,
+      agencies,
+      currentPage: page,
+      totalPages,
+      totalAgencies: totalDocuments,
+    };
+
+    // Cache the response
+    cache.set(cacheKey, {
+      data: responseData,
+      timestamp: now
+    });
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error("Error fetching agencies:", error);
     return NextResponse.json(
