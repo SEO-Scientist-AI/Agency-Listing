@@ -24,8 +24,14 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
     'jaipur'
   ];
 
-  // Static pages
+  // Static pages - Add homepage and other important static pages
   const staticPages: SitemapEntry[] = [
+    {
+      url: baseUrl, // Add homepage
+      lastModified: new Date().toISOString(),
+      changeFrequency: "daily",
+      priority: 1.0,
+    },
     {
       url: `${baseUrl}/agency`,
       lastModified: new Date().toISOString(),
@@ -45,9 +51,20 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
     const servicesRef = collection(db, "services");
     const servicesSnapshot = await getDocs(servicesRef);
     
+    // Create service pages (without city)
+    const servicePages: SitemapEntry[] = servicesSnapshot.docs.map(serviceDoc => {
+      const serviceData = serviceDoc.data();
+      return {
+        url: `${baseUrl}/agency/list/${serviceData.slug}`,
+        lastModified: new Date().toISOString(),
+        changeFrequency: "weekly",
+        priority: 0.8,
+      };
+    });
+
     // Create city pages
     const cityPages: SitemapEntry[] = cities.map(city => ({
-      url: `${baseUrl}/agency/list/${city}`,
+      url: `${baseUrl}/agency/list/${encodeURIComponent(city)}`,
       lastModified: new Date().toISOString(),
       changeFrequency: "weekly",
       priority: 0.8,
@@ -57,11 +74,9 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
     const combinationPages: SitemapEntry[] = [];
     servicesSnapshot.docs.forEach((serviceDoc) => {
       const serviceData = serviceDoc.data();
-
-      // Add service+city combinations
       cities.forEach(city => {
         combinationPages.push({
-          url: `${baseUrl}/agency/list/${serviceData.slug}/${city}`,
+          url: `${baseUrl}/agency/list/${encodeURIComponent(serviceData.slug)}/${encodeURIComponent(city)}`,
           lastModified: new Date().toISOString(),
           changeFrequency: "weekly",
           priority: 0.7,
@@ -72,13 +87,27 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
     // Combine all pages
     const allPages = [
       ...staticPages,
+      ...servicePages,
       ...cityPages,
       ...combinationPages
     ];
 
-    // Remove duplicates based on URL
+    // Remove duplicates and invalid URLs
     const uniquePages = Array.from(
-      new Map(allPages.map(page => [page.url, page])).values()
+      new Map(
+        allPages
+          .filter(page => {
+            try {
+              // Validate URL
+              new URL(page.url);
+              return true;
+            } catch {
+              console.warn(`Invalid URL found in sitemap: ${page.url}`);
+              return false;
+            }
+          })
+          .map(page => [page.url, page])
+      ).values()
     );
 
     return uniquePages;

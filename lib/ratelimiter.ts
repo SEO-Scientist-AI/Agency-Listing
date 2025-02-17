@@ -6,6 +6,19 @@ type RateLimitConfig = {
   ratelimit: Ratelimit | null;
 };
 
+// Add this helper function
+function isSearchBot(userAgent: string) {
+  const searchBots = [
+    'Googlebot',
+    'Bingbot',
+    'Slurp',
+    'DuckDuckBot',
+    'Baiduspider',
+    'YandexBot'
+  ];
+  return searchBots.some(bot => userAgent.toLowerCase().includes(bot.toLowerCase()));
+}
+
 let ratelimitConfig: RateLimitConfig = {
   enabled: false,
   ratelimit: null,
@@ -14,10 +27,10 @@ let ratelimitConfig: RateLimitConfig = {
 if (process.env.UPSTASH_REDIS_REST_URL) {
   const redis = Redis.fromEnv();
 
-  // Create a new ratelimiter, that allows 5 requests per 10 seconds
+  // Create a new ratelimiter with a higher limit to accommodate bots
   const ratelimitFunction = new Ratelimit({
     redis: redis,
-    limiter: Ratelimit.slidingWindow(5, "10 s"),
+    limiter: Ratelimit.slidingWindow(20, "10 s"), // Increased limit
     analytics: true,
     enableProtection: true,
   });
@@ -34,4 +47,4 @@ if (process.env.UPSTASH_REDIS_REST_URL) {
   };
 }
 
-export { ratelimitConfig };
+export { ratelimitConfig, isSearchBot };

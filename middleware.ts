@@ -50,7 +50,28 @@ const isAdminOnlyRoute = (req: Request) => {
   return req.url.includes('/dashboard/get-listed');
 };
 
+// Add this function to check if the request is from a search engine bot
+function isSearchBot(userAgent: string) {
+  const searchBots = [
+    'Googlebot',
+    'Bingbot',
+    'Slurp', // Yahoo
+    'DuckDuckBot',
+    'Baiduspider',
+    'YandexBot'
+  ];
+  return searchBots.some(bot => userAgent.toLowerCase().includes(bot.toLowerCase()));
+}
+
 export default function middleware(req: any) {
+  // Get user agent
+  const userAgent = req.headers.get('user-agent') || '';
+
+  // Allow search engine bots to bypass auth and rate limiting
+  if (isSearchBot(userAgent)) {
+    return NextResponse.next();
+  }
+
   if (config.auth.enabled) {
     return clerkMiddleware(async (auth, req) => {
       const resolvedAuth = await auth();
