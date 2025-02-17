@@ -1,6 +1,13 @@
 import { z } from "zod";
 
-export type userCreateProps = z.infer<typeof userCreateSchema>;
+export type userCreateProps = {
+  email: string;
+  first_name: string;
+  last_name: string;
+  profile_image_url?: string;
+  user_id: string;
+  role?: string;
+};
 
 const userCreateSchema = z.object({
   email: z.string().email({ message: "Invalid email" }).describe("user email"),
@@ -22,7 +29,14 @@ const userCreateSchema = z.object({
   user_id: z.string().describe("user ID"),
 });
 
-export type userUpdateProps = z.infer<typeof userUpdateSchema>;
+export type userUpdateProps = {
+  email: string;
+  first_name: string;
+  last_name: string;
+  profile_image_url?: string;
+  user_id: string;
+  role?: string;
+};
 
 const userUpdateSchema = z.object({
   email: z

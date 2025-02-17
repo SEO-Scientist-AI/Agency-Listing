@@ -1,111 +1,152 @@
-import { userCreate } from "@/utils/data/user/userCreate";
-import { userUpdate } from "@/utils/data/user/userUpdate";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
+import { createClient } from "@supabase/supabase-js";
+
+// Create Supabase client with service role key
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+);
+
+// User creation function
+async function createUser(userData: any) {
+  const { data, error } = await supabase
+    .from("user")
+    .insert([userData])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// User update function
+async function updateUser(userData: any) {
+  const { data, error } = await supabase
+    .from("user")
+    .update(userData)
+    .eq("user_id", userData.user_id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
 
 export async function POST(req: Request) {
-  // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
-  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
-
-  if (!WEBHOOK_SECRET) {
-    throw new Error(
-      "Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local"
-    );
-  }
-
-  // Get the headers
-  const headerPayload = await headers();
-  const svix_id = headerPayload.get("svix-id");
-  const svix_timestamp = headerPayload.get("svix-timestamp");
-  const svix_signature = headerPayload.get("svix-signature");
-
-  // If there are no headers, error out
-  if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response("Error occured -- no svix headers", {
-      status: 400,
-    });
-  }
-
-  // Get the body
-  const payload = await req.json();
-  const body = JSON.stringify(payload);
-
-  // Create a new SVIX instance with your secret.
-  const wh = new Webhook(WEBHOOK_SECRET);
-
-  let evt: WebhookEvent;
-
-  // Verify the payload with the headers
+  console.log("Webhook endpoint hit at:", new Date().toISOString());
+  
   try {
-    evt = wh.verify(body, {
-      "svix-id": svix_id,
-      "svix-timestamp": svix_timestamp,
-      "svix-signature": svix_signature,
-    }) as WebhookEvent;
-  } catch (err) {
-    console.error("Error verifying webhook:", err);
-    return new Response("Error occured", {
-      status: 400,
-    });
-  }
+    const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+    console.log("Starting webhook processing with secret:", WEBHOOK_SECRET?.substring(0, 5) + "...");
 
-  // Get the ID and type
-  const { id } = evt.data;
-  const eventType = evt.type;
+    if (!WEBHOOK_SECRET) {
+      console.error("WEBHOOK_SECRET is not set");
+      throw new Error("WEBHOOK_SECRET is required");
+    }
 
+    // Get the headers
+    const headerPayload = await headers();
+    const svix_id = headerPayload.get("svix-id");
+    const svix_timestamp = headerPayload.get("svix-timestamp");
+    const svix_signature = headerPayload.get("svix-signature");
 
-  switch (eventType) {
-    case "user.created":
-      try {
-        await userCreate({
-          email: payload?.data?.email_addresses?.[0]?.email_address,
-          first_name: payload?.data?.first_name,
-          last_name: payload?.data?.last_name,
-          profile_image_url: payload?.data?.profile_image_url,
-          user_id: payload?.data?.id,
-        });
-
-        return NextResponse.json({
-          status: 200,
-          message: "User info inserted",
-        });
-      } catch (error: any) {
-        return NextResponse.json({
-          status: 400,
-          message: error.message,
-        });
-      }
-      break;
-
-    case "user.updated":
-      try {
-        await userUpdate({
-          email: payload?.data?.email_addresses?.[0]?.email_address,
-          first_name: payload?.data?.first_name,
-          last_name: payload?.data?.last_name,
-          profile_image_url: payload?.data?.profile_image_url,
-          user_id: payload?.data?.id,
-        });
-
-        return NextResponse.json({
-          status: 200,
-          message: "User info updated",
-        });
-      } catch (error: any) {
-        return NextResponse.json({
-          status: 400,
-          message: error.message,
-        });
-      }
-      break;
-
-    default:
-      return new Response("Error occured -- unhandeled event type", {
+    if (!svix_id || !svix_timestamp || !svix_signature) {
+      console.error("Missing SVIX headers");
+      return new Response("Error occurred -- no svix headers", {
         status: 400,
       });
-  }
+    }
 
-  return new Response("", { status: 201 });
+    // Get the body
+    const payload = await req.json();
+    const body = JSON.stringify(payload);
+
+    console.log("Webhook payload:", JSON.stringify(payload, null, 2));
+
+    // Verify webhook signature
+    let evt: WebhookEvent;
+    try {
+      evt = new Webhook(WEBHOOK_SECRET).verify(body, {
+        "svix-id": svix_id,
+        "svix-timestamp": svix_timestamp,
+        "svix-signature": svix_signature,
+      }) as WebhookEvent;
+    } catch (err) {
+      console.error("Error verifying webhook:", err);
+      return new Response("Error occurred", {
+        status: 400,
+      });
+    }
+
+    const eventType = evt.type;
+    console.log("Event type:", eventType);
+
+    // Extract user data
+    const emailAddress = payload.data.email_addresses?.[0]?.email_address;
+    const firstName = payload.data.first_name || 
+      payload.data.oauth_names?.[0]?.first_name || 
+      payload.data.username;
+    const lastName = payload.data.last_name || 
+      payload.data.oauth_names?.[0]?.last_name || 
+      '';
+    const profileImageUrl = payload.data.profile_image_url || 
+      payload.data.image_url ||
+      payload.data.avatar_url;
+    const userId = payload.data.id;
+
+    const userData = {
+      email: emailAddress,
+      first_name: firstName,
+      last_name: lastName,
+      profile_image_url: profileImageUrl,
+      user_id: userId,
+      role: 'user',
+    };
+
+    console.log("Processed user data:", userData);
+
+    switch (eventType) {
+      case "user.created":
+        try {
+          console.log("Creating new user...");
+          const result = await createUser(userData);
+          console.log("User creation result:", result);
+          return NextResponse.json({ status: 200, message: "User created", data: result });
+        } catch (error: any) {
+          console.error("Error creating user:", error);
+          return NextResponse.json({ status: 400, error: error.message });
+        }
+
+      case "user.updated":
+        try {
+          console.log("Updating user...");
+          const result = await updateUser(userData);
+          console.log("User update result:", result);
+          return NextResponse.json({ status: 200, message: "User updated", data: result });
+        } catch (error: any) {
+          console.error("Error updating user:", error);
+          return NextResponse.json({ status: 400, error: error.message });
+        }
+
+      default:
+        console.log("Unhandled event type:", eventType);
+        return new Response(`Unhandled event type: ${eventType}`, { status: 400 });
+    }
+  } catch (error) {
+    console.error("Webhook error:", error);
+    return NextResponse.json({ 
+      status: 500, 
+      error: "Internal server error",
+      details: error instanceof Error ? error.message : String(error)
+    });
+  }
 }

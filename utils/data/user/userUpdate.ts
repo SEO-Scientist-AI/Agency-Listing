@@ -9,12 +9,13 @@ export const userUpdate = async ({
   last_name,
   profile_image_url,
   user_id,
+  role,
 }: userUpdateProps) => {
   const cookieStore = await cookies();
 
   const supabase = createServerClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
       cookies: {
         get(name: string) {
@@ -34,15 +35,20 @@ export const userUpdate = async ({
           last_name,
           profile_image_url,
           user_id,
+          role,
         },
       ])
-      .eq("email", email)
+      .eq("user_id", user_id)
       .select();
 
-    if (data) return data;
+    if (error) {
+      console.error("Error updating user:", error);
+      throw error;
+    }
 
-    if (error) return error;
+    return data;
   } catch (error: any) {
+    console.error("Error in userUpdate:", error);
     throw new Error(error.message);
   }
 };
