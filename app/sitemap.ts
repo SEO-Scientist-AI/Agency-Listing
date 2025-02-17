@@ -1,5 +1,6 @@
 import { db } from "@/lib/firebase/config";
 import { collection, getDocs } from "firebase/firestore";
+import { cache } from 'react';
 
 type SitemapEntry = {
   url: string;
@@ -8,7 +9,8 @@ type SitemapEntry = {
   priority?: number;
 };
 
-export default async function sitemap(): Promise<SitemapEntry[]> {
+// Cache the sitemap generation for 1 hour
+const getSitemapEntries = cache(async (): Promise<SitemapEntry[]> => {
   const baseUrl = "https://agencyspot.seoscientist.ai";
 
   // Define the cities we want to index
@@ -51,6 +53,12 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
     const servicesRef = collection(db, "services");
     const servicesSnapshot = await getDocs(servicesRef);
     
+    // Add error handling for empty services
+    if (servicesSnapshot.empty) {
+      console.warn('No services found in database');
+      return staticPages;
+    }
+
     // Create service pages (without city)
     const servicePages: SitemapEntry[] = servicesSnapshot.docs.map(serviceDoc => {
       const serviceData = serviceDoc.data();
@@ -113,6 +121,35 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
     return uniquePages;
   } catch (error) {
     console.error('Error generating sitemap:', error);
+    // Return static pages as fallback
     return staticPages;
+  }
+});
+
+export default async function sitemap(): Promise<SitemapEntry[]> {
+  try {
+    const entries = await getSitemapEntries();
+    
+    // Validate all URLs before returning
+    return entries.filter(entry => {
+      try {
+        new URL(entry.url);
+        return true;
+      } catch {
+        console.error(`Invalid URL in sitemap: ${entry.url}`);
+        return false;
+      }
+    });
+  } catch (error) {
+    console.error('Sitemap generation failed:', error);
+    // Return minimal sitemap in case of errors
+    return [
+      {
+        url: "https://agencyspot.seoscientist.ai",
+        lastModified: new Date().toISOString(),
+        changeFrequency: "daily",
+        priority: 1.0,
+      }
+    ];
   }
 }
