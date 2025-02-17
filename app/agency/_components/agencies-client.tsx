@@ -77,6 +77,7 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isScrolling, setIsScrolling] = useState(false);
 
   // Memoize the params construction
   const params = useMemo(() => {
@@ -94,8 +95,18 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
   
   const { agencies, totalPages, currentPage, isLoading, mutate } = useAgencies(params);
 
+  const scrollToTop = useCallback(() => {
+    setIsScrolling(true);
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    // Reset scrolling state after animation
+    setTimeout(() => setIsScrolling(false), 1000);
+  }, []);
+
   const handlePageChange = useCallback(async (page: number) => {
-    if (page === currentPage || isLoading) return;
+    if (page === currentPage || isLoading || isScrolling) return;
     
     // Update URL with new page number
     const newParams = new URLSearchParams(params);
@@ -104,9 +115,12 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
     // Update URL without refresh
     router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
     
+    // Start scroll before loading
+    scrollToTop();
+    
     // Trigger refetch with new params
     await mutate();
-  }, [currentPage, isLoading, params, pathname, router, mutate]);
+  }, [currentPage, isLoading, isScrolling, params, pathname, router, mutate, scrollToTop]);
 
   const renderPageNumbers = useCallback(() => {
     const pages = [];
@@ -147,29 +161,29 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
       <div className="lg:w-3/4">
         <div className="space-y-6">
           {isLoading ? (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-in fade-in-50 duration-500">
               {[1, 2, 3].map((i) => (
                 <LoadingAgencyCard key={i} />
               ))}
             </div>
           ) : agencies.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8 animate-in fade-in-50 duration-500">
               <p className="text-lg text-muted-foreground">No agencies found</p>
               <p className="text-sm text-muted-foreground mt-2">
                 Try adjusting your filters
               </p>
             </div>
           ) : (
-            <>
+            <div className="animate-in fade-in-50 duration-500">
               {agencies.map((agency: Agency) => (
                 <AgencyCard
                   key={agency.id}
                   agency={agency}
-                  className="w-full"
+                  className="w-full mb-6"
                 />
               ))}
               {agencies.length > 0 && totalPages > 1 && (
-                <Pagination>
+                <Pagination className={isLoading ? 'opacity-50 pointer-events-none' : ''}>
                   <PaginationContent>
                     <PaginationItem>
                       <PaginationPrevious
@@ -243,7 +257,7 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
                   </PaginationContent>
                 </Pagination>
               )}
-            </>
+            </div>
           )}
         </div>
       </div>
