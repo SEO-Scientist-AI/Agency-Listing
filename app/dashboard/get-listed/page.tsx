@@ -29,8 +29,12 @@ import {
 } from "@/components/ui/accordion";
 import { FormMethodSelector } from "./_components/form-method-selector";
 import { AgencySidebar } from "./_components/agency-sidebar";
-import { FormSection, InputField, TextareaField } from "./_components/agency-form-sections";
+import { FormSection, InputField, TextareaField, SubSection } from "./_components/agency-form-sections";
 import { Progress } from "@/components/ui/progress"
+import { FormMethodHeader } from "./_components/form-method-header";
+import { createAgency } from '@/lib/firebase/agencies';
+import { IndustrySelect } from "./_components/industry-select";
+import { LocationSelect } from "./_components/location-select";
 
 const featuredAgencies = [
   {
@@ -92,6 +96,13 @@ const stats = [
     { value: "500+", label: "Active partnerships" },
 ];
 
+const capitalizeFirstLetter = (str: string) => {
+    return str
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+};
+
 export default function GetListed() {
     const router = useRouter();
     const { toast } = useToast();
@@ -132,42 +143,75 @@ export default function GetListed() {
         project_durations: [] as string[],
         locations: [] as string[],
         expertise: [] as string[],
+        additionalLocations: [] as string[],
+        locationCity: "",
+        locationCountry: "",
     });
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        
+        // Handle nested social media fields
+        if (name.startsWith('socialMedia.')) {
+            const socialField = name.split('.')[1];
+            setFormData(prev => ({
+                ...prev,
+                socialMedia: {
+                    ...prev.socialMedia,
+                    [socialField]: value
+                }
+            }));
+        } else {
+            // Handle other fields as before
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!isFormValid()) {
+            toast({
+                title: "Validation Error",
+                description: "Please fill in all required fields",
+                variant: "destructive",
+            });
+            return;
+        }
+
         setLoading(true);
 
         try {
-            const response = await axiosInstance.post("/api/agency/create", {
+            // Prepare the data
+            const agencyData = {
                 ...formData,
                 services: selectedServices,
                 min_budget: parseInt(formData.min_budget),
                 max_budget: parseInt(formData.max_budget),
                 google_rating: parseFloat(formData.google_rating),
                 google_review_count: parseInt(formData.google_review_count),
-                founded_year: parseInt(formData.founded_year),
-            });
+                founded_year: formData.founded_year ? parseInt(formData.founded_year) : null,
+            };
 
-            if (response.data.success) {
+            // Create agency in Firebase
+            const result = await createAgency(agencyData);
+
+            if (result.success) {
                 toast({
-                    title: "Success",
-                    description: "Agency listed successfully",
+                    title: "Success!",
+                    description: "Your agency has been successfully listed. Our team will review your submission.",
                 });
-                router.push('/agency');
+                
+                // Redirect to dashboard
+                router.push('/dashboard');
             }
         } catch (error) {
             console.error("Error creating agency:", error);
             toast({
                 title: "Error",
-                description: "Failed to list agency",
+                description: "Failed to list agency. Please try again.",
                 variant: "destructive",
             });
         } finally {
@@ -212,11 +256,24 @@ export default function GetListed() {
     const getSectionCompletion = useCallback((section: string) => {
         switch (section) {
             case 'basic-info':
-                return !!(formData.name && formData.description && formData.location);
+                return !!(
+                    formData.name && 
+                    formData.description && 
+                    formData.location && 
+                    formData.industries.length > 0
+                );
             case 'contact-info':
                 return !!(formData.email);
             case 'company-details':
                 return !!(formData.websiteUrl && formData.imageUrl);
+            case 'social-media':
+                // Check if at least one social media link is provided
+                return !!(
+                    formData.socialMedia.linkedin ||
+                    formData.socialMedia.twitter ||
+                    formData.socialMedia.facebook ||
+                    formData.socialMedia.instagram
+                );
             case 'pricing':
                 return !!(formData.starting_price && formData.min_budget && formData.max_budget);
             case 'google-reviews':
@@ -227,10 +284,39 @@ export default function GetListed() {
     }, [formData]);
 
     useEffect(() => {
-        const sections = ['basic-info', 'contact-info', 'company-details', 'pricing', 'google-reviews'];
+        const sections = [
+            'basic-info',
+            'contact-info',
+            'company-details',
+            'social-media',
+            'pricing',
+            'google-reviews'
+        ];
         const completedSections = sections.filter(getSectionCompletion).length;
         setProgress((completedSections / sections.length) * 100);
     }, [formData, getSectionCompletion]);
+
+    const isFormValid = () => {
+        // Check required fields
+        const requiredFields = {
+            name: formData.name,
+            description: formData.description,
+            location: formData.location,
+            email: formData.email,
+            websiteUrl: formData.websiteUrl,
+            imageUrl: formData.imageUrl,
+            starting_price: formData.starting_price,
+            min_budget: formData.min_budget,
+            max_budget: formData.max_budget,
+        };
+
+        const hasRequiredFields = Object.values(requiredFields).every(field => !!field);
+        const hasServices = selectedServices.length > 0;
+        const hasSocialMedia = Object.values(formData.socialMedia).some(url => !!url);
+        const hasGoogleReviews = !!(formData.google_rating && formData.google_review_count);
+
+        return hasRequiredFields && hasServices && hasSocialMedia && hasGoogleReviews;
+    };
 
     return (
         <div className="container py-10">
@@ -263,293 +349,354 @@ export default function GetListed() {
                                     }}
                                 />
                             ) : (
-                                <>
-                                    <form onSubmit={handleSubmit} className="space-y-6">
-                                        {formMethod === 'google' && (
-                                            <div className="mb-6 p-4 bg-muted rounded-lg">
-                                                <p className="text-sm">
-                                                    Start by entering your Google Business URL in the Google Reviews section below.
-                                                    The form will be auto-filled with your business details.
-                                                </p>
-                                                <Button
-                                                    type="button"
-                                                    variant="link"
-                                                    onClick={() => setFormMethod(null)}
-                                                    className="px-0"
-                                                >
-                                                    Switch to manual entry
-                                                </Button>
-                                            </div>
-                                        )}
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    {formMethod && (
+                                        <FormMethodHeader
+                                            method={formMethod}
+                                            onChangeMethod={() => setFormMethod(null)}
+                                            onSwitchMethod={() => setFormMethod(formMethod === 'google' ? 'manual' : 'google')}
+                                        />
+                                    )}
 
-                                        <Accordion 
-                                            type="single" 
-                                            collapsible 
-                                            defaultValue={formMethod === 'google' ? 'google-reviews' : 'basic-info'}
+                                    <Accordion 
+                                        type="single" 
+                                        collapsible 
+                                        defaultValue={formMethod === 'google' ? 'google-reviews' : 'basic-info'}
+                                    >
+                                        <FormSection
+                                            title="Basic Information"
+                                            value="basic-info"
+                                            isCompleted={getSectionCompletion('basic-info')}
                                         >
-                                            <FormSection
-                                                title="Basic Information"
-                                                value="basic-info"
-                                                isCompleted={getSectionCompletion('basic-info')}
-                                            >
+                                            <SubSection title="Agency Identity">
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="name">Agency Name *</Label>
-                                                        <Input
-                                                            id="name"
-                                                            name="name"
-                                                            required
-                                                            value={formData.name}
-                                                            onChange={handleChange}
-                                                            placeholder="Enter your agency name"
-                                                        />
-                                                    </div>
+                                                    <InputField
+                                                        label="Agency Name"
+                                                        required
+                                                        id="name"
+                                                        name="name"
+                                                        value={formData.name}
+                                                        onChange={handleChange}
+                                                        placeholder="Enter your agency name"
+                                                        description="Your official agency name"
+                                                    />
+                                                    <InputField
+                                                        label="Tagline"
+                                                        id="tagline"
+                                                        name="tagline"
+                                                        value={formData.tagline}
+                                                        onChange={handleChange}
+                                                        placeholder="A short catchy tagline"
+                                                        description="A brief slogan that describes your agency"
+                                                    />
+                                                </div>
+                                            </SubSection>
 
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="tagline">Tagline</Label>
-                                                        <Input
-                                                            id="tagline"
-                                                            name="tagline"
-                                                            value={formData.tagline}
-                                                            onChange={handleChange}
-                                                            placeholder="A short catchy tagline"
-                                                        />
+                                            <SubSection title="Location Details">
+                                                <div className="space-y-2">
+                                                    <Label className="font-medium">
+                                                        Primary Location *
+                                                    </Label>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="space-y-2">
+                                                            <Input
+                                                                id="locationCity"
+                                                                name="locationCity"
+                                                                required
+                                                                value={formData.locationCity || ''}
+                                                                onChange={(e) => {
+                                                                    const city = capitalizeFirstLetter(e.target.value);
+                                                                    setFormData(prev => ({
+                                                                        ...prev,
+                                                                        locationCity: city,
+                                                                        location: prev.locationCountry ? `${city}, ${prev.locationCountry}` : city
+                                                                    }));
+                                                                }}
+                                                                placeholder="Enter city name"
+                                                            />
+                                                            <p className="text-xs text-muted-foreground">City</p>
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <Input
+                                                                id="locationCountry"
+                                                                name="locationCountry"
+                                                                required
+                                                                value={formData.locationCountry || ''}
+                                                                onChange={(e) => {
+                                                                    const country = capitalizeFirstLetter(e.target.value);
+                                                                    setFormData(prev => ({
+                                                                        ...prev,
+                                                                        locationCountry: country,
+                                                                        location: prev.locationCity ? `${prev.locationCity}, ${country}` : country
+                                                                    }));
+                                                                }}
+                                                                placeholder="Enter country name"
+                                                            />
+                                                            <p className="text-xs text-muted-foreground">Country</p>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                            </SubSection>
 
+                                            <div className="space-y-2">
+                                                <Label htmlFor="additionalLocations">Additional Locations</Label>
+                                                <LocationSelect
+                                                    value={formData.additionalLocations}
+                                                    onChange={(locations) => 
+                                                        setFormData(prev => ({ ...prev, additionalLocations: locations }))
+                                                    }
+                                                />
+                                                <p className="text-sm text-muted-foreground">
+                                                    Add any additional office locations
+                                                </p>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="services">Services *</Label>
+                                                <ServiceSelect
+                                                    value={selectedServices}
+                                                    onChange={setSelectedServices}
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="industries">Industries</Label>
+                                                <IndustrySelect
+                                                    value={formData.industries}
+                                                    onChange={(industries) => 
+                                                        setFormData(prev => ({ ...prev, industries }))
+                                                    }
+                                                />
+                                            </div>
+                                        </FormSection>
+
+                                        <FormSection
+                                            title="Contact Information"
+                                            value="contact-info"
+                                            isCompleted={getSectionCompletion('contact-info')}
+                                        >
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="description">Description *</Label>
-                                                    <Textarea
-                                                        id="description"
-                                                        name="description"
+                                                    <Label htmlFor="email">Email Address *</Label>
+                                                    <Input
+                                                        id="email"
+                                                        name="email"
+                                                        type="email"
                                                         required
-                                                        value={formData.description}
+                                                        value={formData.email}
                                                         onChange={handleChange}
-                                                        placeholder="Describe your agency and its services"
-                                                        className="min-h-[100px]"
+                                                        placeholder="contact@agency.com"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="phone">Phone Number</Label>
+                                                    <Input
+                                                        id="phone"
+                                                        name="phone"
+                                                        value={formData.phone}
+                                                        onChange={handleChange}
+                                                        placeholder="+1 (555) 000-0000"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </FormSection>
+
+                                        <FormSection
+                                            title="Company Details"
+                                            value="company-details"
+                                            isCompleted={getSectionCompletion('company-details')}
+                                        >
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="websiteUrl">Website URL</Label>
+                                                    <Input
+                                                        id="websiteUrl"
+                                                        name="websiteUrl"
+                                                        type="url"
+                                                        value={formData.websiteUrl}
+                                                        onChange={handleChange}
+                                                        placeholder="https://your-agency.com"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Agency Logo</Label>
+                                                    <LogoUpload 
+                                                        onUploadComplete={(url) => 
+                                                            setFormData(prev => ({ ...prev, imageUrl: url || '' }))
+                                                        }
+                                                        maxSizeInMB={5}
                                                     />
                                                 </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="location">Location *</Label>
-                                                        <Input
-                                                            id="location"
-                                                            name="location"
-                                                            required
-                                                            value={formData.location}
-                                                            onChange={handleChange}
-                                                            placeholder="City, Country"
-                                                        />
-                                                    </div>
-
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="services">Services *</Label>
-                                                        <ServiceSelect
-                                                            value={selectedServices}
-                                                            onChange={setSelectedServices}
-                                                        />
-                                                    </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="founded_year">Founded Year</Label>
+                                                    <Input
+                                                        id="founded_year"
+                                                        name="founded_year"
+                                                        type="number"
+                                                        value={formData.founded_year}
+                                                        onChange={handleChange}
+                                                        placeholder="2020"
+                                                    />
                                                 </div>
-                                            </FormSection>
-
-                                            <FormSection
-                                                title="Contact Information"
-                                                value="contact-info"
-                                                isCompleted={getSectionCompletion('contact-info')}
-                                            >
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="email">Email Address *</Label>
-                                                        <Input
-                                                            id="email"
-                                                            name="email"
-                                                            type="email"
-                                                            required
-                                                            value={formData.email}
-                                                            onChange={handleChange}
-                                                            placeholder="contact@agency.com"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="phone">Phone Number</Label>
-                                                        <Input
-                                                            id="phone"
-                                                            name="phone"
-                                                            value={formData.phone}
-                                                            onChange={handleChange}
-                                                            placeholder="+1 (555) 000-0000"
-                                                        />
-                                                    </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="team_size">Team Size</Label>
+                                                    <Select
+                                                        name="team_size"
+                                                        onValueChange={(value) =>
+                                                            setFormData((prev) => ({ ...prev, team_size: value }))
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select team size" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {teamSizes.map((size) => (
+                                                                <SelectItem key={size} value={size}>
+                                                                    {size}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
                                                 </div>
-                                            </FormSection>
 
-                                            <FormSection
-                                                title="Company Details"
-                                                value="company-details"
-                                                isCompleted={getSectionCompletion('company-details')}
-                                            >
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="websiteUrl">Website URL</Label>
-                                                        <Input
-                                                            id="websiteUrl"
-                                                            name="websiteUrl"
-                                                            type="url"
-                                                            value={formData.websiteUrl}
-                                                            onChange={handleChange}
-                                                            placeholder="https://your-agency.com"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label>Agency Logo</Label>
-                                                        <LogoUpload 
-                                                            onUploadComplete={(url) => 
-                                                                setFormData(prev => ({ ...prev, imageUrl: url || '' }))
-                                                            }
-                                                            maxSizeInMB={5}
-                                                        />
-                                                    </div>
-
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="founded_year">Founded Year</Label>
-                                                        <Input
-                                                            id="founded_year"
-                                                            name="founded_year"
-                                                            type="number"
-                                                            value={formData.founded_year}
-                                                            onChange={handleChange}
-                                                            placeholder="2020"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="team_size">Team Size</Label>
-                                                        <Select
-                                                            name="team_size"
-                                                            onValueChange={(value) =>
-                                                                setFormData((prev) => ({ ...prev, team_size: value }))
-                                                            }
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select team size" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {teamSizes.map((size) => (
-                                                                    <SelectItem key={size} value={size}>
-                                                                        {size}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="budgetRange">Budget Range</Label>
-                                                        <Input
-                                                            id="budgetRange"
-                                                            name="budgetRange"
-                                                            value={formData.budgetRange}
-                                                            onChange={handleChange}
-                                                            placeholder="e.g., $1,000 - $10,000"
-                                                        />
-                                                    </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="budgetRange">Budget Range</Label>
+                                                    <Input
+                                                        id="budgetRange"
+                                                        name="budgetRange"
+                                                        value={formData.budgetRange}
+                                                        onChange={handleChange}
+                                                        placeholder="e.g., $1,000 - $10,000"
+                                                    />
                                                 </div>
-                                            </FormSection>
+                                            </div>
+                                        </FormSection>
 
-                                            <FormSection
-                                                title="Social Media"
-                                                value="social-media"
-                                                isCompleted={getSectionCompletion('social-media')}
-                                            >
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="linkedin">LinkedIn</Label>
-                                                        <Input
-                                                            id="linkedin"
-                                                            name="socialMedia.linkedin"
-                                                            value={formData.socialMedia.linkedin}
-                                                            onChange={handleChange}
-                                                            placeholder="LinkedIn URL"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="twitter">Twitter</Label>
-                                                        <Input
-                                                            id="twitter"
-                                                            name="socialMedia.twitter"
-                                                            value={formData.socialMedia.twitter}
-                                                            onChange={handleChange}
-                                                            placeholder="Twitter URL"
-                                                        />
-                                                    </div>
+                                        <FormSection
+                                            title="Social Media"
+                                            value="social-media"
+                                            isCompleted={getSectionCompletion('social-media')}
+                                        >
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="linkedin">LinkedIn</Label>
+                                                    <Input
+                                                        id="linkedin"
+                                                        name="socialMedia.linkedin"
+                                                        value={formData.socialMedia.linkedin}
+                                                        onChange={handleChange}
+                                                        placeholder="https://linkedin.com/company/your-agency"
+                                                        type="url"
+                                                    />
                                                 </div>
-                                            </FormSection>
-
-                                            <FormSection
-                                                title="Pricing Information"
-                                                value="pricing"
-                                                isCompleted={getSectionCompletion('pricing')}
-                                            >
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                    <div>
-                                                        <Label htmlFor="starting_price">Starting Price</Label>
-                                                        <Input
-                                                            id="starting_price"
-                                                            name="starting_price"
-                                                            value={formData.starting_price}
-                                                            onChange={handleChange}
-                                                            required
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <Label htmlFor="min_budget">Minimum Budget</Label>
-                                                        <Input
-                                                            type="number"
-                                                            id="min_budget"
-                                                            name="min_budget"
-                                                            value={formData.min_budget}
-                                                            onChange={handleChange}
-                                                            required
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <Label htmlFor="max_budget">Maximum Budget</Label>
-                                                        <Input
-                                                            type="number"
-                                                            id="max_budget"
-                                                            name="max_budget"
-                                                            value={formData.max_budget}
-                                                            onChange={handleChange}
-                                                            required
-                                                        />
-                                                    </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="twitter">Twitter</Label>
+                                                    <Input
+                                                        id="twitter"
+                                                        name="socialMedia.twitter"
+                                                        value={formData.socialMedia.twitter}
+                                                        onChange={handleChange}
+                                                        placeholder="https://twitter.com/your-agency"
+                                                        type="url"
+                                                    />
                                                 </div>
-                                            </FormSection>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="facebook">Facebook</Label>
+                                                    <Input
+                                                        id="facebook"
+                                                        name="socialMedia.facebook"
+                                                        value={formData.socialMedia.facebook}
+                                                        onChange={handleChange}
+                                                        placeholder="https://facebook.com/your-agency"
+                                                        type="url"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="instagram">Instagram</Label>
+                                                    <Input
+                                                        id="instagram"
+                                                        name="socialMedia.instagram"
+                                                        value={formData.socialMedia.instagram}
+                                                        onChange={handleChange}
+                                                        placeholder="https://instagram.com/your-agency"
+                                                        type="url"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground mt-2">
+                                                At least one social media link is required
+                                            </p>
+                                        </FormSection>
 
-                                            <FormSection
-                                                title="Google Reviews"
-                                                value="google-reviews"
-                                                isCompleted={getSectionCompletion('google-reviews')}
-                                            >
-                                                <GoogleReviewsFetch
-                                                    onFetchComplete={({ rating, reviewCount, name, address, website, phone }) => {
-                                                        setFormData(prev => ({
-                                                            ...prev,
-                                                            google_rating: rating.toString(),
-                                                            google_review_count: reviewCount.toString(),
-                                                            ...(name && !prev.name ? { name } : {}),
-                                                            ...(address && !prev.location ? { location: address } : {}),
-                                                            ...(website && !prev.websiteUrl ? { websiteUrl: website } : {}),
-                                                            ...(phone && !prev.phone ? { phone } : {})
-                                                        }));
-                                                    }}
-                                                />
-                                            </FormSection>
-                                        </Accordion>
-                                    </form>
-                                    
+                                        <FormSection
+                                            title="Pricing Information"
+                                            value="pricing"
+                                            isCompleted={getSectionCompletion('pricing')}
+                                        >
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <Label htmlFor="starting_price">Starting Price</Label>
+                                                    <Input
+                                                        id="starting_price"
+                                                        name="starting_price"
+                                                        value={formData.starting_price}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor="min_budget">Minimum Budget</Label>
+                                                    <Input
+                                                        type="number"
+                                                        id="min_budget"
+                                                        name="min_budget"
+                                                        value={formData.min_budget}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor="max_budget">Maximum Budget</Label>
+                                                    <Input
+                                                        type="number"
+                                                        id="max_budget"
+                                                        name="max_budget"
+                                                        value={formData.max_budget}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                        </FormSection>
+
+                                        <FormSection
+                                            title="Google Reviews"
+                                            value="google-reviews"
+                                            isCompleted={getSectionCompletion('google-reviews')}
+                                        >
+                                            <GoogleReviewsFetch
+                                                onFetchComplete={({ rating, reviewCount, name, address, website, phone }) => {
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        google_rating: rating.toString(),
+                                                        google_review_count: reviewCount.toString(),
+                                                        ...(name && !prev.name ? { name } : {}),
+                                                        ...(address && !prev.location ? { location: address } : {}),
+                                                        ...(website && !prev.websiteUrl ? { websiteUrl: website } : {}),
+                                                        ...(phone && !prev.phone ? { phone } : {})
+                                                    }));
+                                                }}
+                                            />
+                                        </FormSection>
+                                    </Accordion>
+
                                     <div className="pt-6">
-                                        <Button type="submit" className="w-full" disabled={loading}>
+                                        <Button 
+                                            type="submit" 
+                                            className="w-full" 
+                                            disabled={loading || !isFormValid()}
+                                        >
                                             {loading ? (
                                                 <>
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -560,7 +707,7 @@ export default function GetListed() {
                                             )}
                                         </Button>
                                     </div>
-                                </>
+                                </form>
                             )}
                         </CardContent>
                     </Card>

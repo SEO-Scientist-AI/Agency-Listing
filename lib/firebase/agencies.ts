@@ -1,6 +1,6 @@
 import { Agency } from '@/types/agency';
 import { db } from './config';
-import { collection, getDocs, getDoc, doc, query, where, orderBy, limit, startAfter } from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc, query, where, orderBy, limit, startAfter, addDoc } from 'firebase/firestore';
 
 const AGENCIES_PER_PAGE = 10;
 
@@ -130,5 +130,24 @@ export async function getAllLocations() {
     } catch (error) {
         console.error('Error getting locations:', error);
         return [];
+    }
+}
+
+export async function createAgency(agencyData: any) {
+    try {
+        const agenciesRef = collection(db, 'agencies');
+        const docRef = await addDoc(agenciesRef, {
+            ...agencyData,
+            createdAt: new Date().toISOString(),
+            status: 'pending', // You can use this for approval workflow
+        });
+        
+        return {
+            success: true,
+            id: docRef.id
+        };
+    } catch (error) {
+        console.error('Error creating agency:', error);
+        throw error;
     }
 }

@@ -24,19 +24,20 @@ export function AgencySidebar({ companies, testimonials, stats }: AgencySidebarP
           {companies.map((company) => (
             <div
               key={company.id}
-              className="group relative flex items-center justify-center p-2 rounded-lg border hover:border-primary transition-all"
+              className="relative aspect-square rounded-lg border bg-card hover:bg-accent transition-colors"
             >
-              <Image
-                src={company.logo}
-                alt={company.name}
-                height={80}
-                width={80}
-                className="opacity-75 group-hover:opacity-100 transition-opacity rounded-lg"
-              />
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                <span className="text-white text-xs font-medium text-center px-2">
+              <div className="absolute inset-0 p-2">
+                <Image
+                  src={company.logo}
+                  alt={company.name}
+                  fill
+                  className="object-contain p-2 rounded-lg"
+                />
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/60 opacity-0 transition-opacity hover:opacity-100">
+                <p className="text-xs text-white font-medium px-2 text-center">
                   {company.name}
-                </span>
+                </p>
               </div>
             </div>
           ))}
