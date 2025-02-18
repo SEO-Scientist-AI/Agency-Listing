@@ -10,7 +10,8 @@ export default function robots(): MetadataRoute.Robots {
           '/agency',
           '/agency/list',
           '/agency/list/*',
-          '/sitemap.xml'
+          '/sitemap.xml',
+          '/robots.txt'
         ],
         disallow: [
           '/dashboard',
@@ -20,7 +21,9 @@ export default function robots(): MetadataRoute.Robots {
           '/user-profile',
           '/marketing',
           '/marketing/*',
-          '/*'  // Disallow all other routes
+          '/api/*',
+          '/_next/*',
+          '/static/*'
         ]
       }
     ],
