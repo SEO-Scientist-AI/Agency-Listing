@@ -11,7 +11,8 @@ export default function robots(): MetadataRoute.Robots {
           '/agency/list',
           '/agency/list/*',
           '/sitemap.xml',
-          '/robots.txt'
+          '/robots.txt',
+          '/static/*'
         ],
         disallow: [
           '/dashboard',
@@ -22,8 +23,8 @@ export default function robots(): MetadataRoute.Robots {
           '/marketing',
           '/marketing/*',
           '/api/*',
-          '/_next/*',
-          '/static/*'
+          '/_next/*'
+          
         ]
       }
     ],
