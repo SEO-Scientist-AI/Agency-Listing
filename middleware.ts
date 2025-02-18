@@ -50,26 +50,63 @@ const isAdminOnlyRoute = (req: Request) => {
   return req.url.includes('/dashboard/get-listed');
 };
 
-// Add this function to check if the request is from a search engine bot
+// Updated search bot detection function with more comprehensive list
 function isSearchBot(userAgent: string) {
   const searchBots = [
     'Googlebot',
     'Bingbot',
-    'Slurp', // Yahoo
+    'Slurp',           // Yahoo
     'DuckDuckBot',
     'Baiduspider',
-    'YandexBot'
+    'YandexBot',
+    'facebookexternalhit',
+    'Applebot',
+    'Twitterbot',
+    'rogerbot',
+    'linkedinbot',
+    'embedly',
+    'Discordbot',
+    'Pinterestbot'
   ];
-  return searchBots.some(bot => userAgent.toLowerCase().includes(bot.toLowerCase()));
+  
+  // Case-insensitive check for any of the bot names
+  return searchBots.some(bot => 
+    userAgent.toLowerCase().includes(bot.toLowerCase())
+  );
 }
 
 export default function middleware(req: any) {
-  // Get user agent
   const userAgent = req.headers.get('user-agent') || '';
+  const url = new URL(req.url);
+  const path = url.pathname;
 
-  // Allow search engine bots to bypass auth and rate limiting
+  // Allow search engine bots to access public routes only
   if (isSearchBot(userAgent)) {
-    return NextResponse.next();
+    // List of public paths that bots can access
+    const publicPaths = [
+      '/',
+      '/agency',
+      '/agency/list',
+      '/sitemap.xml',
+      '/robots.txt',
+      '/static'
+    ];
+
+    // Check if the current path starts with any of the public paths
+    const isPublicPath = publicPaths.some(publicPath => 
+      path === publicPath || path.startsWith(`${publicPath}/`)
+    );
+
+    if (isPublicPath) {
+      return NextResponse.next();
+    }
+
+    // Block bots from accessing non-public routes
+    return NextResponse.next({
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow'
+      }
+    });
   }
 
   if (config.auth.enabled) {
