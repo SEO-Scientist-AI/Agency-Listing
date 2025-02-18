@@ -42,7 +42,7 @@ const nextConfig = {
         headers: [
           {
             key: 'X-Robots-Tag',
-            value: 'index, follow'
+            value: 'all'
           },
           {
             key: 'Cache-Control',
@@ -54,6 +54,10 @@ const nextConfig = {
         source: '/robots.txt',
         headers: [
           {
+            key: 'X-Robots-Tag',
+            value: 'all'
+          },
+          {
             key: 'Cache-Control',
             value: 'public, max-age=3600, must-revalidate',
           },
@@ -62,6 +66,10 @@ const nextConfig = {
       {
         source: '/sitemap.xml',
         headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'all'
+          },
           {
             key: 'Cache-Control',
             value: 'public, max-age=3600, must-revalidate',
@@ -72,6 +80,19 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: '/',
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'all'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, must-revalidate'
+          }
+        ],
+      }
     ];
   },
 }
