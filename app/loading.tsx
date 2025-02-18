@@ -1,11 +1,20 @@
-import React from 'react';
+"use client";
+import { MultiStepLoader } from "@/components/ui/multi-step-loader";
 
-const loading = () => {
-  return (
-    <div>
-      Loading...
-    </div>
-  );
-}
+const loadingStates = [
+  {
+    text: "Loading your experience...",
+  },
+  {
+    text: "Getting things ready...",
+  },
+  {
+    text: "Almost there...",
+  },
+];
 
-export default loading;
+const Loading = () => {
+  return <MultiStepLoader loadingStates={loadingStates} loading={true} />;
+};
+
+export default Loading;
