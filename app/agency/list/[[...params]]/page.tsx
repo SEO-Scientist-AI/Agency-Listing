@@ -25,18 +25,26 @@ async function getServiceName(slug: string): Promise<string> {
   }
 }
 
-// Helper function to get location name from slug
+// Add this helper function
+function capitalizeWords(str: string): string {
+  return str
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+// Update the getLocationName function
 async function getLocationName(slug: string): Promise<string> {
   try {
     const locationsRef = collection(db, "locations");
     const q = query(locationsRef, where("citySlug", "==", slug));
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
-      return querySnapshot.docs[0].data().cityName || slug;
+      return querySnapshot.docs[0].data().cityName || capitalizeWords(slug);
     }
-    return slug;
+    return capitalizeWords(slug);
   } catch (error) {
-    return slug;
+    return capitalizeWords(slug);
   }
 }
 
@@ -70,18 +78,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   // Generate title and description based on parameters
-  let title = "Top Professional Agency Worldwide";
-  let description = "Discover the top Companies worldwide. Connect with skilled marketing agencies from our curated community to elevate your marketing strategy.";
+  let title = "Top Professional Agencies | SEO Scientist Agency Spot";
+  let description = "Find the perfect digital marketing partner for your next project. Browse top-rated agencies, freelancers, and marketing professionals. Get multiple proposals in your inbox within 48 hours.";
 
   if (serviceName && locationName) {
-    title = `Trusted ${serviceName} Agency in ${locationName}`;
-    description = `Discover the top ${serviceName} Companies in ${locationName}. Connect with skilled marketing agencies from our curated community to elevate your marketing strategy.`;
+    title = `Top ${serviceName} Agencies in ${locationName} | SEO Scientist Agency Spot`;
+    description = `Find the perfect ${serviceName} partner in ${locationName}. Browse top-rated agencies, freelancers, and marketing professionals. Get multiple proposals in your inbox within 48 hours.`;
   } else if (serviceName) {
-    title = `Top Professional ${serviceName} Agency Worldwide`;
-    description = `Discover the top ${serviceName} Companies worldwide. Connect with skilled marketing agencies from our curated community to elevate your marketing strategy.`;
+    title = `Best ${serviceName} Agencies | SEO Scientist Agency Spot`;
+    description = `Find the perfect ${serviceName} partner for your project. Browse top-rated agencies, freelancers, and marketing professionals. Get multiple proposals in your inbox within 48 hours.`;
   } else if (locationName) {
-    title = `Trusted Agency in ${locationName}`;
-    description = `Discover the top Companies in ${locationName}. Connect with skilled marketing agencies from our curated community to elevate your marketing strategy.`;
+    title = `Top Agencies in ${locationName} | SEO Scientist Agency Spot`;
+    description = `Find the perfect digital marketing partner in ${locationName}. Browse top-rated agencies, freelancers, and marketing professionals. Get multiple proposals in your inbox within 48 hours.`;
   }
 
   return {
