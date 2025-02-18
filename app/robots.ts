@@ -4,7 +4,11 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
-        userAgent: '*',
+        userAgent: 'Googlebot',  // Specific rule for Google
+        allow: '/',  // Explicitly allow root
+      },
+      {
+        userAgent: '*',  // Rule for all other bots
         allow: [
           '/',
           '/agency',
@@ -24,10 +28,9 @@ export default function robots(): MetadataRoute.Robots {
           '/marketing/*',
           '/api/*',
           '/_next/*'
-          
         ]
       }
     ],
-    sitemap: 'https://agencyspot.seoscientist.ai/sitemap.xml',
+    sitemap: 'https://agencyspot.seoscientist.ai/sitemap.xml'
   }
 }
