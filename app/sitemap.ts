@@ -23,13 +23,38 @@ const getSitemapEntries = cache(async (): Promise<SitemapEntry[]> => {
     'hyderabad',
     'chennai',
     'kolkata',
-    'jaipur'
+    'jaipur',
+    'ahmedabad'
   ];
 
-  // Static pages - Add homepage and other important static pages
+  // Define the specific services we want to include
+  const services = [
+    'branding',
+    'logo-design',
+    'ui-ux-design',
+    'seo',
+    'ppc',
+    'social-media-marketing',
+    'content-marketing',
+    'mobile-app-development',
+    'web-design',
+    'software-development',
+    'web-development',
+    'ecommerce',
+    'ecommerce-development',
+    'public-relations',
+    'media-buying',
+    'copywriting',
+    'digital-strategy',
+    'advertising',
+    'video-production',
+    'video-marketing'
+  ];
+
+  // Static pages
   const staticPages: SitemapEntry[] = [
     {
-      url: baseUrl, // Add homepage
+      url: baseUrl,
       lastModified: new Date().toISOString(),
       changeFrequency: "daily",
       priority: 1.0,
@@ -49,26 +74,13 @@ const getSitemapEntries = cache(async (): Promise<SitemapEntry[]> => {
   ];
 
   try {
-    // Fetch all services
-    const servicesRef = collection(db, "services");
-    const servicesSnapshot = await getDocs(servicesRef);
-    
-    // Add error handling for empty services
-    if (servicesSnapshot.empty) {
-      console.warn('No services found in database');
-      return staticPages;
-    }
-
     // Create service pages (without city)
-    const servicePages: SitemapEntry[] = servicesSnapshot.docs.map(serviceDoc => {
-      const serviceData = serviceDoc.data();
-      return {
-        url: `${baseUrl}/agency/list/${serviceData.slug}`,
-        lastModified: new Date().toISOString(),
-        changeFrequency: "weekly",
-        priority: 0.8,
-      };
-    });
+    const servicePages: SitemapEntry[] = services.map(service => ({
+      url: `${baseUrl}/agency/list/${service}`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    }));
 
     // Create city pages
     const cityPages: SitemapEntry[] = cities.map(city => ({
@@ -80,11 +92,10 @@ const getSitemapEntries = cache(async (): Promise<SitemapEntry[]> => {
 
     // Create service+city combination pages
     const combinationPages: SitemapEntry[] = [];
-    servicesSnapshot.docs.forEach((serviceDoc) => {
-      const serviceData = serviceDoc.data();
+    services.forEach(service => {
       cities.forEach(city => {
         combinationPages.push({
-          url: `${baseUrl}/agency/list/${encodeURIComponent(serviceData.slug)}/${encodeURIComponent(city)}`,
+          url: `${baseUrl}/agency/list/${encodeURIComponent(service)}/${encodeURIComponent(city)}`,
           lastModified: new Date().toISOString(),
           changeFrequency: "weekly",
           priority: 0.7,
