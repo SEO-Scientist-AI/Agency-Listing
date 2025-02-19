@@ -32,6 +32,7 @@ import { ContactAgency } from "./contact-agency";
 import { Agency } from '@/types/agency';
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { FacebookIcon, LinkedinIcon, InstagramIcon, YoutubeIcon } from "./social-icons";
 
 interface AgencyDetailComponentProps {
     agency: Agency;
@@ -133,7 +134,7 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                                         rel="noopener noreferrer" 
                                                         className="p-1.5 border border-dashed border-[#1877F2]/20 rounded-lg text-[#1877F2] dark:text-[#1877F2]/80 hover:text-primary hover:border-primary/50 hover:bg-[#1877F2]/5 transition-all bg-background"
                                                     >
-                                                        <Facebook className="h-4 w-4" />
+                                                        <FacebookIcon />
                                                     </Link>
                                                 )}
                                                 {socialLinks?.linkedin && (
@@ -143,7 +144,7 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                                         rel="noopener noreferrer" 
                                                         className="p-1.5 border border-dashed border-[#0A66C2]/20 rounded-lg text-[#0A66C2] dark:text-[#0A66C2]/80 hover:text-primary hover:border-primary/50 hover:bg-[#0A66C2]/5 transition-all bg-background"
                                                     >
-                                                        <Linkedin className="h-4 w-4" />
+                                                        <LinkedinIcon />
                                                     </Link>
                                                 )}
                                                 {socialLinks?.instagram && (
@@ -153,7 +154,7 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                                         rel="noopener noreferrer" 
                                                         className="p-1.5 border border-dashed border-[#E4405F]/20 rounded-lg text-[#E4405F] dark:text-[#E4405F]/80 hover:text-primary hover:border-primary/50 hover:bg-[#E4405F]/5 transition-all bg-background"
                                                     >
-                                                        <Instagram className="h-4 w-4" />
+                                                        <InstagramIcon />
                                                     </Link>
                                                 )}
                                                 {socialLinks?.youtube && (
@@ -163,7 +164,7 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
                                                         rel="noopener noreferrer" 
                                                         className="p-1.5 border border-dashed border-[#FF0000]/20 rounded-lg text-[#FF0000] dark:text-[#FF0000]/80 hover:text-primary hover:border-primary/50 hover:bg-[#FF0000]/5 transition-all bg-background"
                                                     >
-                                                        <Youtube className="h-4 w-4" />
+                                                        <YoutubeIcon />
                                                     </Link>
                                                 )}
                                                 {websiteUrl && (

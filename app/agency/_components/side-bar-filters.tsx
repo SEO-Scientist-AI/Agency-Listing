@@ -14,6 +14,7 @@ import useAppStore from "@/lib/store/useAppStore";
 import axiosInstance from "@/lib/axios-instance";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAgencies } from "@/lib/hooks/use-agencies";
+import { Briefcase, MapPin } from "lucide-react";
 
 interface SideBarFiltersProps {
     servicesSlug?: string;
@@ -46,7 +47,8 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
     const { services, cities: locations, serviceLoading, citiesLoading, setAgencies } = useAppStore();
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
     const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
-    const [searchQuery, setSearchQuery] = useState("");
+    const [serviceSearch, setServiceSearch] = useState("");
+    const [locationSearch, setLocationSearch] = useState("");
     const [filteredServices, setFilteredServices] = useState(services);
     const [filteredLocations, setFilteredLocations] = useState(locations);
     const router = useRouter();
@@ -75,20 +77,23 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
 
     useEffect(() => {
         const filtered = services.filter(service => 
-            service.serviceName.toLowerCase().includes(searchQuery.toLowerCase())
+            service.serviceName.toLowerCase().includes(serviceSearch.toLowerCase())
         );
         setFilteredServices(filtered);
+    }, [serviceSearch, services]);
 
+    useEffect(() => {
         const filteredLocs = locations.filter(location =>
-            location.cityName.toLowerCase().includes(searchQuery.toLowerCase())
+            location.cityName.toLowerCase().includes(locationSearch.toLowerCase())
         );
         setFilteredLocations(filteredLocs);
-    }, [searchQuery, services, locations]);
+    }, [locationSearch, locations]);
 
     const clearFilters = async () => {
         setSelectedServices([]);
         setSelectedLocations([]);
-        setSearchQuery("");
+        setServiceSearch("");
+        setLocationSearch("");
         setFiltersApplied(false);
         router.push(pathname);
         const response = await axiosInstance.get('/agency');
@@ -105,6 +110,9 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
         }
         
         setFiltersApplied(true);
+        // Clear search bars
+        setServiceSearch("");
+        setLocationSearch("");
         router.replace(`/agency?${newParams.toString()}`);
         // No need to make API call - the hook will handle it
     };
@@ -152,7 +160,7 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
     };
 
     const hasActiveFilters = () => {
-        return selectedServices.length > 0 || selectedLocations.length > 0 || searchQuery.length > 0;
+        return selectedServices.length > 0 || selectedLocations.length > 0 || serviceSearch.length > 0 || locationSearch.length > 0;
     };
 
     if (serviceLoading || citiesLoading) {
@@ -164,21 +172,18 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
             <CardHeader className="space-y-4">
                 <div className="flex justify-between items-center">
                     <CardTitle className="text-2xl font-semibold">Filter</CardTitle>
-                    <Button
-                        onClick={handleApplyFilters}
-                        size="sm"
-                        className="h-8"
-                    >
-                        Apply Filters
-                    </Button>
+                    {hasActiveFilters() && (
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="h-8"
+                        >
+                            <X className="h-4 w-4 mr-1" />
+                            Clear Filter
+                        </Button>
+                    )}
                 </div>
-
-                <Input
-                    placeholder="Search filters..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full"
-                />
 
                 {filtersApplied && (selectedServices.length > 0 || selectedLocations.length > 0) && (
                     <div className="flex flex-wrap gap-2 mt-4">
@@ -223,7 +228,16 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
 
             <CardContent className="space-y-6">
                 <div className="space-y-4">
-                    <Label className="text-lg font-semibold">Services</Label>
+                    <div className="flex items-center gap-1.5">
+                        <Briefcase className="w-4 h-4 text-muted-foreground" />
+                        <Label className="text-base font-medium text-muted-foreground">Services</Label>
+                    </div>
+                    <Input
+                        placeholder="Search services..."
+                        value={serviceSearch}
+                        onChange={(e) => setServiceSearch(e.target.value)}
+                        className="w-full h-8 text-sm px-3 mb-2"
+                    />
                     <ScrollArea className="h-[200px] rounded-md">
                         <div className="grid grid-cols-1 gap-2 p-1">
                             {filteredServices.map((service) => (
@@ -251,7 +265,16 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
                 <Separator />
 
                 <div className="space-y-4">
-                    <Label className="text-lg font-semibold">Locations</Label>
+                    <div className="flex items-center gap-1.5">
+                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                        <Label className="text-base font-medium text-muted-foreground">Locations</Label>
+                    </div>
+                    <Input
+                        placeholder="Search locations..."
+                        value={locationSearch}
+                        onChange={(e) => setLocationSearch(e.target.value)}
+                        className="w-full h-8 text-sm px-3 mb-2"
+                    />
                     <ScrollArea className="h-[200px] rounded-md">
                         <div className="grid grid-cols-1 gap-2 p-1">
                             {filteredLocations.map((location) => (
@@ -278,16 +301,12 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
 
                 <Separator />
 
-                {hasActiveFilters() && (
-                    <Button
-                        variant="destructive"
-                        className="w-full"
-                        onClick={clearFilters}
-                    >
-                        <span className="mr-2">Clear all filters</span>
-                        <X className="h-4 w-4" />
-                    </Button>
-                )}
+                <Button
+                    onClick={handleApplyFilters}
+                    className="w-full"
+                >
+                    Apply Filters
+                </Button>
             </CardContent>
         </Card>
     );

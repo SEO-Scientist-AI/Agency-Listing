@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import FindAgencies from "@/app/agency/_components/find-agency";
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/lib/firebase/config";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, getCountFromServer } from "firebase/firestore";
 
 interface PageProps {
   params: Promise<{
@@ -48,15 +48,32 @@ async function getLocationName(slug: string): Promise<string> {
   }
 }
 
-// Generate metadata
+// Add this helper function
+const getAgencyCount = async (filters: string[] = []): Promise<number> => {
+  try {
+    let baseQuery = query(collection(db, "agencies"));
+    if (filters.length > 0) {
+      baseQuery = query(baseQuery, where("combinedSlug", "array-contains-any", filters));
+    }
+    const snapshot = await getCountFromServer(baseQuery);
+    return snapshot.data().count;
+  } catch (error) {
+    console.error('Error getting count:', error);
+    return 0;
+  }
+};
+
+// Update generateMetadata
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const slugParams = resolvedParams.params || [];
+  const nextYear = new Date().getFullYear() + 1;
 
   let service = "";
   let location = "";
   let serviceName = "";
   let locationName = "";
+  let filters: string[] = [];
 
   if (slugParams.length === 1) {
     const slug = slugParams[0];
@@ -66,37 +83,47 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     if (isService) {
       service = slug;
       serviceName = await getServiceName(slug);
+      filters.push(slug.toLowerCase());
     } else if (isLocation) {
       location = slug;
       locationName = await getLocationName(slug);
+      filters.push(slug.toLowerCase());
     }
   } else if (slugParams.length === 2) {
     service = slugParams[0];
     location = slugParams[1];
     serviceName = await getServiceName(service);
     locationName = await getLocationName(location);
+    filters.push(service.toLowerCase(), location.toLowerCase());
   }
 
-  // Generate title and description based on parameters
-  let title = "Top Professional Agencies | SEO Scientist Agency Spot";
-  let description = "Find the perfect digital marketing partner for your next project. Browse top-rated agencies, freelancers, and marketing professionals. Get multiple proposals in your inbox within 48 hours.";
+  const count = await getAgencyCount(filters);
+
+  let title, description, ogTitle;
 
   if (serviceName && locationName) {
-    title = `Top ${serviceName} Agencies in ${locationName} | SEO Scientist Agency Spot`;
-    description = `Find the perfect ${serviceName} partner in ${locationName}. Browse top-rated agencies, freelancers, and marketing professionals. Get multiple proposals in your inbox within 48 hours.`;
+    title = `Top ${count}+ ${serviceName} Agencies in ${locationName} (${nextYear} List) | Agency Spot`;
+    description = `Compare the Best ${serviceName} Agencies in ${locationName}. ✓ Verified Agencies ✓ Client Reviews ✓ Portfolio. Get Free Quotes Within 48 Hours.`;
+    ogTitle = `Best ${serviceName} Agencies in ${locationName} - Top ${count}+ Verified Agencies`;
   } else if (serviceName) {
-    title = `Best ${serviceName} Agencies | SEO Scientist Agency Spot`;
-    description = `Find the perfect ${serviceName} partner for your project. Browse top-rated agencies, freelancers, and marketing professionals. Get multiple proposals in your inbox within 48 hours.`;
+    title = `Top ${count}+ ${serviceName} Agencies & Companies (${nextYear} List) | Agency Spot`;
+    description = `Compare the Best ${serviceName} Agencies Worldwide. ✓ Verified Agencies ✓ Client Reviews ✓ Portfolio. Get Free Quotes Within 48 Hours.`;
+    ogTitle = `Best ${serviceName} Agencies - Top ${count}+ Verified Companies`;
   } else if (locationName) {
-    title = `Top Agencies in ${locationName} | SEO Scientist Agency Spot`;
-    description = `Find the perfect digital marketing partner in ${locationName}. Browse top-rated agencies, freelancers, and marketing professionals. Get multiple proposals in your inbox within 48 hours.`;
+    title = `Top ${count}+ Digital Marketing Agencies in ${locationName} (${nextYear}) | Agency Spot`;
+    description = `Compare the Best Digital Marketing Agencies in ${locationName}. ✓ Verified Agencies ✓ Client Reviews ✓ Portfolio. Get Free Quotes Within 48 Hours.`;
+    ogTitle = `Best Digital Agencies in ${locationName} - Top ${count}+ Verified Companies`;
+  } else {
+    title = `Top ${count}+ Digital Marketing Agencies & Companies (${nextYear}) | Agency Spot`;
+    description = `Compare the Best Digital Marketing Agencies Worldwide. ✓ Verified Agencies ✓ Client Reviews ✓ Portfolio. Get Free Quotes Within 48 Hours.`;
+    ogTitle = `Best Digital Marketing Agencies - Top ${count}+ Verified Companies`;
   }
 
   return {
     title,
     description,
     openGraph: {
-      title,
+      title: ogTitle,
       description,
       type: 'website',
       url: 'https://agencyspot.seoscientist.ai/',
@@ -104,7 +131,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: ogTitle,
       description,
       creator: '@udaydev',
     },

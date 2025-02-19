@@ -3,7 +3,7 @@ export const revalidate = 86400; // Revalidate every day
 import { notFound, redirect, RedirectType } from "next/navigation";
 import FindAgencies from "../../_components/find-agency";
 import { db } from "@/lib/firebase/config";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, getCountFromServer } from "firebase/firestore";
 import { Metadata } from 'next';
 
 // Helper function to capitalize first letter of each word
@@ -28,18 +28,48 @@ async function getServiceName(slug: string): Promise<string> {
   }
 }
 
+// Add helper function
+const getAgencyCount = async (service: string): Promise<number> => {
+  try {
+    const baseQuery = query(
+      collection(db, "agencies"), 
+      where("combinedSlug", "array-contains", service.toLowerCase())
+    );
+    const snapshot = await getCountFromServer(baseQuery);
+    return snapshot.data().count;
+  } catch (error) {
+    console.error('Error getting count:', error);
+    return 0;
+  }
+};
+
 export async function generateMetadata(
   { params }: { params: Promise<{ service: string }> }
 ): Promise<Metadata> {
   const resolvedParams = await params;
   const serviceName = await getServiceName(resolvedParams.service);
+  const count = await getAgencyCount(resolvedParams.service);
+  const nextYear = new Date().getFullYear() + 1;
+  
+  const title = `Top ${count}+ ${serviceName} Agencies & Companies (${nextYear} List) | Agency Spot`;
+  const description = `Compare the Best ${serviceName} Agencies Worldwide. ✓ Verified Agencies ✓ Client Reviews ✓ Portfolio. Get Free Quotes Within 48 Hours.`;
+  const ogTitle = `Best ${serviceName} Agencies - Top ${count}+ Verified Companies`;
   
   return {
-    title: `Best ${serviceName} Agencies | SEO Scientist Agency Spot`,
-    description: `Find the perfect ${serviceName} partner for your project. Browse top-rated agencies, freelancers, and marketing professionals. Get multiple proposals in your inbox within 48 hours.`,
+    title,
+    description,
     openGraph: {
-      title: `Top ${serviceName} Agencies`,
-      description: `Discover and connect with the best ${serviceName} agencies. Compare proposals and find your ideal marketing partner.`,
+      title: ogTitle,
+      description,
+      type: 'website',
+      url: `https://agencyspot.seoscientist.ai/agency/list/${resolvedParams.service}`,
+      siteName: 'SEO Scientist Agency Spot',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: ogTitle,
+      description,
+      creator: '@udaydev',
     }
   }
 }

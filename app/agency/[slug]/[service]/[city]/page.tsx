@@ -3,7 +3,7 @@ export const revalidate = 86400; // Revalidate every day
 import FindAgencies from "@/app/agency/_components/find-agency";
 import { notFound,redirect, RedirectType } from "next/navigation";
 import { db } from "@/lib/firebase/config";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, getCountFromServer } from "firebase/firestore";
 import { Metadata } from 'next';
 
 // Helper functions
@@ -41,19 +41,52 @@ async function getLocationName(slug: string): Promise<string> {
   }
 }
 
+// Add helper function
+const getAgencyCount = async (service: string, city: string): Promise<number> => {
+  try {
+    const baseQuery = query(
+      collection(db, "agencies"), 
+      where("combinedSlug", "array-contains-any", [
+        service.toLowerCase(), 
+        city.toLowerCase()
+      ])
+    );
+    const snapshot = await getCountFromServer(baseQuery);
+    return snapshot.data().count;
+  } catch (error) {
+    console.error('Error getting count:', error);
+    return 0;
+  }
+};
+
 export async function generateMetadata(
   { params }: { params: Promise<{ service: string; city: string }> }
 ): Promise<Metadata> {
   const resolvedParams = await params;
   const serviceName = await getServiceName(resolvedParams.service);
   const locationName = await getLocationName(resolvedParams.city);
+  const count = await getAgencyCount(resolvedParams.service, resolvedParams.city);
+  const nextYear = new Date().getFullYear() + 1;
+  
+  const title = `Top ${count}+ ${serviceName} Agencies in ${locationName} (${nextYear} List) | Agency Spot`;
+  const description = `Compare the Best ${serviceName} Agencies in ${locationName}. ✓ Verified Agencies ✓ Client Reviews ✓ Portfolio. Get Free Quotes Within 48 Hours.`;
+  const ogTitle = `Best ${serviceName} Agencies in ${locationName} - Top ${count}+ Verified Companies`;
   
   return {
-    title: `Top ${serviceName} Agencies in ${locationName} | SEO Scientist Agency Spot`,
-    description: `Find the perfect ${serviceName} partner in ${locationName}. Browse top-rated agencies, freelancers, and marketing professionals. Get multiple proposals in your inbox within 48 hours.`,
+    title,
+    description,
     openGraph: {
-      title: `Top ${serviceName} Agencies in ${locationName}`,
-      description: `Discover and connect with the best ${serviceName} agencies in ${locationName}. Compare proposals and find your ideal marketing partner.`,
+      title: ogTitle,
+      description,
+      type: 'website',
+      url: `https://agencyspot.seoscientist.ai/agency/list/${resolvedParams.service}/${resolvedParams.city}`,
+      siteName: 'SEO Scientist Agency Spot',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: ogTitle,
+      description,
+      creator: '@udaydev',
     }
   }
 }

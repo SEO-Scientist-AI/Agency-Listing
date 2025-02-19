@@ -3,6 +3,7 @@
 import { AgenciesClient } from './agencies-client';
 import { Skeleton } from "@/components/ui/skeleton"
 import useAppStore from "@/lib/store/useAppStore";
+import { useEffect, useState } from "react";
 
 
 
@@ -100,10 +101,13 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
   const { services, cities } = useAppStore();
   const selectedServices = servicesSlug?.split(' ') || [];
   const selectedLocations = locationSlug?.split(' ') || [];
+  const [totalAgencies, setTotalAgencies] = useState(0);
   
+  const getNextYear = () => {
+    return new Date().getFullYear() + 1;
+  };
+
   const getDisplayTitle = () => {
-  
-    
     const serviceNames = selectedServices
       .map(slug => services.find(s => s.slug === slug)?.serviceName)
       .filter(Boolean)
@@ -115,14 +119,14 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
       .join(', ');
 
     if (serviceNames && locationNames) {
-      return `Trusted ${serviceNames} Agency  in ${locationNames}`;
+      return `${totalAgencies} Best ${serviceNames} Agency in ${locationNames} in ${getNextYear()} (Updated List)`;
     } else if (serviceNames) {
-      return `Top Professional ${serviceNames} Agency  Worldwide`;
+      return `${totalAgencies} Top ${serviceNames} Agency Worldwide in ${getNextYear()} (Updated List)`;
     } else if (locationNames) {
-      return `Trusted Agency in ${locationNames}`;
+      return `${totalAgencies} Trusted Agency in ${locationNames} in ${getNextYear()} (Updated List)`;
     }
     
-    return "Top Professional Agency Worldwide";
+    return `Top Professional Agency Worldwide in ${getNextYear()} (Updated List)`;
   };
 
   const getDisplayDescription = () => {    
@@ -142,6 +146,25 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
     
     return "Discover the top Companies worldwide. Connect with skilled marketing agencies from our curated community to elevate your marketing strategy.";
   };
+
+  useEffect(() => {
+    const updateTotalAgencies = async () => {
+      try {
+        const params = new URLSearchParams();
+        if (servicesSlug) params.append('services', servicesSlug);
+        if (locationSlug) params.append('location', locationSlug);
+        
+        const response = await fetch(`/api/agency/count?${params.toString()}`);
+        const data = await response.json();
+        setTotalAgencies(data.count || 0);
+      } catch (error) {
+        console.error('Error fetching total agencies:', error);
+        setTotalAgencies(0);
+      }
+    };
+
+    updateTotalAgencies();
+  }, [servicesSlug, locationSlug]);
 
   return (
     <>  

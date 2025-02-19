@@ -2,11 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, MapPin, DollarSign, Star, Facebook, Linkedin, Instagram, Youtube } from "lucide-react";
+import { Building2, MapPin, DollarSign, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatSlug } from "@/lib/firebase/agencies";
 import { Agency } from "@/types/agency";
+import { FacebookIcon, LinkedinIcon, InstagramIcon, YoutubeIcon } from "./social-icons";
 
 interface ServiceBubbleProps {
     service: string;
@@ -160,7 +161,7 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
                                     rel="noopener noreferrer" 
                                     className="p-1.5 border border-dashed border-[#1877F2]/20 rounded-lg text-[#1877F2] dark:text-[#1877F2]/80 hover:text-primary hover:border-primary/50 hover:bg-[#1877F2]/5 transition-all"
                                 >
-                                    <Facebook className="h-4 w-4" />
+                                    <FacebookIcon />
                                 </Link>
                             )}
                             {agency.socialLinks?.linkedin && (
@@ -170,7 +171,7 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
                                     rel="noopener noreferrer" 
                                     className="p-1.5 border border-dashed border-[#0A66C2]/20 rounded-lg text-[#0A66C2] dark:text-[#0A66C2]/80 hover:text-primary hover:border-primary/50 hover:bg-[#0A66C2]/5 transition-all"
                                 >
-                                    <Linkedin className="h-4 w-4" />
+                                    <LinkedinIcon />
                                 </Link>
                             )}
                             {agency.socialLinks?.instagram && (
@@ -180,7 +181,7 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
                                     rel="noopener noreferrer" 
                                     className="p-1.5 border border-dashed border-[#E4405F]/20 rounded-lg text-[#E4405F] dark:text-[#E4405F]/80 hover:text-primary hover:border-primary/50 hover:bg-[#E4405F]/5 transition-all"
                                 >
-                                    <Instagram className="h-4 w-4" />
+                                    <InstagramIcon />
                                 </Link>
                             )}
                             {agency.socialLinks?.youtube && (
@@ -190,7 +191,7 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
                                     rel="noopener noreferrer" 
                                     className="p-1.5 border border-dashed border-[#FF0000]/20 rounded-lg text-[#FF0000] dark:text-[#FF0000]/80 hover:text-primary hover:border-primary/50 hover:bg-[#FF0000]/5 transition-all"
                                 >
-                                    <Youtube className="h-4 w-4" />
+                                    <YoutubeIcon />
                                 </Link>
                             )}
                         </div>
@@ -207,7 +208,7 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
                                 </Link>
                             )}
                             <Link href={`/agency/${formatSlug(agency.name || "")}`}>
-                                <Button size="sm">View Details</Button>
+                                <Button size="sm">View Portfolio</Button>
                             </Link>
                         </div>
                     </div>
