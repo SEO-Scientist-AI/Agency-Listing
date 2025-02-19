@@ -178,7 +178,7 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
   return (
     <>  
       <div className="container mx-auto max-w-6xl px-4 py-8 pt-24">
-        <nav className="mb-6" aria-label="breadcrumb">
+        <nav className="mb-6 mt-4" aria-label="breadcrumb ">
           <ol className="flex flex-wrap items-center gap-1.5 break-words text-sm text-muted-foreground sm:gap-2.5">
             <li className="inline-flex items-center gap-1.5">
               <Link href="/" className="transition-colors hover:text-foreground">

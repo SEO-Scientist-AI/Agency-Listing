@@ -62,12 +62,12 @@ const LoaderCore = ({
           >
             <div>
               {index > value && (
-                <CheckIcon className="text-gray-500 dark:text-gray-400" />
+                <CheckIcon className="text-gray-500 dark:text-white" />
               )}
               {index <= value && (
                 <CheckFilled
                   className={cn(
-                    "text-gray-500 dark:text-gray-400",
+                    "text-gray-500 dark:text-white",
                     value === index &&
                       "text-green-600 dark:text-lime-500 opacity-100"
                   )}
@@ -76,7 +76,7 @@ const LoaderCore = ({
             </div>
             <span
               className={cn(
-                "text-gray-600 dark:text-gray-300",
+                "text-gray-500 dark:text-white",
                 value === index && "text-green-600 dark:text-lime-500 opacity-100"
               )}
             >
@@ -92,53 +92,36 @@ const LoaderCore = ({
 export const MultiStepLoader = ({
   loadingStates,
   loading,
-  duration = 2000,
-  loop = true,
-  isCompiling = false,
+  duration = 400,
+  loop = false,
 }: {
   loadingStates: LoadingState[];
   loading?: boolean;
   duration?: number;
   loop?: boolean;
-  isCompiling?: boolean;
 }) => {
   const [currentState, setCurrentState] = useState(0);
-  const [isCompleting, setIsCompleting] = useState(false);
 
   useEffect(() => {
-    if (!loading && !isCompleting && !isCompiling) {
+    if (!loading) {
       setCurrentState(0);
       return;
     }
-
     const timeout = setTimeout(() => {
-      if (currentState === loadingStates.length - 1) {
-        if (!loop) {
-          if (!isCompiling) {
-            setIsCompleting(false);
-          } else {
-            setCurrentState(0);
-          }
-        } else {
-          setCurrentState(0);
-        }
-      } else {
-        setCurrentState(prevState => prevState + 1);
-      }
+      setCurrentState((prevState) =>
+        loop
+          ? prevState === loadingStates.length - 1
+            ? 0
+            : prevState + 1
+          : Math.min(prevState + 1, loadingStates.length - 1)
+      );
     }, duration);
 
     return () => clearTimeout(timeout);
-  }, [currentState, loading, loop, loadingStates.length, duration, isCompleting, isCompiling]);
-
-  useEffect(() => {
-    if (loading || isCompiling) {
-      setIsCompleting(true);
-    }
-  }, [loading, isCompiling]);
-
+  }, [currentState, loading, loop, loadingStates.length, duration]);
   return (
     <AnimatePresence mode="wait">
-      {(loading || isCompleting || isCompiling) && (
+      {loading && (
         <motion.div
           initial={{
             opacity: 0,
@@ -149,13 +132,13 @@ export const MultiStepLoader = ({
           exit={{
             opacity: 0,
           }}
-          className="w-full h-full fixed inset-0 z-[100] flex items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-2xl"
+          className="w-full h-full fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-2xl bg-white/90 dark:bg-black/90"
         >
           <div className="h-96 relative">
             <LoaderCore value={currentState} loadingStates={loadingStates} />
           </div>
 
-          <div className="bg-gradient-to-t inset-x-0 z-20 bottom-0 bg-white/90 dark:bg-black/90 h-full absolute [mask-image:radial-gradient(900px_at_center,transparent_30%,white)]" />
+          <div className="bg-gradient-to-t inset-x-0 z-20 bottom-0 bg-white dark:bg-black h-full absolute [mask-image:radial-gradient(900px_at_center,transparent_30%,white)]" />
         </motion.div>
       )}
     </AnimatePresence>

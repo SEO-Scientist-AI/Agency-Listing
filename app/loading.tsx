@@ -1,40 +1,25 @@
 "use client";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
-import { useEffect, useState } from "react";
 
 const loadingStates = [
   {
-    text: "Loading your experience...",
+    text: "Searching for top agencies...",
   },
   {
-    text: "Getting things ready...",
+    text: "Analyzing agency profiles...",
   },
   {
-    text: "Almost there...",
+    text: "Finding the perfect match...",
   },
   {
-    text: "Optimizing for you...",
+    text: "Preparing your results...",
   }
 ];
 
-const Loading = () => {
-  const [isCompiling, setIsCompiling] = useState(false);
-
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      setIsCompiling(true);
-    }
-  }, []);
-
+export default function Loading() {
   return (
-    <MultiStepLoader 
-      loadingStates={loadingStates} 
-      loading={true} 
-      loop={false}
-      isCompiling={isCompiling}
-      duration={400}
-    />
+    <div className="h-screen w-screen">
+      <MultiStepLoader loadingStates={loadingStates} />
+    </div>
   );
-};
-
-export default Loading;
+}
