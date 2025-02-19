@@ -43,10 +43,7 @@ const avatarElements = avatarUrls.map((avatar) => (
 ));
 
 export default function HeroSection() {
-    const { services ,cities} = useAppStore();
-   
-    
-
+    const { services, cities } = useAppStore();
     const router = useRouter();
     const [selectedService, setSelectedService] = useState<string>("");
     const [selectedRegion, setSelectedRegion] = useState<string>("");

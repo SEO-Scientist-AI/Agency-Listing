@@ -1,11 +1,20 @@
 "use client";
 
+import * as React from "react";
 import { AgenciesClient } from './agencies-client';
 import { Skeleton } from "@/components/ui/skeleton"
 import useAppStore from "@/lib/store/useAppStore";
 import { useEffect, useState } from "react";
-
-
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 interface FindAgenciesProps {
     servicesSlug?: string;
@@ -168,17 +177,76 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
 
   return (
     <>  
-     
-      <div className="container mx-auto max-w-6xl px-4 py-8 pt-24 grid grid-cots-3 gap-4">
-        <h1 className="text-3xl font-bold tracking-tight">
-          {getDisplayTitle()}
-        </h1>
-        <p className="text-base text-muted-foreground">
-          {getDisplayDescription()}
-        </p>  
+      <div className="container mx-auto max-w-6xl px-4 py-8 pt-24">
+        <nav className="mb-6" aria-label="breadcrumb">
+          <ol className="flex flex-wrap items-center gap-1.5 break-words text-sm text-muted-foreground sm:gap-2.5">
+            <li className="inline-flex items-center gap-1.5">
+              <Link href="/" className="transition-colors hover:text-foreground">
+                Home
+              </Link>
+            </li>
+            <li role="presentation" aria-hidden="true" className="[&>svg]:h-3.5 [&>svg]:w-3.5">
+              <ChevronRight className="h-4 w-4" />
+            </li>
+            <li className="inline-flex items-center gap-1.5">
+              <Link href="/agency" className="transition-colors hover:text-foreground">
+                Agencies
+              </Link>
+            </li>
+            {selectedServices.map((serviceSlug, index) => {
+              const service = services.find(s => s.slug === serviceSlug);
+              return service ? (
+                <React.Fragment key={serviceSlug}>
+                  <li role="presentation" aria-hidden="true" className="[&>svg]:h-3.5 [&>svg]:w-3.5">
+                    <ChevronRight className="h-4 w-4" />
+                  </li>
+                  <li className="inline-flex items-center gap-1.5">
+                    {index === selectedServices.length - 1 && !selectedLocations.length ? (
+                      <span role="link" aria-disabled="true" aria-current="page" className="font-normal text-foreground">
+                        {service.serviceName}
+                      </span>
+                    ) : (
+                      <Link href={`/agency/list/${serviceSlug}`} className="transition-colors hover:text-foreground">
+                        {service.serviceName}
+                      </Link>
+                    )}
+                  </li>
+                </React.Fragment>
+              ) : null;
+            })}
+            {selectedLocations.map((locationSlug, index) => {
+              const location = cities.find(c => c.citySlug === locationSlug);
+              return location ? (
+                <React.Fragment key={locationSlug}>
+                  <li role="presentation" aria-hidden="true" className="[&>svg]:h-3.5 [&>svg]:w-3.5">
+                    <ChevronRight className="h-4 w-4" />
+                  </li>
+                  <li className="inline-flex items-center gap-1.5">
+                    {index === selectedLocations.length - 1 ? (
+                      <span role="link" aria-disabled="true" aria-current="page" className="font-normal text-foreground">
+                        {location.cityName}
+                      </span>
+                    ) : (
+                      <Link href={`/agency/list/${locationSlug}`} className="transition-colors hover:text-foreground">
+                        {location.cityName}
+                      </Link>
+                    )}
+                  </li>
+                </React.Fragment>
+              ) : null;
+            })}
+          </ol>
+        </nav>
+        <div className="space-y-4">
+          <h1 className="text-3xl font-bold tracking-tight">
+            {getDisplayTitle()}
+          </h1>
+          <p className="text-base text-muted-foreground">
+            {getDisplayDescription()}
+          </p>
+        </div>
       </div>
       <AgenciesClient servicesSlug={servicesSlug} locationSlug={locationSlug} />
-    
     </>
   );
 }
