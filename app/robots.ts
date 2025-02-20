@@ -11,7 +11,6 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',  // Rule for all other bots
         allow: [
           '/',
-          '/agency',
           '/agency/list',
           '/agency/list/*',
           '/sitemap.xml',

@@ -60,12 +60,6 @@ const getSitemapEntries = cache(async (): Promise<SitemapEntry[]> => {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/agency`,
-      lastModified: new Date().toISOString(),
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
       url: `${baseUrl}/agency/list`,
       lastModified: new Date().toISOString(),
       changeFrequency: "daily",
