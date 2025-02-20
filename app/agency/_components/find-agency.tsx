@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 interface FindAgenciesProps {
     servicesSlug?: string;
@@ -106,62 +107,85 @@ const LoadingSkeleton = () => (
 );
 
 export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesProps) {
-  
   const { services, cities } = useAppStore();
-  const selectedServices = servicesSlug?.split(' ') || [];
-  const selectedLocations = locationSlug?.split(' ') || [];
-  const [totalAgencies, setTotalAgencies] = useState(0);
+  const searchParams = useSearchParams();
   
-  const getNextYear = () => {
-    return new Date().getFullYear() + 1;
-  };
+  // Get all services and locations from both path and query params
+  const selectedServices = [
+    ...(servicesSlug?.split(' ') || []),
+    ...(searchParams.get('services')?.split(' ') || [])
+  ].filter(Boolean);
+  
+  const selectedLocations = [
+    ...(locationSlug?.split(' ') || []),
+    ...(searchParams.get('location')?.split(' ') || [])
+  ].filter(Boolean);
 
+  const [totalAgencies, setTotalAgencies] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  
+  // Move this to component level to ensure consistency
+  const nextYear = new Date().getFullYear() + 1;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
   const getDisplayTitle = () => {
     const serviceNames = selectedServices
       .map(slug => services.find(s => s.slug === slug)?.serviceName)
-      .filter(Boolean)
-      .join(', ');
+      .filter(Boolean);
       
     const locationNames = selectedLocations
       .map(slug => cities.find(c => c.citySlug === slug)?.cityName)
-      .filter(Boolean)
-      .join(', ');
+      .filter(Boolean);
 
-    if (serviceNames && locationNames) {
-      return `${totalAgencies} Best ${serviceNames} Agency in ${locationNames} in ${getNextYear()} (Updated List)`;
-    } else if (serviceNames) {
-      return `${totalAgencies} Top ${serviceNames} Agency Worldwide in ${getNextYear()} (Updated List)`;
-    } else if (locationNames) {
-      return `${totalAgencies} Trusted Agency in ${locationNames} in ${getNextYear()} (Updated List)`;
+    if (serviceNames.length && locationNames.length) {
+      return `${totalAgencies} Best ${serviceNames.join(', ')} Companies in ${locationNames.join(', ')} in ${nextYear} (Updated List)`;
+    } else if (serviceNames.length) {
+      return `${totalAgencies} Top ${serviceNames.join(', ')} Companies Worldwide in ${nextYear} (Updated List)`;
+    } else if (locationNames.length) {
+      return `${totalAgencies} Trusted Companies in ${locationNames.join(', ')} in ${nextYear} (Updated List)`;
     }
     
-    return `Top Professional Agency Worldwide in ${getNextYear()} (Updated List)`;
+    return `Top Professional Companies Worldwide in ${nextYear} (Updated List)`;
   };
 
   const getDisplayDescription = () => {    
     const serviceNames = selectedServices
       .map(slug => services.find(s => s.slug === slug)?.serviceName)
-      .filter(Boolean)
-      .join(', ');
+      .filter(Boolean);
       
     const locationNames = selectedLocations
       .map(slug => cities.find(c => c.citySlug === slug)?.cityName)
-      .filter(Boolean)
-      .join(', ');
+      .filter(Boolean);
 
-    if (serviceNames && locationNames) {
-      return `Discover the top ${serviceNames} Companies in ${locationNames}. Connect with skilled marketing agencies from our curated community to elevate your marketing strategy.`;
+    if (serviceNames.length && locationNames.length) {
+      return `The Ultimate List of ${totalAgencies} Best ${serviceNames.join(', ')} Agencies in ${locationNames.join(', ')}. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
     }
     
-    return "Discover the top Companies worldwide. Connect with skilled marketing agencies from our curated community to elevate your marketing strategy.";
+    if (serviceNames.length) {
+      return `The Ultimate List of ${totalAgencies} Best ${serviceNames.join(', ')} Agencies Worldwide. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
+    }
+
+    if (locationNames.length) {
+      return `The Ultimate List of ${totalAgencies} Best Marketing Agencies in ${locationNames.join(', ')}. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
+    }
+    
+    return `The Ultimate List of ${totalAgencies} Best Marketing Agencies Worldwide. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
   };
 
+  // Update total agencies count
   useEffect(() => {
     const updateTotalAgencies = async () => {
       try {
         const params = new URLSearchParams();
-        if (servicesSlug) params.append('services', servicesSlug);
-        if (locationSlug) params.append('location', locationSlug);
+        if (selectedServices.length > 0) {
+          params.append('services', selectedServices.join(' '));
+        }
+        if (selectedLocations.length > 0) {
+          params.append('location', selectedLocations.join(' '));
+        }
         
         const response = await fetch(`/api/agency/count?${params.toString()}`);
         const data = await response.json();
@@ -173,12 +197,16 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
     };
 
     updateTotalAgencies();
-  }, [servicesSlug, locationSlug]);
+  }, [selectedServices, selectedLocations]);
+
+  if (!mounted) {
+    return <LoadingSkeleton />;
+  }
 
   return (
     <>  
-      <div className="container mx-auto max-w-6xl px-4 py-8 pt-24">
-        <nav className="mb-6 mt-4" aria-label="breadcrumb ">
+      <div className="container mx-auto max-w-6xl px-4 py-8 pt-24" key={`${selectedServices.join('-')}-${selectedLocations.join('-')}`}>
+        <nav className="mb-6 mt-4" aria-label="breadcrumb">
           <ol className="flex flex-wrap items-center gap-1.5 break-words text-sm text-muted-foreground sm:gap-2.5">
             <li className="inline-flex items-center gap-1.5">
               <Link href="/" className="transition-colors hover:text-foreground">

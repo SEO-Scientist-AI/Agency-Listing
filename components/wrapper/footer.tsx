@@ -22,6 +22,8 @@ import {
     Sun,
     Twitter,
 } from "lucide-react";
+import Image from "next/image";
+import { FacebookIcon, LinkedinIcon, InstagramIcon, XIcon } from "@/app/agency/_components/social-icons";
 
 const Footer: FC = () => {
     const [isDarkMode, setIsDarkMode] = React.useState(false);
@@ -40,27 +42,21 @@ const Footer: FC = () => {
             <div className="container mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-8">
                 <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
                     <div className="relative">
-                        <h2 className="mb-4 text-3xl font-semibold tracking-tight dark:text-white text-gray-900">
-                            Stay Connected
-                        </h2>
+                        <div className="mb-6"> 
+                            
+                            <Link href="/" className="inline-block">
+                                <Image
+                                    src="/images/favicon.svg"
+                                    alt="Agency Spot Logo"
+                                    width={40}
+                                    height={40}
+                                />
+                            </Link>
+                            
+                        </div>
                         <p className="mb-6 text-gray-600 dark:text-gray-400">
-                            Join our newsletter for the latest updates and exclusive offers.
+                            Global Marketing Agency Marketplace connecting brands with top agencies for branding, digital marketing, SEO, and advertising.
                         </p>
-                        <form className="relative">
-                            <Input
-                                type="email"
-                                placeholder="Enter your email"
-                                className="pr-12 backdrop-blur-sm"
-                            />
-                            <Button
-                                type="submit"
-                                size="icon"
-                                className="absolute right-1 top-1 h-8 w-8 rounded-full bg-[#FF4405] text-white transition-transform hover:scale-105 hover:bg-[#ff642d]"
-                            >
-                                <Send className="h-4 w-4" />
-                                <span className="sr-only">Subscribe</span>
-                            </Button>
-                        </form>
                         <div className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-[#FF4405]/10 blur-2xl" />
                     </div>
                     <div>
@@ -92,17 +88,23 @@ const Footer: FC = () => {
                         </h3>
                         <address className="space-y-4 text-sm not-italic text-gray-600 dark:text-gray-400">
                             <div>
-                                <p className="font-semibold">UAE</p>
+                                <p className="font-semibold flex items-center gap-2">
+                                    <span role="img" aria-label="UAE flag">🇦🇪</span> UAE
+                                </p>
                                 <p>164, A1 Jaddaf Walk</p>
                                 <p>A1 Jaddaf Dubai 500001</p>
                             </div>
                             <div>
-                                <p className="font-semibold">India</p>
+                                <p className="font-semibold flex items-center gap-2">
+                                    <span role="img" aria-label="India flag">🇮🇳</span> India
+                                </p>
                                 <p>404, 4th Floor Govindpuri</p>
                                 <p>New Delhi-11003</p>
                             </div>
                             <div className="pt-2">
-                                <p className="font-semibold">Contact Us</p>
+                                <p className="font-semibold flex items-center gap-2">
+                                    <span role="img" aria-label="Contact">📞</span> Contact Us
+                                </p>
                                 <p>Phone: +917428430119</p>
                                 <p>Email: info@seoscientist.agency</p>
                             </div>
@@ -114,29 +116,42 @@ const Footer: FC = () => {
                         </h3>
                         <div className="mb-6 flex space-x-4">
                             {[
-                                { href: "https://www.facebook.com/seoscientistagency/", icon: Facebook, label: "Facebook" },
-                                { href: "https://twitter.com/iamseoscientist", icon: Twitter, label: "Twitter" },
-                                { href: "https://www.instagram.com/seoscientistuae/", icon: Instagram, label: "Instagram" },
-                                { href: "https://www.linkedin.com/company/seoscientistusa", icon: Linkedin, label: "LinkedIn" },
+                                { 
+                                    href: "https://www.facebook.com/seoscientistagency/", 
+                                    icon: FacebookIcon, 
+                                    label: "Facebook",
+                                    className: "p-1.5 border border-dashed border-[#1877F2]/20 rounded-lg text-[#1877F2] dark:text-[#1877F2]/80 hover:text-primary hover:border-primary/50 hover:bg-[#1877F2]/5 transition-all bg-background"
+                                },
+                                { 
+                                    href: "https://twitter.com/iamseoscientist", 
+                                    icon: XIcon, 
+                                    label: "Twitter",
+                                    className: "p-1.5 border border-dashed border-[#1DA1F2]/20 rounded-lg text-[#1DA1F2] dark:text-[#1DA1F2]/80 hover:text-primary hover:border-primary/50 hover:bg-[#1DA1F2]/5 transition-all bg-background"
+                                },
+                                { 
+                                    href: "https://www.instagram.com/seoscientistuae/", 
+                                    icon: InstagramIcon, 
+                                    label: "Instagram",
+                                    className: "p-1.5 border border-dashed border-[#E4405F]/20 rounded-lg text-[#E4405F] dark:text-[#E4405F]/80 hover:text-primary hover:border-primary/50 hover:bg-[#E4405F]/5 transition-all bg-background"
+                                },
+                                { 
+                                    href: "https://www.linkedin.com/company/seoscientistusa", 
+                                    icon: LinkedinIcon, 
+                                    label: "LinkedIn",
+                                    className: "p-1.5 border border-dashed border-[#0A66C2]/20 rounded-lg text-[#0A66C2] dark:text-[#0A66C2]/80 hover:text-primary hover:border-primary/50 hover:bg-[#0A66C2]/5 transition-all bg-background"
+                                },
                             ].map((social) => (
                                 <TooltipProvider key={social.label}>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                className="rounded-full hover:text-[#ff642d]"
-                                                asChild
+                                            <Link
+                                                href={social.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={social.className}
                                             >
-                                                <a
-                                                    href={social.href}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                >
-                                                    <social.icon className="h-4 w-4" />
-                                                    <span className="sr-only">{social.label}</span>
-                                                </a>
-                                            </Button>
+                                                <social.icon />
+                                            </Link>
                                         </TooltipTrigger>
                                         <TooltipContent>
                                             <p>Follow us on {social.label}</p>

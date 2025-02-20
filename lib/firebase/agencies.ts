@@ -1,6 +1,6 @@
 import { Agency } from '@/types/agency';
 import { db } from './config';
-import { collection, getDocs, getDoc, doc, query, where, orderBy, limit, startAfter, addDoc } from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc, query, where, orderBy, limit, startAfter, addDoc, getCountFromServer } from 'firebase/firestore';
 
 const AGENCIES_PER_PAGE = 10;
 
@@ -150,4 +150,41 @@ export async function createAgency(agencyData: any) {
         console.error('Error creating agency:', error);
         throw error;
     }
+}
+
+export async function checkIfService(slug: string): Promise<boolean> {
+  const servicesRef = collection(db, "services");
+  const q = query(servicesRef, where("slug", "==", slug));
+  const snapshot = await getDocs(q);
+  return !snapshot.empty;
+}
+
+export async function checkIfLocation(slug: string): Promise<boolean> {
+  const locationsRef = collection(db, "locations");
+  const q = query(locationsRef, where("citySlug", "==", slug));
+  const snapshot = await getDocs(q);
+  return !snapshot.empty;
+}
+
+export async function getAgencyCount(services?: string[], locations?: string[]) {
+  try {
+    const agenciesRef = collection(db, "agencies");
+    let baseQuery = query(agenciesRef);
+    
+    if (services?.length || locations?.length) {
+      const filters = [...(services || []), ...(locations || [])].map(f => f.toLowerCase());
+      if (filters.length > 0) {
+        baseQuery = query(
+          baseQuery,
+          where("combinedSlug", "array-contains-any", filters)
+        );
+      }
+    }
+
+    const snapshot = await getCountFromServer(baseQuery);
+    return snapshot.data().count;
+  } catch (error) {
+    console.error('Error getting agency count:', error);
+    return 0;
+  }
 }

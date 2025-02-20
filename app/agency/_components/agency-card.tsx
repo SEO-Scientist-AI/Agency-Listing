@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, MapPin, DollarSign, Star } from "lucide-react";
+import { Building2, MapPin, DollarSign, Star, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatSlug } from "@/lib/firebase/agencies";
@@ -70,19 +70,20 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
                 </div>
                 <div className="flex-grow space-y-3">
                     <div className="flex justify-between items-start">
-                        <div>
-                            <Link
-                                href={`/agency/${formatSlug(
-                                    agency.name || ""
-                                )}`}
-                                className="hover:underline"
+                        <div className="space-y-2">
+                            <a 
+                                href={agency.websiteUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="group inline-flex items-center gap-1 hover:text-primary transition-colors"
                             >
-                                <h2 className="text-xl font-bold">
-                                    {agency.name || "Unnamed Agency"}
-                                </h2>
-                            </Link>
+                                <h3 className="text-xl font-semibold">
+                                    {agency.name}
+                                </h3>
+                                <ArrowUpRight className="w-5 h-5 opacity-0 -translate-y-1 translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0" />
+                            </a>
                             <p className="text-sm text-muted-foreground">
-                                {agency.tagline || "No tagline available"}
+                                {agency.tagline || ""}
                             </p>
                         </div>
                         <div className="flex items-center space-x-1 bg-muted rounded-full px-2 py-1">
@@ -207,7 +208,7 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
                                     </Button>
                                 </Link>
                             )}
-                            <Link href={`/agency/${formatSlug(agency.name || "")}`}>
+                            <Link href={`/agency/${formatSlug(agency.name)}`}>
                                 <Button size="sm">View Portfolio</Button>
                             </Link>
                         </div>

@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar, Video } from "lucide-react"
 import { Skeleton } from '@/components/ui/skeleton';
+import Link from "next/link"
 
 interface ContactAgencyProps {
   agency: {
@@ -28,10 +29,17 @@ export function ContactAgency({ agency }: ContactAgencyProps) {
 
   return (
     <div className="w-full">
-      <Button variant="secondary" className="w-full mb-4 border-[1px]">
-        <Calendar className="mr-2 h-4 w-4" />
-        Schedule a Call
-      </Button>
+      <Link 
+        href="https://calendly.com/seo-scientist/30min"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full"
+      >
+        <Button variant="secondary" className="w-full mb-4 border-[1px]">
+          <Calendar className="mr-2 h-4 w-4" />
+          Schedule a Call
+        </Button>
+      </Link>
       <p className="text-sm text-muted-foreground text-center mb-6">
         {loading ? <Skeleton className="w-[100px] h-[20px] rounded-full" /> : 
         <span>Or fill in this form, and the agency will contact you.</span>}
@@ -77,7 +85,7 @@ export function ContactAgency({ agency }: ContactAgencyProps) {
           />
         </div>
         <Button type="submit" className="w-full">
-          Send Message
+          Get Quote
         </Button>
       </form>
     </div>

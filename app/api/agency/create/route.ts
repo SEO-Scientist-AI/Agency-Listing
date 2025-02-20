@@ -10,10 +10,11 @@ export async function POST(req: NextRequest) {
         // Create a slug from the agency name
         const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         
-        // Create combined slug for filtering
+        // Create combined slug for filtering - ensure all items are lowercase
         const combinedSlug = [
             ...data.services.map((s: string) => s.toLowerCase()),
-            data.location.toLowerCase()
+            data.location.toLowerCase(),
+            ...(data.additionalLocations || []).map((l: string) => l.toLowerCase())
         ];
 
         const agencyData = {

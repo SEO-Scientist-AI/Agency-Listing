@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     metadataBase: new URL("https://agencyspot.seoscientist.ai/"),
     title: {
         default: "SEO Scientist Agency Spot",
-        template: `%s | Connecting You Effortlessly`,
+        template: `%s `,
     },
     description:
         "Find a perfect digital marketing partner for your next project: agencies, freelancers, and many more. Get several proposals right in your inbox in 2 days.",

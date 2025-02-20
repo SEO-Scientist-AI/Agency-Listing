@@ -19,6 +19,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import useAppStore from "@/lib/store/useAppStore";
 import axiosInstance from "@/lib/axios-instance";
 import { useAgencies } from "@/lib/hooks/use-agencies";
+import { AgencyCardSkeleton } from "./agency-card-skeleton";
 
 interface FilterState {
   search: string;
@@ -161,20 +162,20 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
       <div className="lg:w-3/4">
         <div className="space-y-6">
           {isLoading ? (
-            <div className="space-y-6 animate-in fade-in-50 duration-500">
+            <div className="space-y-6">
               {[1, 2, 3].map((i) => (
-                <LoadingAgencyCard key={i} />
+                <AgencyCardSkeleton key={i} />
               ))}
             </div>
           ) : agencies.length === 0 ? (
-            <div className="text-center py-8 animate-in fade-in-50 duration-500">
+            <div className="text-center py-8">
               <p className="text-lg text-muted-foreground">No agencies found</p>
               <p className="text-sm text-muted-foreground mt-2">
                 Try adjusting your filters
               </p>
             </div>
           ) : (
-            <div className="animate-in fade-in-50 duration-500">
+            <div>
               {agencies.map((agency: Agency) => (
                 <AgencyCard
                   key={agency.id}

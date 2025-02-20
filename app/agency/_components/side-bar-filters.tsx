@@ -95,68 +95,132 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
         setServiceSearch("");
         setLocationSearch("");
         setFiltersApplied(false);
-        router.push(pathname);
+        
+        // Clear URL and redirect to list page
+        router.replace('/agency/list');
+        
+        // Refetch agencies without filters
         const response = await axiosInstance.get('/agency');
         setAgencies(response.data);
     };
 
     const handleApplyFilters = async () => {
-        const newParams = new URLSearchParams();
-        if (selectedServices.length > 0) {
-            newParams.set('services', selectedServices.join(' '));
-        }
-        if (selectedLocations.length > 0) {
-            newParams.set('location', selectedLocations.join(' '));
-        }
-        
-        setFiltersApplied(true);
-        // Clear search bars
+        // Clear search inputs first
         setServiceSearch("");
         setLocationSearch("");
-        router.replace(`/agency?${newParams.toString()}`);
-        // No need to make API call - the hook will handle it
+
+        try {
+            // Case 1: Single service only
+            if (selectedServices.length === 1 && selectedLocations.length === 0) {
+                router.replace(`/agency/list/${selectedServices[0]}`);
+                return;
+            }
+
+            // Case 2: Single location only
+            if (selectedLocations.length === 1 && selectedServices.length === 0) {
+                router.replace(`/agency/list/${selectedLocations[0]}`);
+                return;
+            }
+
+            // Case 3: Single service and single location
+            if (selectedServices.length === 1 && selectedLocations.length === 1) {
+                router.replace(`/agency/list/${selectedServices[0]}/${selectedLocations[0]}`);
+                return;
+            }
+
+            // Case 4: Multiple selections - use query params
+            const params = new URLSearchParams();
+            if (selectedServices.length > 0) {
+                params.set('services', selectedServices.join(' '));
+            }
+            if (selectedLocations.length > 0) {
+                params.set('location', selectedLocations.join(' '));
+            }
+
+            // Only add query string if we have parameters
+            const queryString = params.toString();
+            router.replace(queryString ? `/agency/list?${queryString}` : '/agency/list');
+        } catch (error) {
+            console.error('Error applying filters:', error);
+        }
     };
 
     const removeServiceAndApply = async (serviceSlug: string) => {
         const newServices = selectedServices.filter(s => s !== serviceSlug);
         setSelectedServices(newServices);
         
-        const params = new URLSearchParams();
-        if (newServices.length > 0) {
-            params.set('services', newServices.join(' '));
+        try {
+            // Case 1: One service left and one location
+            if (newServices.length === 1 && selectedLocations.length === 1) {
+                router.replace(`/agency/list/${newServices[0]}/${selectedLocations[0]}`);
+                return;
+            }
+
+            // Case 2: One service left, no locations
+            if (newServices.length === 1 && selectedLocations.length === 0) {
+                router.replace(`/agency/list/${newServices[0]}`);
+                return;
+            }
+
+            // Case 3: One location left, no services
+            if (newServices.length === 0 && selectedLocations.length === 1) {
+                router.replace(`/agency/list/${selectedLocations[0]}`);
+                return;
+            }
+
+            // Case 4: Multiple selections or none - use query params
+            const params = new URLSearchParams();
+            if (newServices.length > 0) {
+                params.set('services', newServices.join(' '));
+            }
+            if (selectedLocations.length > 0) {
+                params.set('location', selectedLocations.join(' '));
+            }
+
+            const queryString = params.toString();
+            router.replace(queryString ? `/agency/list?${queryString}` : '/agency/list');
+        } catch (error) {
+            console.error('Error removing service:', error);
         }
-        if (selectedLocations.length > 0) {
-            params.set('location', selectedLocations.join(' '));
-        }
-        
-        if (newServices.length === 0 && selectedLocations.length === 0) {
-            setFiltersApplied(false);
-        }
-        
-        router.replace(`/agency?${params.toString()}`);
-        const response = await axiosInstance.get(`/agency?${params.toString()}`);
-        setAgencies(response.data);
     };
 
     const removeLocationAndApply = async (locationSlug: string) => {
         const newLocations = selectedLocations.filter(l => l !== locationSlug);
         setSelectedLocations(newLocations);
         
-        const params = new URLSearchParams();
-        if (selectedServices.length > 0) {
-            params.set('services', selectedServices.join(' '));
+        try {
+            // Case 1: One service and one location left
+            if (selectedServices.length === 1 && newLocations.length === 1) {
+                router.replace(`/agency/list/${selectedServices[0]}/${newLocations[0]}`);
+                return;
+            }
+
+            // Case 2: One location left, no services
+            if (newLocations.length === 1 && selectedServices.length === 0) {
+                router.replace(`/agency/list/${newLocations[0]}`);
+                return;
+            }
+
+            // Case 3: One service left, no locations
+            if (newLocations.length === 0 && selectedServices.length === 1) {
+                router.replace(`/agency/list/${selectedServices[0]}`);
+                return;
+            }
+
+            // Case 4: Multiple selections or none - use query params
+            const params = new URLSearchParams();
+            if (selectedServices.length > 0) {
+                params.set('services', selectedServices.join(' '));
+            }
+            if (newLocations.length > 0) {
+                params.set('location', newLocations.join(' '));
+            }
+
+            const queryString = params.toString();
+            router.replace(queryString ? `/agency/list?${queryString}` : '/agency/list');
+        } catch (error) {
+            console.error('Error removing location:', error);
         }
-        if (newLocations.length > 0) {
-            params.set('location', newLocations.join(' '));
-        }
-        
-        if (newLocations.length === 0 && selectedServices.length === 0) {
-            setFiltersApplied(false);
-        }
-        
-        router.replace(`/agency?${params.toString()}`);
-        const response = await axiosInstance.get(`/agency?${params.toString()}`);
-        setAgencies(response.data);
     };
 
     const hasActiveFilters = () => {

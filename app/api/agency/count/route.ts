@@ -11,17 +11,18 @@ export async function GET(req: NextRequest) {
     // Create base query
     let baseQuery = query(collection(db, "agencies"));
     
-    // Apply filters
-    const filters = [];
-    if (location) {
-      filters.push(...location.split(" ").map(loc => loc.toLowerCase()));
-    }
-    if (services) {
-      filters.push(...services.split(" ").map(service => service.toLowerCase()));
-    }
-    
-    if (filters.length > 0) {
-      baseQuery = query(baseQuery, where("combinedSlug", "array-contains-any", filters));
+    // Handle multiple filters with OR condition
+    if (services || location) {
+      const serviceFilters = services ? services.split(' ').map(s => s.toLowerCase()) : [];
+      const locationFilters = location ? location.split(' ').map(l => l.toLowerCase()) : [];
+      const allFilters = [...serviceFilters, ...locationFilters];
+
+      if (allFilters.length > 0) {
+        baseQuery = query(
+          baseQuery, 
+          where("combinedSlug", "array-contains-any", allFilters)
+        );
+      }
     }
 
     const snapshot = await getCountFromServer(baseQuery);
