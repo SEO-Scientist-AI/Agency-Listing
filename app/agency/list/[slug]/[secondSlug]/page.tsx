@@ -4,21 +4,24 @@ import { redirect } from "next/navigation";
 import { Metadata } from 'next';
 import { ArchiveRelatedAgencies } from "@/app/agency/_components/archive-related-agencies";
 
-// Generate static params for all service-location combinations
+// Update generateStaticParams to limit combinations
 export async function generateStaticParams() {
   const [services, locations] = await Promise.all([
     getAllServices(),
     getAllLocations()
   ]);
 
-  // Generate all valid service-location combinations
+  // Take only the top N most popular services and locations
+  const topServices = services.slice(0, 200); // Adjust number as needed
+  const topLocations = locations.slice(0, 300); // Adjust number as needed
+
   const paths = [];
   
-  for (const service of services) {
-    for (const location of locations) {
+  for (const service of topServices) {
+    for (const location of topLocations) {
       paths.push({
-        slug: service,       // service is already a string
-        secondSlug: location // location is already a string
+        slug: service,
+        secondSlug: location
       });
     }
   }

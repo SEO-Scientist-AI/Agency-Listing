@@ -48,20 +48,23 @@ const metaTemplates = [
   }
 ];
 
-// Generate static params for all single filter combinations
+// Update generateStaticParams to limit single filters
 export async function generateStaticParams() {
   const [services, locations] = await Promise.all([
     getAllServices(),
     getAllLocations()
   ]);
 
-  // Generate paths for all services and locations
+  // Take only the top N most popular services and locations
+  const topServices = services.slice(0, 200); // Adjust number as needed
+  const topLocations = locations.slice(0, 300); // Adjust number as needed
+
   return [
-    ...services.map(service => ({
-      slug: service  // service is already a string
+    ...topServices.map(service => ({
+      slug: service
     })),
-    ...locations.map(location => ({
-      slug: location  // location is already a string
+    ...topLocations.map(location => ({
+      slug: location
     }))
   ];
 }
