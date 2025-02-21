@@ -57,7 +57,7 @@ export async function generateStaticParams() {
 
   // Take only the top N most popular services and locations
   const topServices = services.slice(0, 200); // Adjust number as needed
-  const topLocations = locations.slice(0, 300); // Adjust number as needed
+  const topLocations = locations.slice(0, 200); // Adjust number as needed
 
   return [
     ...topServices.map(service => ({
