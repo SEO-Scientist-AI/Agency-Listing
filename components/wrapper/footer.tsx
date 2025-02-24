@@ -6,6 +6,7 @@ import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { ThemeToggle } from "@/components/theme-toggle";
 import ReactCountryFlag from "react-country-flag";
 import { Phone, Mail } from "lucide-react";
+import Image from "next/image";
 
 const sections = [
   {
@@ -68,10 +69,12 @@ const Footer: FC = () => {
                         <div className="flex w-full max-w-96 shrink flex-col items-center gap-8 lg:items-start">
                             <div>
                                 <span className="flex items-center justify-center gap-3 lg:justify-start">
-                                    <img
+                                    <Image
                                         src="/images/favicon.svg"
                                         alt="SEO Scientist Logo"
                                         className="h-10"
+                                        width={40}
+                                        height={40}
                                     />
                                     <p className="text-2xl font-semibold text-foreground">SEO Scientist</p>
                                 </span>
@@ -83,22 +86,46 @@ const Footer: FC = () => {
                                 <ul className="flex items-center gap-5 text-muted-foreground">
                                     <li className="font-medium hover:text-primary transition-colors">
                                         <Link href="https://www.instagram.com/seoscientistuae/" target="_blank" rel="noopener noreferrer">
-                                            <FaInstagram className="size-6" />
+                                            <Image
+                                                src="/images/social/instagram.svg"
+                                                alt="Instagram"
+                                                width={24}
+                                                height={24}
+                                                className="h-6 w-6"
+                                            />
                                         </Link>
                                     </li>
                                     <li className="font-medium hover:text-primary">
                                         <Link href="https://www.facebook.com/seoscientistagency/" target="_blank" rel="noopener noreferrer">
-                                            <FaFacebook className="size-6" />
+                                            <Image
+                                                src="/images/social/facebook.svg"
+                                                alt="Facebook"
+                                                width={24}
+                                                height={24}
+                                                className="h-6 w-6"
+                                            />
                                         </Link>
                                     </li>
                                     <li className="font-medium hover:text-primary">
                                         <Link href="https://twitter.com/iamseoscientist" target="_blank" rel="noopener noreferrer">
-                                            <FaTwitter className="size-6" />
+                                            <Image
+                                                src="/images/social/twitter.svg"
+                                                alt="Twitter"
+                                                width={24}
+                                                height={24}
+                                                className="h-6 w-6"
+                                            />
                                         </Link>
                                     </li>
                                     <li className="font-medium hover:text-primary">
                                         <Link href="https://www.linkedin.com/company/seoscientistusa" target="_blank" rel="noopener noreferrer">
-                                            <FaLinkedin className="size-6" />
+                                            <Image
+                                                src="/images/social/linkedin.svg"
+                                                alt="LinkedIn"
+                                                width={24}
+                                                height={24}
+                                                className="h-6 w-6"
+                                            />
                                         </Link>
                                     </li>
                                 </ul>

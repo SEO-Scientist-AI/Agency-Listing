@@ -4,6 +4,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { useFormContext } from "react-hook-form";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { z } from "zod";
 
 interface SectionProps {
   title: string;
@@ -99,4 +103,44 @@ export function SubSection({ title, description, children }: SubSectionProps) {
       {children}
     </div>
   );
-} 
+}
+
+export const BasicInfoSection = () => {
+  const { control, formState: { errors } } = useFormContext();
+
+  return (
+    <div className="space-y-4">
+      <FormField
+        control={control}
+        name="phone"
+        rules={{
+          required: "Phone number is required",
+        }}
+        render={({ field: { value, onChange } }) => (
+          <FormItem>
+            <FormLabel>
+              Phone Number <span className="text-red-500">*</span>
+            </FormLabel>
+            <FormControl>
+              <PhoneInput
+                value={value}
+                onChange={onChange}
+                defaultCountry="IN"
+                placeholder="Enter phone number"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  );
+};
+
+const formSchema = z.object({
+  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+});
+
+type FormData = z.infer<typeof formSchema> & {
+  phone: string;
+}; 
