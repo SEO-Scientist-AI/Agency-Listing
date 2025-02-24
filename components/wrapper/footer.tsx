@@ -2,7 +2,7 @@
 
 import { type FC } from "react";
 import Link from "next/link";
-import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaLinkedin, FaXTwitter } from "react-icons/fa6";
 import { ThemeToggle } from "@/components/theme-toggle";
 import ReactCountryFlag from "react-country-flag";
 import { Phone, Mail } from "lucide-react";
@@ -76,7 +76,10 @@ const Footer: FC = () => {
                                         width={40}
                                         height={40}
                                     />
-                                    <p className="text-2xl font-semibold text-foreground">SEO Scientist</p>
+                                    <div className="flex flex-col">
+                                        <p className="text-2xl font-semibold text-foreground">SEO Scientist</p>
+                                        <p className="text-sm text-muted-foreground">Agency Spot</p>
+                                    </div>
                                 </span>
                                 <p className="mt-4 text-sm text-muted-foreground">
                                     Global Marketing Agency Marketplace connecting brands with top agencies for branding, digital marketing, SEO, and advertising.
@@ -86,46 +89,22 @@ const Footer: FC = () => {
                                 <ul className="flex items-center gap-5 text-muted-foreground">
                                     <li className="font-medium hover:text-primary transition-colors">
                                         <Link href="https://www.instagram.com/seoscientistuae/" target="_blank" rel="noopener noreferrer">
-                                            <Image
-                                                src="/images/social/instagram.svg"
-                                                alt="Instagram"
-                                                width={24}
-                                                height={24}
-                                                className="h-6 w-6"
-                                            />
+                                            <FaInstagram className="w-[24px] h-[24px]" />
                                         </Link>
                                     </li>
                                     <li className="font-medium hover:text-primary">
                                         <Link href="https://www.facebook.com/seoscientistagency/" target="_blank" rel="noopener noreferrer">
-                                            <Image
-                                                src="/images/social/facebook.svg"
-                                                alt="Facebook"
-                                                width={24}
-                                                height={24}
-                                                className="h-6 w-6"
-                                            />
+                                            <FaFacebook className="w-[24px] h-[24px]" />
                                         </Link>
                                     </li>
                                     <li className="font-medium hover:text-primary">
                                         <Link href="https://twitter.com/iamseoscientist" target="_blank" rel="noopener noreferrer">
-                                            <Image
-                                                src="/images/social/twitter.svg"
-                                                alt="Twitter"
-                                                width={24}
-                                                height={24}
-                                                className="h-6 w-6"
-                                            />
+                                            <FaXTwitter className="w-[24px] h-[24px]" />
                                         </Link>
                                     </li>
                                     <li className="font-medium hover:text-primary">
                                         <Link href="https://www.linkedin.com/company/seoscientistusa" target="_blank" rel="noopener noreferrer">
-                                            <Image
-                                                src="/images/social/linkedin.svg"
-                                                alt="LinkedIn"
-                                                width={24}
-                                                height={24}
-                                                className="h-6 w-6"
-                                            />
+                                            <FaLinkedin className="w-[24px] h-[24px]" />
                                         </Link>
                                     </li>
                                 </ul>
@@ -194,7 +173,7 @@ const Footer: FC = () => {
                         </div>
                     </div>
                     <div className="mt-16 flex flex-col justify-between gap-4 border-t border-border pt-6 text-center text-sm font-medium text-muted-foreground lg:flex-row lg:items-center lg:text-left">
-                        <p>© 2024 SEO Scientist. All rights reserved.</p>
+                        <p>© 2024 SEO Scientist Agency Spot. All rights reserved.</p>
                         <ul className="flex justify-center gap-6 lg:justify-start">
                             <li className="hover:text-primary transition-colors">
                                 <Link href="/terms-and-conditions">Terms and Conditions</Link>

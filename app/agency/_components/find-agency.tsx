@@ -161,18 +161,18 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
       .filter(Boolean);
 
     if (serviceNames.length && locationNames.length) {
-      return `The Ultimate List of ${totalAgencies} Best ${serviceNames.join(', ')} Agencies in ${locationNames.join(', ')}. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
+      return `The Ultimate List of **${totalAgencies} Best ${serviceNames.join(', ')} Agencies in ${locationNames.join(', ')}**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
     }
     
     if (serviceNames.length) {
-      return `The Ultimate List of ${totalAgencies} Best ${serviceNames.join(', ')} Agencies Worldwide. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
+      return `The Ultimate List of **${totalAgencies} Best ${serviceNames.join(', ')} Agencies Worldwide**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
     }
 
     if (locationNames.length) {
-      return `The Ultimate List of ${totalAgencies} Best Marketing Agencies in ${locationNames.join(', ')}. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
+      return `The Ultimate List of **${totalAgencies} Best Marketing Agencies in ${locationNames.join(', ')}**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
     }
     
-    return `The Ultimate List of ${totalAgencies} Best Marketing Agencies Worldwide. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
+    return `The Ultimate List of **${totalAgencies} Best Marketing Agencies Worldwide**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
   };
 
   // Update total agencies count
@@ -270,7 +270,9 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
             {getDisplayTitle()}
           </h1>
           <p className="text-base text-muted-foreground">
-            {getDisplayDescription()}
+            {getDisplayDescription().split('**').map((part, i) => 
+              i % 2 === 1 ? <span key={i} className="font-bold">{part}</span> : part
+            )}
           </p>
         </div>
       </div>
