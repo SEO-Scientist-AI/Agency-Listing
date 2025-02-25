@@ -1,12 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { X } from "lucide-react";
+import { X, ChevronDown, ChevronUp } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,11 +15,14 @@ import axiosInstance from "@/lib/axios-instance";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAgencies } from "@/lib/hooks/use-agencies";
 import { Briefcase, MapPin } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface SideBarFiltersProps {
     servicesSlug?: string;
     locationSlug?: string;
-  }
+}
+
 function LoadingSkeleton() {
     return (
         <Card className="col-span-1 h-fit animate-pulse">
@@ -43,7 +46,7 @@ function LoadingSkeleton() {
     );
 }
 
-const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
+const SideBarFilters = ({servicesSlug, locationSlug}: SideBarFiltersProps) => {
     const { services, cities: locations, serviceLoading, citiesLoading, setAgencies } = useAppStore();
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
     const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
@@ -55,6 +58,8 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [filtersApplied, setFiltersApplied] = useState(false);
+    const [servicesOpen, setServicesOpen] = useState(true);
+    const [locationsOpen, setLocationsOpen] = useState(true);
 
     // Create params object once
     const params = new URLSearchParams(searchParams.toString());
@@ -232,146 +237,166 @@ const SideBarFilters = ({servicesSlug,locationSlug}:SideBarFiltersProps) => {
     }
 
     return (
-        <Card className="col-span-1 h-fit">
-            <CardHeader className="space-y-4">
-                <div className="flex justify-between items-center">
-                    <CardTitle className="text-2xl font-semibold">Filter</CardTitle>
+        <Card className="col-span-1 h-fit w-full max-w-[280px]">
+            <div className="p-4 border-b">
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold">Filters</h2>
                     {hasActiveFilters() && (
-                        <Button
-                            variant="destructive"
-                            size="sm"
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 text-muted-foreground"
                             onClick={clearFilters}
-                            className="h-8"
                         >
-                            <X className="h-4 w-4 mr-1" />
-                            Clear Filter
+                            Clear All
                         </Button>
                     )}
                 </div>
 
                 {filtersApplied && (selectedServices.length > 0 || selectedLocations.length > 0) && (
-                    <div className="flex flex-wrap gap-2 mt-4">
-                        {selectedServices.map((serviceSlug) => {
-                            const service = services.find(s => s.slug === serviceSlug);
-                            return (
-                                <div
-                                    key={serviceSlug}
-                                    className="flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-sm"
-                                >
-                                    {service?.serviceName}
-                                    <button
-                                        onClick={() => removeServiceAndApply(serviceSlug)}
-                                        className="hover:bg-blue-200 rounded-full p-1"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </div>
-                            );
-                        })}
-                        {selectedLocations.map((locSlug) => {
-                            const location = locations.find(l => l.citySlug === locSlug);
-                            return (
-                                <div
-                                    key={locSlug}
-                                    className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-sm"
-                                >
-                                    {location?.cityName}
-                                    <button
-                                        onClick={() => removeLocationAndApply(locSlug)}
-                                        className="hover:bg-green-200 rounded-full p-1"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </div>
-                            );
-                        })}
+                    <div className="mb-4">
+                        <ScrollArea className="h-full max-h-[100px]">
+                            <div className="flex flex-wrap gap-2">
+                                {selectedServices.map((serviceSlug) => {
+                                    const service = services.find(s => s.slug === serviceSlug);
+                                    return (
+                                        <Badge 
+                                            key={serviceSlug} 
+                                            variant="secondary" 
+                                            className="rounded-full"
+                                        >
+                                            {service?.serviceName}
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-4 w-4 ml-1 p-0 hover:bg-transparent"
+                                                onClick={() => removeServiceAndApply(serviceSlug)}
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </Button>
+                                        </Badge>
+                                    );
+                                })}
+                                {selectedLocations.map((locSlug) => {
+                                    const location = locations.find(l => l.citySlug === locSlug);
+                                    return (
+                                        <Badge 
+                                            key={locSlug} 
+                                            variant="secondary" 
+                                            className="rounded-full"
+                                        >
+                                            {location?.cityName}
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-4 w-4 ml-1 p-0 hover:bg-transparent"
+                                                onClick={() => removeLocationAndApply(locSlug)}
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </Button>
+                                        </Badge>
+                                    );
+                                })}
+                            </div>
+                        </ScrollArea>
                     </div>
                 )}
-                <Separator />
-            </CardHeader>
 
-            <CardContent className="space-y-6">
-                <div className="space-y-4">
-                    <div className="flex items-center gap-1.5">
-                        <Briefcase className="w-4 h-4 text-muted-foreground" />
-                        <Label className="text-base font-medium text-muted-foreground">Services</Label>
-                    </div>
-                    <Input
-                        placeholder="Search services..."
-                        value={serviceSearch}
-                        onChange={(e) => setServiceSearch(e.target.value)}
-                        className="w-full h-8 text-sm px-3 mb-2"
-                    />
-                    <ScrollArea className="h-[200px] rounded-md">
-                        <div className="grid grid-cols-1 gap-2 p-1">
-                            {filteredServices.map((service) => (
-                                <div key={service.id} className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id={service.slug}
-                                        checked={selectedServices.includes(service.slug)}
-                                        onCheckedChange={(checked) => {
-                                            if (checked) {
-                                                setSelectedServices([...selectedServices, service.slug]);
-                                            } else {
-                                                setSelectedServices(selectedServices.filter(s => s !== service.slug));
-                                            }
-                                        }}
-                                    />
-                                    <Label htmlFor={service.slug} className="text-sm font-medium">
-                                        {service.serviceName}
-                                    </Label>
-                                </div>
-                            ))}
-                        </div>
-                    </ScrollArea>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-4">
-                    <div className="flex items-center gap-1.5">
-                        <MapPin className="w-4 h-4 text-muted-foreground" />
-                        <Label className="text-base font-medium text-muted-foreground">Locations</Label>
-                    </div>
-                    <Input
-                        placeholder="Search locations..."
-                        value={locationSearch}
-                        onChange={(e) => setLocationSearch(e.target.value)}
-                        className="w-full h-8 text-sm px-3 mb-2"
-                    />
-                    <ScrollArea className="h-[200px] rounded-md">
-                        <div className="grid grid-cols-1 gap-2 p-1">
-                            {filteredLocations.map((location) => (
-                                <div key={location.id} className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id={location.citySlug}
-                                        checked={selectedLocations.includes(location.citySlug)}
-                                        onCheckedChange={(checked) => {
-                                            if (checked) {
-                                                setSelectedLocations([...selectedLocations, location.citySlug]);
-                                            } else {
-                                                setSelectedLocations(selectedLocations.filter(l => l !== location.citySlug));
-                                            }
-                                        }}
-                                    />
-                                    <Label htmlFor={location.citySlug} className="text-sm font-medium">
-                                        {location.cityName}
-                                    </Label>
-                                </div>
-                            ))}
-                        </div>
-                    </ScrollArea>
-                </div>
-
-                <Separator />
-
-                <Button
+                <Button 
+                    className="w-full" 
+                    size="sm" 
                     onClick={handleApplyFilters}
-                    className="w-full"
                 >
-                    Apply Filters
+                    Apply Filters {(selectedServices.length + selectedLocations.length) > 0 && 
+                        `(${selectedServices.length + selectedLocations.length})`}
                 </Button>
-            </CardContent>
+            </div>
+
+            <div className="p-4">
+                <div className="space-y-4">
+                    <Collapsible open={servicesOpen} onOpenChange={setServicesOpen}>
+                        <CollapsibleTrigger className="flex w-full items-center justify-between py-2 font-medium">
+                            <div className="flex items-center gap-1.5">
+                                <Briefcase className="w-4 h-4 text-muted-foreground" />
+                                <span>Services</span>
+                            </div>
+                            {servicesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="space-y-4 pt-2">
+                            <Input
+                                placeholder="Search services..."
+                                value={serviceSearch}
+                                onChange={(e) => setServiceSearch(e.target.value)}
+                                className="h-8 text-sm"
+                            />
+                            <ScrollArea className="h-[200px]">
+                                <div className="space-y-2 pr-2">
+                                    {filteredServices.map((service) => (
+                                        <div key={service.id} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={service.slug}
+                                                checked={selectedServices.includes(service.slug)}
+                                                onCheckedChange={(checked) => {
+                                                    if (checked) {
+                                                        setSelectedServices([...selectedServices, service.slug]);
+                                                    } else {
+                                                        setSelectedServices(selectedServices.filter(s => s !== service.slug));
+                                                    }
+                                                }}
+                                            />
+                                            <Label htmlFor={service.slug} className="text-sm font-normal">
+                                                {service.serviceName}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </ScrollArea>
+                        </CollapsibleContent>
+                    </Collapsible>
+
+                    <Separator />
+
+                    <Collapsible open={locationsOpen} onOpenChange={setLocationsOpen}>
+                        <CollapsibleTrigger className="flex w-full items-center justify-between py-2 font-medium">
+                            <div className="flex items-center gap-1.5">
+                                <MapPin className="w-4 h-4 text-muted-foreground" />
+                                <span>Locations</span>
+                            </div>
+                            {locationsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="space-y-4 pt-2">
+                            <Input
+                                placeholder="Search locations..."
+                                value={locationSearch}
+                                onChange={(e) => setLocationSearch(e.target.value)}
+                                className="h-8 text-sm"
+                            />
+                            <ScrollArea className="h-[200px]">
+                                <div className="space-y-2 pr-2">
+                                    {filteredLocations.map((location) => (
+                                        <div key={location.id} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={location.citySlug}
+                                                checked={selectedLocations.includes(location.citySlug)}
+                                                onCheckedChange={(checked) => {
+                                                    if (checked) {
+                                                        setSelectedLocations([...selectedLocations, location.citySlug]);
+                                                    } else {
+                                                        setSelectedLocations(selectedLocations.filter(l => l !== location.citySlug));
+                                                    }
+                                                }}
+                                            />
+                                            <Label htmlFor={location.citySlug} className="text-sm font-normal">
+                                                {location.cityName}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </ScrollArea>
+                        </CollapsibleContent>
+                    </Collapsible>
+                </div>
+            </div>
         </Card>
     );
 };

@@ -80,7 +80,7 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
                                 <h3 className="text-xl font-semibold">
                                     {agency.name}
                                 </h3>
-                                <ArrowUpRight className="w-5 h-5 opacity-0 -translate-y-1 translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0" />
+                                <ArrowUpRight className="w-5 h-5 transition-all transform group-active:translate-x-3 group-active:-translate-y-3 group-active:opacity-0 duration-300" />
                             </a>
                             <p className="text-sm text-muted-foreground">
                                 {agency.tagline || ""}
@@ -202,14 +202,26 @@ export function AgencyCard({ agency, className }: AgencyCardProps) {
                                     href={agency.websiteUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    className="group cursor-pointer rounded-xl bg-transparent p-1 transition-all duration-500"
                                 >
-                                    <Button variant="outline" size="sm">
+                                    <div className="relative flex items-center justify-center gap-2 overflow-hidden rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground">
                                         Visit Site
-                                    </Button>
+                                        <div
+                                            className="absolute -left-16 top-0 h-full w-12 rotate-[30deg] scale-y-150 bg-white/10 transition-all duration-700 group-hover:left-[calc(100%+1rem)]"
+                                        />
+                                    </div>
                                 </Link>
                             )}
-                            <Link href={`/agency/${formatSlug(agency.name)}`}>
-                                <Button size="sm">View Portfolio</Button>
+                            <Link 
+                                href={`/agency/${formatSlug(agency.name)}`}
+                                className="group cursor-pointer rounded-xl bg-transparent p-1 transition-all duration-500"
+                            >
+                                <div className="relative flex items-center justify-center gap-2 overflow-hidden rounded-lg bg-[#ff642d] px-4 py-2 text-sm font-medium text-white">
+                                    View Portfolio
+                                    <div
+                                        className="absolute -left-16 top-0 h-full w-12 rotate-[30deg] scale-y-150 bg-white/10 transition-all duration-700 group-hover:left-[calc(100%+1rem)]"
+                                    />
+                                </div>
                             </Link>
                         </div>
                     </div>

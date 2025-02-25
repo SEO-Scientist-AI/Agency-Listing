@@ -3,6 +3,7 @@ import { checkIfService, checkIfLocation, getAllServices, getAllLocations, getAg
 import { redirect } from "next/navigation";
 import { Metadata } from 'next';
 import { ArchiveRelatedAgencies } from "@/app/agency/_components/archive-related-agencies";
+import { DynamicFAQ } from "@/app/agency/_components/dynamic-faq";
 
 // Update generateStaticParams to limit combinations
 export async function generateStaticParams() {
@@ -160,6 +161,11 @@ export default async function AgencyDoubleFilterPage({
         service={resolvedParams.slug}
         location={resolvedParams.secondSlug}
         excludeIds={[]}
+      />
+      
+      <DynamicFAQ 
+        service={resolvedParams.slug}
+        location={resolvedParams.secondSlug}
       />
     </div>
   );

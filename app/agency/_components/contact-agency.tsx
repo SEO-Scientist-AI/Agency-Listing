@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar, Loader2 } from "lucide-react"
+import { Calendar, Loader2, ArrowRight } from "lucide-react"
 import { Skeleton } from '@/components/ui/skeleton'
 import Link from "next/link"
 import { useToast } from "@/components/ui/use-toast"
 import { PhoneInput } from "@/components/ui/phone-input"
+import { AgencyButton } from "@/components/ui/agency-button"
 
 type E164Number = string;
 
@@ -142,95 +143,108 @@ export function ContactAgency({ agency }: ContactAgencyProps) {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="name" className="text-sm font-medium">
-            Full name <span className="text-red-500">*</span>
-          </Label>
-          <Input 
-            id="name"
-            name="name"
-            required 
-            className="w-full"
-            value={formData.name}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium">
-            Email <span className="text-red-500">*</span>
-          </Label>
-          <Input 
-            id="email"
-            name="email"
-            type="email" 
-            required 
-            className="w-full"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="phone" className="text-sm font-medium">
-            Phone Number <span className="text-red-500">*</span>
-          </Label>
-          <PhoneInput
-            value={formData.phone}
-            onChange={handlePhoneChange}
-            defaultCountry="IN"
-            placeholder="Enter phone number"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="service" className="text-sm font-medium">
-            Main service you&apos;re interested in <span className="text-red-500">*</span>
-          </Label>
-          <Select 
-            value={selectedMainService} 
-            onValueChange={setSelectedMainService}
-            required
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select a service" />
-            </SelectTrigger>
-            <SelectContent>
-              {agency.services.map((service) => (
-                <SelectItem key={service} value={service}>
-                  {service}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="message" className="text-sm font-medium">
-            Project details <span className="text-red-500">*</span>
-          </Label>
-          <Textarea
-            id="message"
-            name="message"
-            placeholder="Tell us about your project..."
-            className="min-h-[100px]"
-            value={formData.message}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <Button 
-          type="submit" 
-          className="w-full"
-          disabled={loading}
-        >
+      <div className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-sm font-medium">
+              Full name <span className="text-red-500">*</span>
+            </Label>
+            <Input 
+              id="name"
+              name="name"
+              required 
+              className="w-full"
+              value={formData.name}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium">
+              Email <span className="text-red-500">*</span>
+            </Label>
+            <Input 
+              id="email"
+              name="email"
+              type="email" 
+              required 
+              className="w-full"
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-sm font-medium">
+              Phone Number <span className="text-red-500">*</span>
+            </Label>
+            <PhoneInput
+              value={formData.phone}
+              onChange={handlePhoneChange}
+              defaultCountry="IN"
+              placeholder="Enter phone number"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="service" className="text-sm font-medium">
+              Main service you&apos;re interested in <span className="text-red-500">*</span>
+            </Label>
+            <Select 
+              value={selectedMainService} 
+              onValueChange={setSelectedMainService}
+              required
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a service" />
+              </SelectTrigger>
+              <SelectContent>
+                {agency.services.map((service) => (
+                  <SelectItem key={service} value={service}>
+                    {service}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="message" className="text-sm font-medium">
+              Project details <span className="text-red-500">*</span>
+            </Label>
+            <Textarea
+              id="message"
+              name="message"
+              placeholder="Tell us about your project..."
+              className="min-h-[100px]"
+              value={formData.message}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          
           {loading ? (
-            <>
+            <Button 
+              disabled 
+              className="w-full"
+            >
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Sending...
-            </>
+            </Button>
           ) : (
-            'Get Quote'
+            <div className="w-full">
+              <button 
+                type="submit"
+                className="group cursor-pointer rounded-xl bg-transparent p-1 transition-all duration-500 w-full"
+              >
+                <div className="relative flex items-center justify-center gap-2 overflow-hidden rounded-lg bg-[#ff642d] px-4 py-2 text-sm font-medium text-white w-full">
+                  Get Quote
+                  <ArrowRight className="transition-all group-hover:translate-x-2" strokeWidth={1.5} size={21} />
+                  <div
+                    className="absolute -left-16 top-0 h-full w-12 rotate-[30deg] scale-y-150 bg-white/10 transition-all duration-700 group-hover:left-[calc(100%+1rem)]"
+                  />
+                </div>
+              </button>
+            </div>
           )}
-        </Button>
-      </form>
+        </form>
+      </div>
     </div>
   )
 }

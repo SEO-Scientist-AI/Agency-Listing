@@ -1,11 +1,11 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Find Top **Best Marketing Agencies Worldwide** | Agency Spot',
-  description: 'Discover and connect with the **Best Marketing Agencies Worldwide**. Filter by services, location, and more to find your perfect agency partner.',
+  title: 'Find & Compare the Best Digital Agencies | Top Agency Marketplace',
+  description: 'Find and compare the best digital agencies for SEO, marketing, design, and more. Read reviews, check ratings, and hire top agencies on our marketplace!',
   openGraph: {
-    title: 'Find Top **Best Marketing Agencies Worldwide** | Agency Spot',
-    description: 'Discover and connect with the **Best Marketing Agencies Worldwide**. Filter by services, location, and more to find your perfect agency partner.',
+    title: 'Find & Compare the Best Digital Agencies | Top Agency Marketplace',
+    description: 'Find and compare the best digital agencies for SEO, marketing, design, and more. Read reviews, check ratings, and hire top agencies on our marketplace!',
     type: 'website',
   }
 };

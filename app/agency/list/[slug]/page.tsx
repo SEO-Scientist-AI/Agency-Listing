@@ -3,6 +3,7 @@ import { checkIfService, checkIfLocation, getAllServices, getAllLocations, getAg
 import { redirect } from "next/navigation";
 import { Metadata } from 'next';
 import { ArchiveRelatedAgencies } from "@/app/agency/_components/archive-related-agencies";
+import { DynamicFAQ } from "@/app/agency/_components/dynamic-faq";
 
 // Add at the top after imports
 const metaTemplates = [
@@ -156,8 +157,18 @@ export default async function AgencyFilterPage({
   }
 
   if (isService) {
-    return <FindAgencies servicesSlug={resolvedParams.slug} />;
+    return (
+      <>
+        <FindAgencies servicesSlug={resolvedParams.slug} />
+        <DynamicFAQ service={resolvedParams.slug} />
+      </>
+    );
   }
 
-  return <FindAgencies locationSlug={resolvedParams.slug} />;
+  return (
+    <>
+      <FindAgencies locationSlug={resolvedParams.slug} />
+      <DynamicFAQ location={resolvedParams.slug} />
+    </>
+  );
 } 

@@ -2,7 +2,7 @@
 
 import { type FC } from "react";
 import Link from "next/link";
-import { FaFacebook, FaInstagram, FaLinkedin, FaXTwitter } from "react-icons/fa6";
+import { FaFacebook, FaInstagram, FaLinkedin, FaXTwitter, FaYoutube } from "react-icons/fa6";
 import { ThemeToggle } from "@/components/theme-toggle";
 import ReactCountryFlag from "react-country-flag";
 import { Phone, Mail } from "lucide-react";
@@ -105,6 +105,11 @@ const Footer: FC = () => {
                                     <li className="font-medium hover:text-primary">
                                         <Link href="https://www.linkedin.com/company/seoscientistusa" target="_blank" rel="noopener noreferrer">
                                             <FaLinkedin className="w-[24px] h-[24px]" />
+                                        </Link>
+                                    </li>
+                                    <li className="font-medium hover:text-primary">
+                                        <Link href="https://www.youtube.com/@seoscientist" target="_blank" rel="noopener noreferrer">
+                                            <FaYoutube className="w-[24px] h-[24px]" />
                                         </Link>
                                     </li>
                                 </ul>

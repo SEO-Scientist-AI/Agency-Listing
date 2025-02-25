@@ -8,6 +8,17 @@ import HowItWorks from "@/components/homepage/how-it-works";
 import PageWrapper from "@/components/wrapper/page-wrapper";
 import config from "@/config";
 import { OutSource } from "@/components/homepage/out-source";
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "The #1 Platform to Find & Review SEO & Marketing Agencies - AgencySpot",
+  description: "Find and compare top-rated SEO and marketing agencies on AgencySpot. Read reviews, check ratings, and hire the best agency for your business needs today!",
+  openGraph: {
+    title: "The #1 Platform to Find & Review SEO & Marketing Agencies - AgencySpot",
+    description: "Find and compare top-rated SEO and marketing agencies on AgencySpot. Read reviews, check ratings, and hire the best agency for your business needs today!",
+    type: 'website',
+  }
+};
 
 export default function Home() {
   return (
