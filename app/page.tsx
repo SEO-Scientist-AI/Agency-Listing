@@ -9,6 +9,7 @@ import PageWrapper from "@/components/wrapper/page-wrapper";
 import config from "@/config";
 import { OutSource } from "@/components/homepage/out-source";
 import { Metadata } from 'next';
+import { LocationLinks } from "@/components/homepage/location-links";
 
 export const metadata: Metadata = {
   title: "The #1 Platform to Find & Review SEO & Marketing Agencies - AgencySpot",
@@ -41,6 +42,7 @@ export default function Home() {
       <div className="flex justify-center items-center w-full my-[10rem]">
         <AccordionComponent />
       </div>
+      <LocationLinks />
 
       {/* <div className="max-w-[1200px] p-8 mt-[2rem] lg:mt-[6rem] lg:mb-[5rem]">
         <BlogSample />
