@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     },
     openGraph: {
         description:
-            "Find a perfect digital marketing partner for your next project: agencies, freelancers, and many more. Get several proposals right in your inbox in 2 days.",
+            "Find and compare top-rated SEO and marketing agencies on AgencySpot. Read reviews, check ratings, and hire the best agency for your business needs today!",
         images: ["/opengraph.png"],
         url: "https://agencyspot.seoscientist.ai/",
     },
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: "SEO Scientist Agency Spot",
         description:
-            "Find a perfect digital marketing partner for your next project: agencies, freelancers, and many more. Get several proposals right in your inbox in 2 days.",
+            "Find and compare top-rated SEO and marketing agencies on AgencySpot. Read reviews, check ratings, and hire the best agency for your business needs today!",
         siteId: "",
         creator: "@udaydev",
         creatorId: "",
