@@ -11,11 +11,11 @@ import FloatingButtons from "@/components/floating-buttons";
 export const metadata: Metadata = {
     metadataBase: new URL("https://agencyspot.seoscientist.ai/"),
     title: {
-        default: "SEO Scientist Agency Spot",
+        default: "The #1 Platform to Find & Review SEO & Marketing Agencies - AgencySpot",
         template: `%s `,
     },
     description:
-        "Find a perfect digital marketing partner for your next project: agencies, freelancers, and many more. Get several proposals right in your inbox in 2 days.",
+        "Find and compare top-rated SEO and marketing agencies on AgencySpot. Read reviews, check ratings, and hire the best agency for your business needs today!",
     robots: {
         index: true,
         follow: true,
