@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     let lastDocId = searchParams.get("lastDocId");
     let hasMore = false;
+    let docLimit = 10 ;
     const page = parseInt(searchParams.get("page") || "1", 10);
     const services = searchParams.get("services");
     const location = searchParams.get("location");
@@ -70,12 +71,12 @@ export async function GET(req: NextRequest) {
       });
     }
      // Apply initial sorting
-     let paginatedQuery = query(baseQuery, orderBy('name'), limit(10));
-    //  check is more data available
-    if(page * 10 < totalDocuments){
-      console.log(page * 10, totalDocuments)
-      hasMore = true;
-    }
+     //  check is more data available
+     if(page * 10 < totalDocuments){
+       hasMore = true;
+      }
+      docLimit = (totalDocuments - page * 10 ) < 10 ? totalDocuments - page * 10 : 10;
+      let paginatedQuery = query(baseQuery, orderBy('name'), limit(docLimit));
    // Add validation
     // if lastDocId => next 10 lists
 
