@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
      if(page * 10 < totalDocuments){
        hasMore = true;
       }
-      docLimit = (totalDocuments - page * 10 ) < 10 ? totalDocuments - page * 10 : 10;
+      docLimit = (page * 10 ) > totalDocuments ? page * 10 - totalDocuments : 10;
       let paginatedQuery = query(baseQuery, orderBy('name'), limit(docLimit));
    // Add validation
     // if lastDocId => next 10 lists
