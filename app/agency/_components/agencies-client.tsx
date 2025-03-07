@@ -20,7 +20,6 @@ import useAppStore from "@/lib/store/useAppStore";
 import axiosInstance from "@/lib/axios-instance";
 import { useAgencies } from "@/lib/hooks/use-agencies";
 import { AgencyCardSkeleton } from "./agency-card-skeleton";
-import InfiniteScroll from "react-infinite-scroll-component";
 
 interface FilterState {
   search: string;
@@ -80,11 +79,6 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isScrolling, setIsScrolling] = useState(false);
-  const [agencies, setAgencies] = useState<Agency[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [lastDocId, setLastDocId] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
 
   // Memoize the params construction
   const params = useMemo(() => {
@@ -100,7 +94,7 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
     return newParams;
   }, [searchParams, servicesSlug, locationSlug]);
   
-  const { totalPages, currentPage, isLoading: apiLoading, mutate } = useAgencies(params);
+  const { agencies, totalPages, currentPage, isLoading, mutate } = useAgencies(params);
 
   const scrollToTop = useCallback(() => {
     setIsScrolling(true);
@@ -160,31 +154,6 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
     return pages;
   }, [currentPage, totalPages, handlePageChange]);
 
-  const fetchMoreAgencies = async () => {
-    if (isLoading || !hasMore) return;
-
-    try {
-      setIsLoading(true);
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('page', (page + 1).toString());
-      if (lastDocId) {
-        params.set('lastDocId', lastDocId);
-      }
-
-      const response = await axiosInstance.get(`/agency?${params.toString()}`);
-      const data = response.data;
-
-      setAgencies(prev => [...prev, ...data.agencies]);
-      setLastDocId(data.lastDocId);
-      setHasMore(data.hasMore);
-      setPage(prev => prev + 1);
-    } catch (error) {
-      console.error('Error fetching more agencies:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="container flex flex-col lg:flex-row gap-8 mx-auto max-w-6xl px-4">
       <div className="lg:w-1/4">
@@ -207,33 +176,13 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
             </div>
           ) : (
             <div>
-              <InfiniteScroll
-                dataLength={agencies.length}
-                next={fetchMoreAgencies}
-                hasMore={hasMore}
-                loader={
-                  <div className="grid gap-4">
-                    {[1, 2, 3].map((i) => (
-                      <AgencyCardSkeleton key={i} />
-                    ))}
-                  </div>
-                }
-                endMessage={
-                  <p className="text-center text-muted-foreground py-8">
-                    No more agencies to load
-                  </p>
-                }
-              >
-                <div className="grid gap-4">
-                  {agencies.map((agency: Agency) => (
-                    <AgencyCard
-                      key={agency.id}
-                      agency={agency}
-                      className="w-full mb-6"
-                    />
-                  ))}
-                </div>
-              </InfiniteScroll>
+              {agencies.map((agency: Agency) => (
+                <AgencyCard
+                  key={agency.id}
+                  agency={agency}
+                  className="w-full mb-6"
+                />
+              ))}
               {agencies.length > 0 && totalPages > 1 && (
                 <Pagination className={isLoading ? 'opacity-50 pointer-events-none' : ''}>
                   <PaginationContent>
