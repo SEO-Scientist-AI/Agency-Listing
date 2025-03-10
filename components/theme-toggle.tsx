@@ -6,6 +6,21 @@ import { Moon, Sun } from "lucide-react"
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+
+  // After mounting, we have access to the theme
+  React.useEffect(() => setMounted(true), [])
+
+  if (!mounted) {
+    // Return a placeholder with the same dimensions to avoid layout shift
+    return (
+      <div className="relative inline-flex cursor-pointer items-center">
+        <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-muted">
+          <div className="inline-block h-4 w-4 transform rounded-full bg-background" />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="relative inline-flex cursor-pointer items-center">
