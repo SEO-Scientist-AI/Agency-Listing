@@ -1,5 +1,4 @@
 import FindAgencies from "../../../_components/find-agency";
-import { getAgencyCount } from "@/lib/firebase/agencies";
 import { redirect } from "next/navigation";
 import { Metadata } from 'next';
 import { ArchiveRelatedAgencies } from "@/app/agency/_components/archive-related-agencies";
@@ -90,7 +89,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
 
-    // Get the actual count using the Firebase function
+
     const countData = await axiosInstance.get<number>('/api/agency/count', {
       params: {
         services: resolvedParams.slug,
@@ -98,11 +97,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       },
     });
     const count = countData.data;
-    if(!count){
-      return ;
-    }
+    
 
-    console.log("count",count)
+   
 
     // Use a deterministic way to select template based on service and location
     const templateIndex = (serviceName.length + locationName.length) % metaTemplates.length;

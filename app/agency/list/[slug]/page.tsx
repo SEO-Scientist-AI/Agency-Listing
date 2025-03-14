@@ -1,10 +1,10 @@
 import FindAgencies from "../../_components/find-agency";
-import { checkIfService, checkIfLocation, getAllServices, getAllLocations, getAgencyCount } from "@/lib/firebase/agencies";
 import { redirect } from "next/navigation";
 import { Metadata } from 'next';
 import { ArchiveRelatedAgencies } from "@/app/agency/_components/archive-related-agencies";
 import { DynamicFAQ } from "@/app/agency/_components/dynamic-faq";
-
+import useAppStore from "@/lib/store/useAppStore";
+import axiosInstance from "@/lib/axios-instance";
 // Add at the top after imports
 const metaTemplates = [
   {
@@ -51,10 +51,7 @@ const metaTemplates = [
 
 // Update generateStaticParams to limit single filters
 export async function generateStaticParams() {
-  const [services, locations] = await Promise.all([
-    getAllServices(),
-    getAllLocations()
-  ]);
+  const {services,cities:locations} = useAppStore();
 
   // Take only the top N most popular services and locations
   const topServices = services.slice(0, 200); // Adjust number as needed
@@ -72,21 +69,24 @@ export async function generateStaticParams() {
 
 // Update the generateMetadata function
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const {checkIfService,checkIfLocation} = useAppStore();
   const resolvedParams = await params;
-  const isService = await checkIfService(resolvedParams.slug);
-  const isLocation = await checkIfLocation(resolvedParams.slug);
+  const isService = checkIfService(resolvedParams.slug);
+  const isLocation = checkIfLocation(resolvedParams.slug);
   
   const readableName = resolvedParams.slug
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-  // Get the actual count using the Firebase function
-  const count = await getAgencyCount(
-    isService ? [resolvedParams.slug] : undefined,
-    isLocation ? [resolvedParams.slug] : undefined
-  );
 
+  const countData = await axiosInstance.get<number>('/api/agency/count', {
+    params: {
+      services: isService && resolvedParams.slug,
+      locations: isLocation && resolvedParams.slug,
+    },
+  });
+  const count = countData.data;
   // Use a deterministic way to select template based on slug
   const templateIndex = readableName.length % metaTemplates.length;
   const template = metaTemplates[templateIndex];
@@ -147,10 +147,10 @@ export default async function AgencyFilterPage({
   params: Promise<{ slug: string }> 
 }) {
   const resolvedParams = await params;
-  
+  const {checkIfService,checkIfLocation} = useAppStore();
   // Check if the slug is a service or location
-  const isService = await checkIfService(resolvedParams.slug);
-  const isLocation = await checkIfLocation(resolvedParams.slug);
+  const isService =  checkIfService(resolvedParams.slug);
+  const isLocation = checkIfLocation(resolvedParams.slug);
 
   if (!isService && !isLocation) {
     redirect("/agency/list");

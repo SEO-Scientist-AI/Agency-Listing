@@ -1,5 +1,6 @@
 export interface Agency {
     _id: string;
+    agencySlug:string;
     name: string;
     description: string;
     location: string;

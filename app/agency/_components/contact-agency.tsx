@@ -12,7 +12,7 @@ import Link from "next/link"
 import { useToast } from "@/components/ui/use-toast"
 import { PhoneInput } from "@/components/ui/phone-input"
 import { AgencyButton } from "@/components/ui/agency-button"
-import { Agency } from "@/lib/model/Agency"
+import { Agency } from '@/types/agency';
 
 type E164Number = string;
 
@@ -21,7 +21,6 @@ interface ContactAgencyProps {
 }
 
 export function ContactAgency({ agency }: ContactAgencyProps) {
-  const agencydata = agency.data;
   
   const [selectedMainService, setSelectedMainService] = useState("")
   const [loading, setLoading] = useState(false)
