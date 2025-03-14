@@ -1,17 +1,16 @@
 import FindAgencies from "../../../_components/find-agency";
-import { checkIfService, checkIfLocation, getAllServices, getAllLocations, getAgencyCount } from "@/lib/firebase/agencies";
+import { getAgencyCount } from "@/lib/firebase/agencies";
 import { redirect } from "next/navigation";
 import { Metadata } from 'next';
 import { ArchiveRelatedAgencies } from "@/app/agency/_components/archive-related-agencies";
 import { DynamicFAQ } from "@/app/agency/_components/dynamic-faq";
+import useAppStore from "@/lib/store/useAppStore";
+import axiosInstance from "@/lib/axios-instance";
 
 // Update generateStaticParams to limit combinations
 export async function generateStaticParams() {
-  const [services, locations] = await Promise.all([
-    getAllServices(),
-    getAllLocations()
-  ]);
-
+  const {services,cities:locations} = useAppStore();
+  
   // Take only the top N most popular services and locations
   const topServices = services.slice(0, 200); // Adjust number as needed
   const topLocations = locations.slice(0, 200); // Adjust number as needed
@@ -75,9 +74,10 @@ const metaTemplates = [
 
 // Update the generateMetadata function
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; secondSlug: string }> }): Promise<Metadata> {
+  const {checkIfService,checkIfLocation} = useAppStore();
   const resolvedParams = await params;
-  const isFirstService = await checkIfService(resolvedParams.slug);
-  const isSecondLocation = await checkIfLocation(resolvedParams.secondSlug);
+  const isFirstService =  checkIfService(resolvedParams.slug);
+  const isSecondLocation = checkIfLocation(resolvedParams.secondSlug);
 
   if (isFirstService && isSecondLocation) {
     const serviceName = resolvedParams.slug
@@ -91,7 +91,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       .join(' ');
 
     // Get the actual count using the Firebase function
-    const count = await getAgencyCount([resolvedParams.slug], [resolvedParams.secondSlug]);
+    const countData = await axiosInstance.get<number>('/api/agency/count', {
+      params: {
+        services: resolvedParams.slug,
+        locations: resolvedParams.secondSlug,
+      },
+    });
+    const count = countData.data;
+    if(!count){
+      return ;
+    }
+
+    console.log("count",count)
 
     // Use a deterministic way to select template based on service and location
     const templateIndex = (serviceName.length + locationName.length) % metaTemplates.length;
@@ -130,16 +141,17 @@ export default async function AgencyDoubleFilterPage({
 }: { 
   params: Promise<{ slug: string; secondSlug: string }> 
 }) {
+  const {checkIfService,checkIfLocation} = useAppStore();
   const resolvedParams = await params;
   
   // First parameter must be a service, second must be a location
-  const isFirstService = await checkIfService(resolvedParams.slug);
-  const isSecondLocation = await checkIfLocation(resolvedParams.secondSlug);
+  const isFirstService =  checkIfService(resolvedParams.slug);
+  const isSecondLocation =  checkIfLocation(resolvedParams.secondSlug);
 
   if (!isFirstService || !isSecondLocation) {
     // If order is wrong, redirect to the correct order
-    const isFirstLocation = await checkIfLocation(resolvedParams.slug);
-    const isSecondService = await checkIfService(resolvedParams.secondSlug);
+    const isFirstLocation = checkIfLocation(resolvedParams.slug);
+    const isSecondService = checkIfService(resolvedParams.secondSlug);
     
     if (isFirstLocation && isSecondService) {
       // Redirect to correct order: service/location

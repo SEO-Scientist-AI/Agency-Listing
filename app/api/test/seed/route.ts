@@ -29,7 +29,7 @@ export async function GET(req:NextRequest){
           await Agency.save();
         }
         console.log("agencies is done")
-        // await AgencyModel.insertMany(agencies.agencies)
+     
         // // Seed Locations 
         // await LocationModel.deleteMany({});
         // await LocationModel.insertMany(locations.locations)

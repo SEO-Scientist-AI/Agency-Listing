@@ -12,17 +12,17 @@ import Link from "next/link"
 import { useToast } from "@/components/ui/use-toast"
 import { PhoneInput } from "@/components/ui/phone-input"
 import { AgencyButton } from "@/components/ui/agency-button"
+import { Agency } from "@/lib/model/Agency"
 
 type E164Number = string;
 
 interface ContactAgencyProps {
-  agency: {
-    name: string;
-    services: string[];
-  };
+  agency: Agency
 }
 
 export function ContactAgency({ agency }: ContactAgencyProps) {
+  const agencydata = agency.data;
+  
   const [selectedMainService, setSelectedMainService] = useState("")
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()

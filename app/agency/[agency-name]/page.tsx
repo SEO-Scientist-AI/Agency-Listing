@@ -59,8 +59,9 @@ export async function generateMetadata({
   try {
 
     const resolvedParams = await params;
-    const agencyData = await axiosInstance.get<Agency>('/agencies/' + resolvedParams['agency-name']);
-    agency = agencyData.data;
+    const agencyParam = resolvedParams['agency-name'];
+    const agencyData = await axiosInstance.get<Agency>('/agency/' + agencyParam );
+    agency = await agencyData.data;
   }catch(err){
     console.log("error",err);
 
@@ -106,7 +107,7 @@ export default async function AgencyDetailPage({
   try {
 
     const resolvedParams = await params;
-    const agencyData = await axiosInstance.get<Agency>('/agencies/' + resolvedParams['agency-name']);
+    const agencyData:{succes:boolean,data:Agency} = await axiosInstance.get('/agency/' + resolvedParams['agency-name']);
     agency = agencyData.data;
   }catch(err){
     console.log("error",err);
@@ -116,6 +117,6 @@ export default async function AgencyDetailPage({
   if (!agency) {
     notFound();
   }
-
+  agency = agency.data;
   return <AgencyDetailComponent agency={agency} />;
 } 
