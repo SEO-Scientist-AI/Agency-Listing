@@ -117,16 +117,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       .join(' ');
 
 
-    const countData = await axiosInstance.get<number>('agency/count', {
+    const countData = await axiosInstance.get<{count: number}>('agency/count', {
       params: {
         services: resolvedParams.slug,
         locations: resolvedParams.secondSlug,
       },
     });
-    const count = countData.data;
-    
-
-   
+    const count = countData.data.count || 10;
 
     // Use a deterministic way to select template based on service and location
     const templateIndex = (serviceName.length + locationName.length) % metaTemplates.length;

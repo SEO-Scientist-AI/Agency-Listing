@@ -113,14 +113,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-  const countData = await axiosInstance.get<number>('agency/count', {
+  const countData = await axiosInstance.get<{count: number}>('agency/count', {
     params: {
       services: isService ? resolvedParams.slug : undefined,
       locations: isLocation ? resolvedParams.slug : undefined,
     },
   });
-  const count = countData.data;
-  // Use a deterministic way to select template based on slug
+  const count = countData.data.count || ' ';
+
   const templateIndex = readableName.length % metaTemplates.length;
   const template = metaTemplates[templateIndex];
 
