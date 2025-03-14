@@ -332,7 +332,7 @@ const SideBarFilters = ({servicesSlug, locationSlug}: SideBarFiltersProps) => {
                             <ScrollArea className="h-[200px]">
                                 <div className="space-y-2 pr-2">
                                     {filteredServices.map((service) => (
-                                        <div key={service.id} className="flex items-center space-x-2">
+                                        <div key={service._id} className="flex items-center space-x-2">
                                             <Checkbox
                                                 id={service.slug}
                                                 checked={selectedServices.includes(service.slug)}
@@ -374,7 +374,7 @@ const SideBarFilters = ({servicesSlug, locationSlug}: SideBarFiltersProps) => {
                             <ScrollArea className="h-[200px]">
                                 <div className="space-y-2 pr-2">
                                     {filteredLocations.map((location) => (
-                                        <div key={location.id} className="flex items-center space-x-2">
+                                        <div key={location._id} className="flex items-center space-x-2">
                                             <Checkbox
                                                 id={location.citySlug}
                                                 checked={selectedLocations.includes(location.citySlug)}

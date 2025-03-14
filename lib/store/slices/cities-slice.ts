@@ -7,9 +7,10 @@ export interface CitiesSlice {
   citiesLoading: boolean;
   error: string | null;
   fetchCities: () => Promise<void>;
+  checkIfLocation:(slug:string)=>boolean;
 }
 
-export const createCitiesSlice: StateCreator<CitiesSlice> = (set) => ({
+export const createCitiesSlice: StateCreator<CitiesSlice> = (set,get) => ({
     cities: [],
     citiesLoading: false,
     error: null,
@@ -26,4 +27,8 @@ export const createCitiesSlice: StateCreator<CitiesSlice> = (set) => ({
         set({ error: 'Failed to fetch cities data', citiesLoading: false });
       }
     },
+    checkIfLocation: (slug:string) => {
+      const {cities} = get();
+      return cities.some(city => city.citySlug === slug);
+    }
 });

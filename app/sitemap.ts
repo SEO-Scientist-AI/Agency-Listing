@@ -1,6 +1,6 @@
-import { db } from "@/lib/firebase/config";
-import { collection, getDocs } from "firebase/firestore";
 import { cache } from 'react';
+import dbConnect from "@/lib/dbConnect";
+import { getServicesServer, getLocationsServer } from "@/lib/data/fetch-server-data";
 
 type SitemapEntry = {
   url: string;

@@ -32,7 +32,7 @@ import { AgencySidebar } from "./_components/agency-sidebar";
 import { FormSection, InputField, TextareaField, SubSection } from "./_components/agency-form-sections";
 import { Progress } from "@/components/ui/progress"
 import { FormMethodHeader } from "./_components/form-method-header";
-import { createAgency } from '@/lib/firebase/agencies';
+import { createAgency } from '@/lib/actions/agencies';
 import { IndustrySelect } from "./_components/industry-select";
 import { LocationSelect } from "./_components/location-select";
 
@@ -195,7 +195,7 @@ export default function GetListed() {
                 founded_year: formData.founded_year ? parseInt(formData.founded_year) : null,
             };
 
-            // Create agency in Firebase
+            // Create agency in MongoDB
             const result = await createAgency(agencyData);
 
             if (result.success) {
@@ -206,6 +206,8 @@ export default function GetListed() {
                 
                 // Redirect to dashboard
                 router.push('/dashboard');
+            } else {
+                throw new Error(result.error || "Failed to create agency");
             }
         } catch (error) {
             console.error("Error creating agency:", error);

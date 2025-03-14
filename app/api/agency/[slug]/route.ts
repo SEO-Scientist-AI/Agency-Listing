@@ -1,29 +1,25 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase/config';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import Agency from '@/lib/model/Agency'; 
+import dbConnect from '@/lib/dbConnect'; 
 
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
-    const agenciesRef = collection(db, 'agencies');
-    const querysent = (await params).slug;
-    const q = query(agenciesRef, where('slug', '==', querysent ));
-    const querySnapshot = await getDocs(q);
+    await dbConnect(); 
 
-    if (querySnapshot.empty) {
+    const { slug } = await params;
+    const trimedSlug = slug.trim();
+    const agency = await Agency.findOne({ agencySlug:trimedSlug });
+
+    if (!agency) {
       return NextResponse.json(
         { success: false, error: 'Agency not found' },
         { status: 404 }
       );
     }
 
-    const agencyData = {
-      id: querySnapshot.docs[0].id,
-      ...querySnapshot.docs[0].data()
-    };
-
     return NextResponse.json({
       success: true,
-      data: agencyData
+      data: agency
     });
 
   } catch (error) {

@@ -12,17 +12,18 @@ import Link from "next/link"
 import { useToast } from "@/components/ui/use-toast"
 import { PhoneInput } from "@/components/ui/phone-input"
 import { AgencyButton } from "@/components/ui/agency-button"
+import { Agency } from '@/types/agency';
+import { useServices } from "@/lib/hooks/use-services";
+import { useLocations } from "@/lib/hooks/use-locations";
 
 type E164Number = string;
 
 interface ContactAgencyProps {
-  agency: {
-    name: string;
-    services: string[];
-  };
+  agency: Agency
 }
 
 export function ContactAgency({ agency }: ContactAgencyProps) {
+  
   const [selectedMainService, setSelectedMainService] = useState("")
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
@@ -33,6 +34,10 @@ export function ContactAgency({ agency }: ContactAgencyProps) {
     phone: "" as E164Number | undefined,
     message: ""
   })
+
+  // Fetch services and locations with error handling
+  const { data: services = [], isLoading: servicesLoading } = useServices();
+  const { data: locations = [], isLoading: locationsLoading } = useLocations();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -196,9 +201,9 @@ export function ContactAgency({ agency }: ContactAgencyProps) {
                 <SelectValue placeholder="Select a service" />
               </SelectTrigger>
               <SelectContent>
-                {agency.services.map((service) => (
-                  <SelectItem key={service} value={service}>
-                    {service}
+                {!servicesLoading && services && services.map((service) => (
+                  <SelectItem key={service.slug} value={service.slug}>
+                    {service.serviceName}
                   </SelectItem>
                 ))}
               </SelectContent>

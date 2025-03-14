@@ -25,9 +25,6 @@ export const createAgenciesSlice: StateCreator<AgenciesSlice> = (set) => ({
     error: null,
     totalPages:1,
     currentPage:1,
-    
-    doctimeline:[],
-
     fetchAgencies: async () => {
       set({ agencyLoading: true});
       try {
@@ -53,4 +50,5 @@ export const createAgenciesSlice: StateCreator<AgenciesSlice> = (set) => ({
       const currentPage = Number(data.currentPage);
         set({agencies,totalPages,currentPage});
     }
+    
 });

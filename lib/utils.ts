@@ -16,3 +16,10 @@ export function getUniqueValuesFromArray<T>(arr: T[], key: keyof T): T[] {
   
   return Array.from(uniqueMap.values());
 }
+
+export function formatSlug(name: string) {
+  return name.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+$/, ''); // Remove trailing hyphens
+}

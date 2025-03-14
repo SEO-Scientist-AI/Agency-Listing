@@ -1,10 +1,12 @@
 import FindAgencies from "../../_components/find-agency";
-import { checkIfService, checkIfLocation, getAllServices, getAllLocations, getAgencyCount } from "@/lib/firebase/agencies";
 import { redirect } from "next/navigation";
 import { Metadata } from 'next';
 import { ArchiveRelatedAgencies } from "@/app/agency/_components/archive-related-agencies";
 import { DynamicFAQ } from "@/app/agency/_components/dynamic-faq";
-
+import { getServices } from "@/lib/services";
+import { getLocations } from "@/lib/locations";
+import axiosInstance from "@/lib/axios-instance";
+import { getServicesServer, getLocationsServer } from "@/lib/data/fetch-server-data";
 // Add at the top after imports
 const metaTemplates = [
   {
@@ -49,44 +51,75 @@ const metaTemplates = [
   }
 ];
 
-// Update generateStaticParams to limit single filters
+interface Service {
+  slug: string;
+  serviceName: string;
+}
+
+interface Location {
+  citySlug: string;
+  cityName: string;
+}
+
+// Replace the generateStaticParams function with this static version
 export async function generateStaticParams() {
-  const [services, locations] = await Promise.all([
-    getAllServices(),
-    getAllLocations()
-  ]);
-
-  // Take only the top N most popular services and locations
-  const topServices = services.slice(0, 200); // Adjust number as needed
-  const topLocations = locations.slice(0, 200); // Adjust number as needed
-
-  return [
-    ...topServices.map(service => ({
-      slug: service
-    })),
-    ...topLocations.map(location => ({
-      slug: location
-    }))
+  // Define static services and locations for build time
+  const staticServices = [
+    { slug: 'seo' },
+    { slug: 'web-design' },
+    { slug: 'web-development' },
+    { slug: 'digital-marketing' },
+    { slug: 'social-media-marketing' },
+    { slug: 'content-marketing' },
+    { slug: 'ppc' },
+    { slug: 'ecommerce' },
+    { slug: 'branding' },
+    { slug: 'mobile-app-development' }
   ];
+  
+  const staticLocations = [
+    { citySlug: 'delhi' },
+    { citySlug: 'mumbai' },
+    { citySlug: 'bangalore' },
+    { citySlug: 'hyderabad' },
+    { citySlug: 'chennai' },
+    { citySlug: 'kolkata' },
+    { citySlug: 'pune' },
+    { citySlug: 'ahmedabad' },
+    { citySlug: 'jaipur' },
+    { citySlug: 'gurugram' }
+  ];
+  
+  // Generate paths for all services and locations
+  const paths = [
+    ...staticServices.map((service) => ({ slug: service.slug })),
+    ...staticLocations.map((location) => ({ slug: location.citySlug }))
+  ];
+  
+  return paths;
 }
 
 // Update the generateMetadata function
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const isService = await checkIfService(resolvedParams.slug);
-  const isLocation = await checkIfLocation(resolvedParams.slug);
+  const services = await getServices();
+  const locations = await getLocations();
+  
+  const isService = services.some((s: Service) => s.slug === resolvedParams.slug);
+  const isLocation = locations.some((l: Location) => l.citySlug === resolvedParams.slug);
   
   const readableName = resolvedParams.slug
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-  // Get the actual count using the Firebase function
-  const count = await getAgencyCount(
-    isService ? [resolvedParams.slug] : undefined,
-    isLocation ? [resolvedParams.slug] : undefined
-  );
-
+  const countData = await axiosInstance.get<number>('agency/count', {
+    params: {
+      services: isService ? resolvedParams.slug : undefined,
+      locations: isLocation ? resolvedParams.slug : undefined,
+    },
+  });
+  const count = countData.data;
   // Use a deterministic way to select template based on slug
   const templateIndex = readableName.length % metaTemplates.length;
   const template = metaTemplates[templateIndex];
@@ -147,10 +180,11 @@ export default async function AgencyFilterPage({
   params: Promise<{ slug: string }> 
 }) {
   const resolvedParams = await params;
+  const services = await getServices();
+  const locations = await getLocations();
   
-  // Check if the slug is a service or location
-  const isService = await checkIfService(resolvedParams.slug);
-  const isLocation = await checkIfLocation(resolvedParams.slug);
+  const isService = services.some((s: Service) => s.slug === resolvedParams.slug);
+  const isLocation = locations.some((l: Location) => l.citySlug === resolvedParams.slug);
 
   if (!isService && !isLocation) {
     redirect("/agency/list");

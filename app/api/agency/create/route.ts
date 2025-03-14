@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/firebase/config";
-import { collection, addDoc } from "firebase/firestore";
-import { Agency } from "@/types/agency";
+import dbConnect from "@/lib/dbConnect";
+import AgencyModel from "@/lib/model/Agency";
 
 export async function POST(req: NextRequest) {
     try {
@@ -12,26 +11,38 @@ export async function POST(req: NextRequest) {
         
         // Create combined slug for filtering - ensure all items are lowercase
         const combinedSlug = [
-            ...data.services.map((s: string) => s.toLowerCase()),
-            data.location.toLowerCase(),
+            ...(data.services || []).map((s: string) => s.toLowerCase()),
+            data.location?.toLowerCase(),
             ...(data.additionalLocations || []).map((l: string) => l.toLowerCase())
-        ];
+        ].filter(Boolean);
 
+        // Prepare the agency data with additional fields
         const agencyData = {
             ...data,
-            slug,
+            agencySlug: slug,
             combinedSlug,
-            createdAt: new Date().toISOString(),
-            rating: 0,
-            reviewCount: 0,
+            createdAt: new Date(),
+            rating: parseFloat(data.google_rating) || 0,
+            reviewCount: parseInt(data.google_review_count) || 0,
+            socialLinks: {
+                facebook: data.socialMedia?.facebook || "",
+                linkedin: data.socialMedia?.linkedin || "",
+                instagram: data.socialMedia?.instagram || "",
+                twitter: data.socialMedia?.twitter || ""
+            }
         };
 
-        const docRef = await addDoc(collection(db, "agencies"), agencyData);
+        // Connect to MongoDB
+        await dbConnect();
+        
+        // Create the agency in MongoDB
+        const agency = new AgencyModel(agencyData);
+        await agency.save();
 
         return NextResponse.json({
             success: true,
             message: "Agency created successfully",
-            id: docRef.id
+            id: agency._id
         });
     } catch (error) {
         console.error("Error creating agency:", error);

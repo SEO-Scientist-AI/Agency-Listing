@@ -7,9 +7,10 @@ export interface ServicesSlice {
   serviceLoading: boolean;
   error: string | null;
   fetchServices: () => Promise<void>;
+  checkIfService: (slug:string)=> boolean;
 }
 
-export const createServicesSlice: StateCreator<ServicesSlice> = (set) => ({
+export const createServicesSlice: StateCreator<ServicesSlice> = (set,get) => ({
     services: [],
     serviceLoading: false,
     error: null,
@@ -26,6 +27,10 @@ export const createServicesSlice: StateCreator<ServicesSlice> = (set) => ({
         set({ error: 'Failed to fetch services data', serviceLoading: false });
       }
     },
+    checkIfService: (slug:string) => {
+      const { services } = get(); 
+      return services.some(service => service.slug === slug);
+    }
 });
 
 

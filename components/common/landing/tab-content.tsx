@@ -47,7 +47,7 @@ const TabContent = ({ tabData,value }: { tabData: TabContentProp, value:string }
     <TabsContent value={value} className="mt-6 ">
       <div className="flex flex-wrap gap-3 justify-center">
         {tabData.slice(0, 20).map((tabItem) =>  (
-          <Link href={`/agency?services=${tabItem.slug}`}  key={tabItem.id}>
+          <Link href={`/agency?services=${tabItem.slug}`}  key={tabItem._id}>
             <motion.button
              
               className={`rounded-full border px-4 py-2 text-sm transition-colors hover:text-signature hover:border-signature`}
@@ -69,7 +69,7 @@ const TabContent = ({ tabData,value }: { tabData: TabContentProp, value:string }
       <div className="flex flex-wrap gap-3 justify-center">
         {tabData.slice(0, 20).map((tabItem) =>  (
             <motion.button
-              key={tabItem.id}
+              key={tabItem._id}
               // onClick={() => handleClick(tabItem.slug)}
               className={`rounded-full border px-4 py-2 text-sm transition-colors hover:text-signature hover:border-signature`}
               whileTap={{ scale: 0.95 }}
@@ -92,7 +92,7 @@ const TabContent = ({ tabData,value }: { tabData: TabContentProp, value:string }
         <TabsContent value={value} className="mt-6 ">
           <div className="flex flex-wrap gap-3 justify-center">
             {uniqueCountry.slice(0, 20).map((tabItem) =>  (
-              <Link href={`/agency?location=${tabItem.countrySlug}`} key={tabItem.id}>
+              <Link href={`/agency?location=${tabItem.countrySlug}`} key={tabItem._id}>
                 <motion.button
                   
                   className={`rounded-full border px-4 py-2 text-sm transition-colors hover:text-signature hover:border-signature`}
@@ -116,7 +116,7 @@ const TabContent = ({ tabData,value }: { tabData: TabContentProp, value:string }
     <TabsContent value={value} className="mt-6 ">
       <div className="flex flex-wrap gap-3 justify-center">
         {uniqueCity.slice(0, 20).map((tabItem) =>  (
-           <Link href={`/agency?location=${tabItem.citySlug}`} key={tabItem.id}>
+           <Link href={`/agency?location=${tabItem.citySlug}`} key={tabItem._id}>
             <motion.button
               
               className={`rounded-full border px-4 py-2 text-sm transition-colors hover:text-signature hover:border-signature`}

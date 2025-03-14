@@ -69,7 +69,6 @@ export function AgencyDetailComponent({ agency }: AgencyDetailComponentProps) {
     if (!agency) {
         return <div>Loading...</div>;
     }
-
     const {
         name = '',
         description = '',

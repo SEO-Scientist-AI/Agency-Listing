@@ -1,7 +1,9 @@
-import { getAgencyById } from "@/lib/firebase/agencies";
+// import { getAgencyById } from "@/lib/firebase/agencies";
 import { AgencyDetailComponent } from "../_components/agency-detail";
 import { notFound } from "next/navigation";
 import { Metadata } from 'next'
+import axiosInstance from "@/lib/axios-instance";
+import { Agency } from "@/lib/model/Agency";
 
 export const revalidate = 3600;
 
@@ -53,11 +55,21 @@ export async function generateMetadata({
 }: { 
   params: Promise<{ 'agency-name': string }> 
 }): Promise<Metadata> {
-  const resolvedParams = await params;
-  const agency = await getAgencyById(resolvedParams['agency-name']);
+  let agency: Agency | null = null;
+  try {
+    const resolvedParams = await params;
+    const agencyParam = resolvedParams['agency-name'];
+    const agencyData = await axiosInstance.get<{success: boolean, data: Agency}>('agency/' + agencyParam);
+    agency = agencyData.data.data;
+  } catch(err) {
+    console.error("Error fetching agency metadata:", err);
+  }
 
   if (!agency) {
-    notFound();
+    return {
+      title: 'Agency Not Found | Agency Spot',
+      description: 'The requested agency could not be found.',
+    };
   }
 
   // Randomly select a template
@@ -91,12 +103,23 @@ export default async function AgencyDetailPage({
 }: { 
   params: Promise<{ 'agency-name': string }> 
 }) {
-  const resolvedParams = await params;
-  const agency = await getAgencyById(resolvedParams['agency-name']);
+  let agency: Agency | null = null;
+  try {
+    const resolvedParams = await params;
+    const agencyData = await axiosInstance.get<{success: boolean, data: Agency}>('agency/' + resolvedParams['agency-name']);
+    
+    if (agencyData.data && agencyData.data.success) {
+      agency = agencyData.data.data;
+    } else {
+      console.error("Agency data structure incorrect:", agencyData);
+    }
+  } catch(err) {
+    console.error("Error fetching agency:", err);
+  }
 
   if (!agency) {
     notFound();
   }
-
+  
   return <AgencyDetailComponent agency={agency} />;
 } 
