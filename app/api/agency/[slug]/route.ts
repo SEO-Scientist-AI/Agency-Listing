@@ -7,7 +7,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     await dbConnect(); 
 
     const { slug } = await params;
-    const trimedSlug = slug.trim():
+    const trimedSlug = slug.trim();
     const agency = await Agency.findOne({ agencySlug:trimedSlug });
 
     if (!agency) {
