@@ -1,0 +1,84 @@
+{
+    "services": [
+        {
+            "serviceName": "Branding",
+            "slug": "branding"
+        },
+        {
+            "serviceName": "Logo Design",
+            "slug": "logo-design"
+        },
+        {
+            "serviceName": "UI/UX Design",
+            "slug": "ui-ux-design"
+        },
+        {
+            "serviceName": "SEO",
+            "slug": "seo"
+        },
+        {
+            "serviceName": "PPC",
+            "slug": "ppc"
+        },
+        {
+            "serviceName": "Social Media Marketing",
+            "slug": "social-media-marketing"
+        },
+        {
+            "serviceName": "Content Marketing",
+            "slug": "content-marketing"
+        },
+        {
+            "serviceName": "Mobile App Development",
+            "slug": "mobile-app-development"
+        },
+        {
+            "serviceName": "Web Design",
+            "slug": "web-design"
+        },
+        {
+            "serviceName": "Software Development",
+            "slug": "software-development"
+        },
+        {
+            "serviceName": "Web Development",
+            "slug": "web-development"
+        },
+        {
+            "serviceName": "eCommerce",
+            "slug": "ecommerce"
+        },
+        {
+            "serviceName": "eCommerce Development",
+            "slug": "ecommerce-development"
+        },
+        {
+            "serviceName": "Public Relations (PR)",
+            "slug": "public-relations"
+        },
+        {
+            "serviceName": "Media Buying",
+            "slug": "media-buying"
+        },
+        {
+            "serviceName": "Copywriting",
+            "slug": "copywriting"
+        },
+        {
+            "serviceName": "Digital Strategy",
+            "slug": "digital-strategy"
+        },
+        {
+            "serviceName": "Advertising",
+            "slug": "advertising"
+        },
+        {
+            "serviceName": "Video Production",
+            "slug": "video-production"
+        },
+        {
+            "serviceName": "Video Marketing",
+            "slug": "video-marketing"
+        }
+    ]
+}

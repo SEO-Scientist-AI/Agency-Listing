@@ -1,7 +1,9 @@
-import { getAgencyById } from "@/lib/firebase/agencies";
+// import { getAgencyById } from "@/lib/firebase/agencies";
 import { AgencyDetailComponent } from "../_components/agency-detail";
 import { notFound } from "next/navigation";
 import { Metadata } from 'next'
+import axiosInstance from "@/lib/axios-instance";
+import { Agency } from "@/lib/model/Agency";
 
 export const revalidate = 3600;
 
@@ -53,8 +55,16 @@ export async function generateMetadata({
 }: { 
   params: Promise<{ 'agency-name': string }> 
 }): Promise<Metadata> {
-  const resolvedParams = await params;
-  const agency = await getAgencyById(resolvedParams['agency-name']);
+  let agency: Agency | null = null;
+  try {
+
+    const resolvedParams = await params;
+    const agencyData = await axiosInstance.get<Agency>('/agencies/' + resolvedParams['agency-name']);
+    agency = agencyData.data;
+  }catch(err){
+    console.log("error",err);
+
+  }
 
   if (!agency) {
     notFound();
@@ -91,8 +101,17 @@ export default async function AgencyDetailPage({
 }: { 
   params: Promise<{ 'agency-name': string }> 
 }) {
-  const resolvedParams = await params;
-  const agency = await getAgencyById(resolvedParams['agency-name']);
+ 
+  let agency: Agency | null = null;
+  try {
+
+    const resolvedParams = await params;
+    const agencyData = await axiosInstance.get<Agency>('/agencies/' + resolvedParams['agency-name']);
+    agency = agencyData.data;
+  }catch(err){
+    console.log("error",err);
+
+  }
 
   if (!agency) {
     notFound();

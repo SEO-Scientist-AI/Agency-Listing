@@ -1,5 +1,4 @@
 import FindAgencies from "../_components/find-agency";
-import { getAllServices, getAllLocations } from "@/lib/firebase/agencies";
 import { DynamicFAQ } from "@/app/agency/_components/dynamic-faq";
 
 // Generate static params for the main list page

@@ -65,7 +65,7 @@ export function ArchiveRelatedAgencies({
         
         // Simply filter out excluded agencies without random sorting
         const filteredAgencies = response.data.agencies
-          .filter((agency: Agency) => !excludeIds.includes(agency.id))
+          .filter((agency: Agency) => !excludeIds.includes(agency._id))
           .slice(0, 3);
 
         setRelatedAgencies(filteredAgencies);
@@ -117,7 +117,7 @@ export function ArchiveRelatedAgencies({
           </div>
           <div className="grid gap-6">
             {relatedAgencies.map((agency) => (
-              <AgencyCard key={agency.id} agency={agency} />
+              <AgencyCard key={agency._id} agency={agency} />
             ))}
           </div>
         </div>

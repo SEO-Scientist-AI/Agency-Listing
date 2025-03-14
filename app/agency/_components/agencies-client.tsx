@@ -178,7 +178,7 @@ export function AgenciesClient({ servicesSlug, locationSlug }: AgenciesClientPro
             <div>
               {agencies.map((agency: Agency) => (
                 <AgencyCard
-                  key={agency.id}
+                  key={agency._id}
                   agency={agency}
                   className="w-full mb-6"
                 />

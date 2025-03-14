@@ -2,26 +2,21 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // db connection import
-import { db } from "@/lib/firebase/config";
+import dbConnect from '@/lib/dbConnect'; 
 
-// libraries imports
-import { collection, getDocs, query} from "firebase/firestore";
-
+// Mongoose model import
+import Location from '@/lib/model/Location'; // Adjust the import path as necessary
 
 export async function GET() {
-    
-    try {
-      
-    let locationQuery = query(collection(db, "locations"));
-      const snapshot = await getDocs(locationQuery);
-    const locations = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-  
+  try {
+    await dbConnect(); // Ensure the database connection is established
+
+    const locations = await Location.find({});
+
+
     return NextResponse.json(locations);
-    } catch (error) {
-      console.error("Error fetching locations:", error);
-      return NextResponse.json({ error: "Failed to fetch data", details: error }, { status: 500 });
-    }
+  } catch (error) {
+    console.error("Error fetching locations:", error);
+    return NextResponse.json({ error: "Failed to fetch data", details: error }, { status: 500 });
   }
+}

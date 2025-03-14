@@ -43,7 +43,7 @@ export function RelatedAgencies({ currentAgency }: RelatedAgenciesProps) {
         
         // Filter out current agency and get random 3 agencies
         const filteredAgencies = response.data.agencies
-          .filter((agency: Agency) => agency.id !== currentAgency.id)
+          .filter((agency: Agency) => agency._id !== currentAgency._id)
           .sort(() => Math.random() - 0.5)
           .slice(0, 3);
 
@@ -86,7 +86,7 @@ export function RelatedAgencies({ currentAgency }: RelatedAgenciesProps) {
         </div>
         <div className="grid gap-8">
           {relatedAgencies.map((agency) => (
-            <AgencyCard key={agency.id} agency={agency} />
+            <AgencyCard key={agency._id} agency={agency} />
           ))}
         </div>
       </div>

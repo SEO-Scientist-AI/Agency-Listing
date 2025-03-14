@@ -1,0 +1,228 @@
+{
+  "industries": [
+    {
+      "industryName": "Agriculture",
+      "slug": "agriculture"
+    },
+    {
+      "industryName": "AI",
+      "slug": "ai"
+    },
+    {
+      "industryName": "Arts",
+      "slug": "arts"
+    },
+    {
+      "industryName": "Automotive",
+      "slug": "automotive"
+    },
+    {
+      "industryName": "Beauty",
+      "slug": "beauty"
+    },
+    {
+      "industryName": "Beer",
+      "slug": "beer"
+    },
+    {
+      "industryName": "Boutique",
+      "slug": "boutique"
+    },
+    {
+      "industryName": "Construction",
+      "slug": "construction"
+    },
+    {
+      "industryName": "Consumer Goods",
+      "slug": "consumer-goods"
+    },
+    {
+      "industryName": "Corporate Services",
+      "slug": "corporate-services"
+    },
+    {
+      "industryName": "Crypto",
+      "slug": "crypto"
+    },
+    {
+      "industryName": "Delivery & Takeaway",
+      "slug": "delivery-takeaway"
+    },
+    {
+      "industryName": "Dental",
+      "slug": "dental"
+    },
+    {
+      "industryName": "Design",
+      "slug": "design"
+    },
+    {
+      "industryName": "eCommerce",
+      "slug": "ecommerce"
+    },
+    {
+      "industryName": "Education",
+      "slug": "education"
+    },
+    {
+      "industryName": "Electronics",
+      "slug": "electronics"
+    },
+    {
+      "industryName": "Energy & Mining",
+      "slug": "energy-mining"
+    },
+    {
+      "industryName": "Entertainment",
+      "slug": "entertainment"
+    },
+    {
+      "industryName": "Fashion",
+      "slug": "fashion"
+    },
+    {
+      "industryName": "Finance",
+      "slug": "finance"
+    },
+    {
+      "industryName": "Fintech",
+      "slug": "fintech"
+    },
+    {
+      "industryName": "Food and Beverage",
+      "slug": "food-and-beverage"
+    },
+    {
+      "industryName": "Gambling",
+      "slug": "gambling"
+    },
+    {
+      "industryName": "Gaming",
+      "slug": "gaming"
+    },
+    {
+      "industryName": "Government",
+      "slug": "government"
+    },
+    {
+      "industryName": "Hardware & Networking",
+      "slug": "hardware-networking"
+    },
+    {
+      "industryName": "Health Care",
+      "slug": "health-care"
+    },
+    {
+      "industryName": "Higher Education",
+      "slug": "higher-education"
+    },
+    {
+      "industryName": "Hobbies & Gifts",
+      "slug": "hobbies-gifts"
+    },
+    {
+      "industryName": "Home & Garden",
+      "slug": "home-garden"
+    },
+    {
+      "industryName": "Hospitality",
+      "slug": "hospitality"
+    },
+    {
+      "industryName": "HR",
+      "slug": "hr"
+    },
+    {
+      "industryName": "Insurance",
+      "slug": "insurance"
+    },
+    {
+      "industryName": "Legal",
+      "slug": "legal"
+    },
+    {
+      "industryName": "Luxury",
+      "slug": "luxury"
+    },
+    {
+      "industryName": "Manufacturing",
+      "slug": "manufacturing"
+    },
+    {
+      "industryName": "Media & Communications",
+      "slug": "media-communications"
+    },
+    {
+      "industryName": "Music",
+      "slug": "music"
+    },
+    {
+      "industryName": "NFT",
+      "slug": "nft"
+    },
+    {
+      "industryName": "Nonprofit",
+      "slug": "nonprofit"
+    },
+    {
+      "industryName": "Other",
+      "slug": "other"
+    },
+    {
+      "industryName": "Pets",
+      "slug": "pets"
+    },
+    {
+      "industryName": "Public Safety",
+      "slug": "public-safety"
+    },
+    {
+      "industryName": "Publishing",
+      "slug": "publishing"
+    },
+    {
+      "industryName": "Real Estate",
+      "slug": "real-estate"
+    },
+    {
+      "industryName": "Recreation & Travel",
+      "slug": "recreation-travel"
+    },
+    {
+      "industryName": "Restaurants",
+      "slug": "restaurants"
+    },
+    {
+      "industryName": "Retail",
+      "slug": "retail"
+    },
+    {
+      "industryName": "Social Networks",
+      "slug": "social-networks"
+    },
+    {
+      "industryName": "Software & IT Services",
+      "slug": "software-it-services"
+    },
+    {
+      "industryName": "Sports",
+      "slug": "sports"
+    },
+    {
+      "industryName": "Supplements",
+      "slug": "supplements"
+    },
+    {
+      "industryName": "Transportation & Logistics",
+      "slug": "transportation-logistics"
+    },
+    {
+      "industryName": "Travel",
+      "slug": "travel"
+    },
+    {
+      "industryName": "Wellness & Fitness",
+      "slug": "wellness-fitness"
+    }
+  ]
+}

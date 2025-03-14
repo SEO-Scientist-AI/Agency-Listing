@@ -285,7 +285,7 @@ export default function HeroSection() {
                                     {services.map((service) => (
                                         <SelectItem
                                             value={service.slug}
-                                            key={service.id}
+                                            key={service._id}
                                         >
                                             {service.serviceName}
                                         </SelectItem>
@@ -303,7 +303,7 @@ export default function HeroSection() {
                                 </SelectTrigger>
                                 <SelectContent className="h-48">
                                     {cities.map((city) => (
-                                        <SelectItem value={city.citySlug} key={city.id}>
+                                        <SelectItem value={city.citySlug} key={city._id}>
                                             {city.cityName}
                                         </SelectItem>
                                     ))}

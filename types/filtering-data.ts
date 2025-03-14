@@ -1,18 +1,18 @@
 export interface Service {
-    id: string;
+    _id: string;
     serviceName: string;
     slug:string
 }
 
 export interface City {
-    id:string;
+    _id:string;
     cityName: string;
     citySlug:string;
     countryName:string;
     countrySlug:string;
 }
 export interface Industry {
-    id:string;
+    _id:string;
     industryName: string;
     slug:string
    

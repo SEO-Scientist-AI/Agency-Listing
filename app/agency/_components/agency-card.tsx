@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Building2, MapPin, DollarSign, Star, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { formatSlug } from "@/lib/firebase/agencies";
+import { formatSlug } from "@/lib/utils";
 import { Agency } from "@/types/agency";
 import { FacebookIcon, LinkedinIcon, InstagramIcon, YoutubeIcon } from "./social-icons";
 
