@@ -52,6 +52,24 @@ export default function RootLayout({
             <html lang="en" suppressHydrationWarning>
                 <head>
                     <link
+                        rel="icon"
+                        type="image/svg+xml"
+                        href="favicon.ico"
+                    />
+                    <link
+                        rel="icon"
+                        type="image/png"
+                        href="favicon.ico"
+                    />
+                    <link
+                        rel="apple-touch-icon"
+                        href="favicon.ico"
+                    />
+                    <link 
+                        rel="manifest" 
+                        href="/site.webmanifest" 
+                    />
+                    <link
                         rel="preload"
                         href="/images/dashboard.png"
                         as="image"
