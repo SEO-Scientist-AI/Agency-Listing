@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Metadata } from 'next'
 import axiosInstance from "@/lib/axios-instance";
 import { Agency } from "@/lib/model/Agency";
+import { getAllAgencySlugServer, getAgencyBySlugServer } from "@/lib/data/fetch-server-data";
 
 export const revalidate = 3600;
 
@@ -50,20 +51,14 @@ const metaTemplates = [
   }
 ];
 
+// Update type for params
 export async function generateMetadata({ 
   params 
 }: { 
   params: Promise<{ 'agency-name': string }> 
 }): Promise<Metadata> {
-  let agency: Agency | null = null;
-  try {
-    const resolvedParams = await params;
-    const agencyParam = resolvedParams['agency-name'];
-    const agencyData = await axiosInstance.get<{success: boolean, data: Agency}>('agency/' + agencyParam);
-    agency = agencyData.data.data;
-  } catch(err) {
-    console.error("Error fetching agency metadata:", err);
-  }
+  const resolvedParams = await params;
+  const agency = await getAgencyBySlugServer(resolvedParams['agency-name']);
 
   if (!agency) {
     return {
@@ -98,24 +93,14 @@ export async function generateMetadata({
   };
 }
 
+// Update the page component to handle Promise params
 export default async function AgencyDetailPage({ 
   params 
 }: { 
   params: Promise<{ 'agency-name': string }> 
 }) {
-  let agency: Agency | null = null;
-  try {
-    const resolvedParams = await params;
-    const agencyData = await axiosInstance.get<{success: boolean, data: Agency}>('agency/' + resolvedParams['agency-name']);
-    
-    if (agencyData.data && agencyData.data.success) {
-      agency = agencyData.data.data;
-    } else {
-      console.error("Agency data structure incorrect:", agencyData);
-    }
-  } catch(err) {
-    console.error("Error fetching agency:", err);
-  }
+  const resolvedParams = await params;
+  const agency = await getAgencyBySlugServer(resolvedParams['agency-name']);
 
   if (!agency) {
     notFound();

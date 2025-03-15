@@ -9,11 +9,32 @@ import IndustryModel from "@/lib/model/Industry";
  * These bypass API routes and directly access MongoDB
  */
 
-export async function getServicesServer() {
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+
+async function withRetry<T>(operation: () => Promise<T>, retries = MAX_RETRIES): Promise<T> {
   try {
     await dbConnect();
-    const services = await ServiceModel.find({}).lean();
-    return services;
+    return await operation();
+  } catch (error) {
+    if (retries > 0) {
+      console.log(`Retrying operation, ${retries} attempts remaining`);
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return withRetry(operation, retries - 1);
+    }
+    throw error;
+  }
+}
+
+export async function getServicesServer() {
+  try {
+    return await withRetry(async () => {
+      const services = await ServiceModel.find({})
+        .select('-__v')  // Exclude version field
+        .lean()
+        .exec();
+      return services;
+    });
   } catch (error) {
     console.error("Error fetching services from server:", error);
     return [];
@@ -22,9 +43,13 @@ export async function getServicesServer() {
 
 export async function getLocationsServer() {
   try {
-    await dbConnect();
-    const locations = await LocationModel.find({}).lean();
-    return locations;
+    return await withRetry(async () => {
+      const locations = await LocationModel.find({})
+        .select('-__v')
+        .lean()
+        .exec();
+      return locations;
+    });
   } catch (error) {
     console.error("Error fetching locations from server:", error);
     return [];
@@ -34,7 +59,10 @@ export async function getLocationsServer() {
 export async function getIndustriesServer() {
   try {
     await dbConnect();
-    const industries = await IndustryModel.find({}).lean();
+    const industries = await IndustryModel.find({})
+      .select('-__v')
+      .lean()
+      .exec();
     return industries;
   } catch (error) {
     console.error("Error fetching industries from server:", error);
@@ -49,28 +77,30 @@ export async function getAgenciesServer(params: any = {}) {
     const { services, location, page = 1, limit = 10 } = params;
     const skip = (page - 1) * limit;
     
-    // Create base query
     let queryConditions: any = {};
 
-    // Handle multiple filters with OR condition
     if (services || location) {
       const serviceFilters = services ? services.split(' ').map((s: string) => s.toLowerCase()) : [];
       const locationFilters = location ? location.split(' ').map((l: string) => l.toLowerCase()) : [];
       const allFilters = [...serviceFilters, ...locationFilters];
 
       if (allFilters.length > 0) {
-        queryConditions.combinedSlug = { $in: allFilters }; // Use $in for OR condition
+        queryConditions.combinedSlug = { $in: allFilters };
       }
     }
     
-    const totalDocuments = await AgencyModel.countDocuments(queryConditions);
+    const [totalDocuments, agencies] = await Promise.all([
+      AgencyModel.countDocuments(queryConditions).exec(),
+      AgencyModel.find(queryConditions)
+        .select('-__v')
+        .sort({ name: 1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+        .exec()
+    ]);
+
     const totalPages = Math.ceil(totalDocuments / limit);
-    
-    const agencies = await AgencyModel.find(queryConditions)
-      .sort({ name: 1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
       
     return {
       agencies,
@@ -92,7 +122,10 @@ export async function getAgenciesServer(params: any = {}) {
 export async function getAgencyBySlugServer(slug: string) {
   try {
     await dbConnect();
-    const agency = await AgencyModel.findOne({ agencySlug: slug }).lean();
+    const agency = await AgencyModel.findOne({ agencySlug: slug })
+      .select('-__v')
+      .lean()
+      .exec();
     return agency;
   } catch (error) {
     console.error("Error fetching agency by slug from server:", error);
@@ -105,8 +138,6 @@ export async function getAgencyCountServer(params: any = {}) {
     await dbConnect();
     
     const { services, location } = params;
-    
-    // Build the query
     let query = {};
 
     if (services || location) {
@@ -115,16 +146,29 @@ export async function getAgencyCountServer(params: any = {}) {
       const allFilters = [...serviceFilters, ...locationFilters];
 
       if (allFilters.length > 0) {
-        query = {
-          combinedSlug: { $in: allFilters }
-        };
+        query = { combinedSlug: { $in: allFilters } };
       }
     }
 
-    const count = await AgencyModel.countDocuments(query);
+    const count = await AgencyModel.countDocuments(query).exec();
     return { count };
   } catch (error) {
     console.error('Error getting agency count from server:', error);
     return { count: 0 };
+  }
+}
+
+export async function getAllAgencySlugServer() {
+  try {
+    await dbConnect();
+    const agencies = await AgencyModel.find({})
+      .select('agencySlug')
+      .lean()
+      .exec();
+    
+    return agencies.map(agency => agency.agencySlug);
+  } catch (error) {
+    console.error("Error fetching agency slugs from server:", error);
+    return [];
   }
 } 

@@ -7,6 +7,11 @@ import { getServices } from "@/lib/services";
 import { getLocations } from "@/lib/locations";
 import axiosInstance from "@/lib/axios-instance";
 import { getServicesServer, getLocationsServer } from "@/lib/data/fetch-server-data";
+import { 
+  PRIORITY_SERVICES, SECONDARY_SERVICES, BASIC_SERVICES,
+  PRIORITY_LOCATIONS, SECONDARY_LOCATIONS, BASIC_LOCATIONS,
+  COMBINATION_LIMITS
+} from "@/lib/data/static-routes";
 
 // Add these interfaces at the top of the file
 interface Service {
@@ -19,34 +24,53 @@ interface Location {
   cityName: string;
 }
 
-// Replace the generateStaticParams function with this static version
+// Helper function to get service tier
+function getServiceTier(service: string) {
+  if (PRIORITY_SERVICES.includes(service)) return 'PRIORITY';
+  if (SECONDARY_SERVICES.includes(service)) return 'SECONDARY';
+  return 'BASIC';
+}
+
+// Helper function to get location tier
+function getLocationTier(location: string) {
+  if (PRIORITY_LOCATIONS.includes(location)) return 'PRIORITY';
+  if (SECONDARY_LOCATIONS.includes(location)) return 'SECONDARY';
+  return 'BASIC';
+}
+
+// Replace the existing generateStaticParams function
 export async function generateStaticParams() {
-  // Define static services and locations for build time
-  const staticServices = [
-    { slug: 'seo' },
-    { slug: 'web-design' },
-    { slug: 'web-development' },
-    { slug: 'digital-marketing' },
-    { slug: 'social-media-marketing' }
-  ];
-  
-  const staticLocations = [
-    { citySlug: 'delhi' },
-    { citySlug: 'mumbai' },
-    { citySlug: 'bangalore' },
-    { citySlug: 'hyderabad' },
-    { citySlug: 'chennai' }
-  ];
-  
-  // Generate all possible service+location combinations (limited set for build time)
   const paths = [];
   
-  for (const service of staticServices) {
-    for (const location of staticLocations) {
-      paths.push({
-        slug: service.slug,
-        secondSlug: location.citySlug
-      });
+  // Process each service according to its tier
+  for (const service of [...PRIORITY_SERVICES, ...SECONDARY_SERVICES, ...BASIC_SERVICES]) {
+    const serviceTier = getServiceTier(service);
+    let locationCount = 0;
+    const limit = COMBINATION_LIMITS[serviceTier];
+    
+    // First add combinations with priority locations
+    for (const location of PRIORITY_LOCATIONS) {
+      if (locationCount >= limit) break;
+      paths.push({ slug: service, secondSlug: location });
+      locationCount++;
+    }
+    
+    // If not at limit, add secondary locations
+    if (locationCount < limit) {
+      for (const location of SECONDARY_LOCATIONS) {
+        if (locationCount >= limit) break;
+        paths.push({ slug: service, secondSlug: location });
+        locationCount++;
+      }
+    }
+    
+    // If still not at limit and it's a priority service, add some basic locations
+    if (locationCount < limit && serviceTier === 'PRIORITY') {
+      for (const location of BASIC_LOCATIONS) {
+        if (locationCount >= limit) break;
+        paths.push({ slug: service, secondSlug: location });
+        locationCount++;
+      }
     }
   }
   

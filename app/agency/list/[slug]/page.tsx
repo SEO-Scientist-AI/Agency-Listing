@@ -7,6 +7,7 @@ import { getServices } from "@/lib/services";
 import { getLocations } from "@/lib/locations";
 import axiosInstance from "@/lib/axios-instance";
 import { getServicesServer, getLocationsServer } from "@/lib/data/fetch-server-data";
+import { STATIC_LOCATIONS, STATIC_SERVICES } from "@/lib/data/static-routes";
 // Add at the top after imports
 const metaTemplates = [
   {
@@ -63,37 +64,16 @@ interface Location {
 
 // Replace the generateStaticParams function with this static version
 export async function generateStaticParams() {
-  // Define static services and locations for build time
-  const staticServices = [
-    { slug: 'seo' },
-    { slug: 'web-design' },
-    { slug: 'web-development' },
-    { slug: 'digital-marketing' },
-    { slug: 'social-media-marketing' },
-    { slug: 'content-marketing' },
-    { slug: 'ppc' },
-    { slug: 'ecommerce' },
-    { slug: 'branding' },
-    { slug: 'mobile-app-development' }
-  ];
-  
-  const staticLocations = [
-    { citySlug: 'delhi' },
-    { citySlug: 'mumbai' },
-    { citySlug: 'bangalore' },
-    { citySlug: 'hyderabad' },
-    { citySlug: 'chennai' },
-    { citySlug: 'kolkata' },
-    { citySlug: 'pune' },
-    { citySlug: 'ahmedabad' },
-    { citySlug: 'jaipur' },
-    { citySlug: 'gurugram' }
-  ];
-  
   // Generate paths for all services and locations
   const paths = [
-    ...staticServices.map((service) => ({ slug: service.slug })),
-    ...staticLocations.map((location) => ({ slug: location.citySlug }))
+    // Generate service paths
+    ...STATIC_SERVICES.map((service) => ({
+      slug: service
+    })),
+    // Generate location paths
+    ...STATIC_LOCATIONS.map((location) => ({
+      slug: location
+    }))
   ];
   
   return paths;
