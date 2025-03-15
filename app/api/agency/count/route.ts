@@ -7,14 +7,14 @@ export async function GET(req: NextRequest) {
     await dbConnect(); 
     const { searchParams } = new URL(req.url);
     const services = searchParams.get("services");
-    const location = searchParams.get("location");
+    const locations = searchParams.get("locations");
 
     // Build the query
     let query = {};
 
-    if (services || location) {
+    if (services || locations) {
       const serviceFilters = services ? services.split(' ').map(s => s.toLowerCase()) : [];
-      const locationFilters = location ? location.split(' ').map(l => l.toLowerCase()) : [];
+      const locationFilters = locations ? locations.split(' ').map(l => l.toLowerCase()) : [];
       const allFilters = [...serviceFilters, ...locationFilters];
 
       if (allFilters.length > 0) {

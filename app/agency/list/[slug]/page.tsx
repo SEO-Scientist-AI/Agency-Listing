@@ -93,15 +93,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
+  // Update count query params based on filter type
   const countData = await axiosInstance.get<{count: number}>('agency/count', {
     params: {
       services: isService ? resolvedParams.slug : undefined,
       locations: isLocation ? resolvedParams.slug : undefined,
     },
   });
-  const count = countData.data.count || ' ';
+  
+  // Ensure count is a positive number or default to 0
+  const count = Math.max(0, countData.data.count || 0);
 
-  const templateIndex = readableName.length % metaTemplates.length;
+  const templateIndex = Math.abs(readableName.length % metaTemplates.length);
   const template = metaTemplates[templateIndex];
 
   if (isService) {

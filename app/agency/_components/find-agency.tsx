@@ -184,7 +184,7 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
           params.append('services', selectedServices.join(' '));
         }
         if (selectedLocations.length > 0) {
-          params.append('location', selectedLocations.join(' '));
+          params.append('locations', selectedLocations.join(' '));
         }
         
         const response = await fetch(`/api/agency/count?${params.toString()}`);
