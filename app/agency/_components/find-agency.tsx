@@ -140,12 +140,15 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
       .map(slug => cities.find(c => c.citySlug === slug)?.cityName)
       .filter(Boolean);
 
+    // Add count prefix only if totalAgencies > 0
+    const countPrefix = totalAgencies > 0 ? `${totalAgencies} ` : '';
+
     if (serviceNames.length && locationNames.length) {
-      return `${totalAgencies} Best ${serviceNames.join(', ')} Companies in ${locationNames.join(', ')} in ${nextYear} (Updated List)`;
+      return `${countPrefix}Best ${serviceNames.join(', ')} Companies in ${locationNames.join(', ')} in ${nextYear} (Updated List)`;
     } else if (serviceNames.length) {
-      return `${totalAgencies} Top ${serviceNames.join(', ')} Companies Worldwide in ${nextYear} (Updated List)`;
+      return `${countPrefix}Top ${serviceNames.join(', ')} Companies Worldwide in ${nextYear} (Updated List)`;
     } else if (locationNames.length) {
-      return `${totalAgencies} Trusted Companies in ${locationNames.join(', ')} in ${nextYear} (Updated List)`;
+      return `${countPrefix}Trusted Companies in ${locationNames.join(', ')} in ${nextYear} (Updated List)`;
     }
     
     return `Top Professional Companies Worldwide in ${nextYear} (Updated List)`;
@@ -160,19 +163,22 @@ export default function FindAgencies({servicesSlug,locationSlug}:FindAgenciesPro
       .map(slug => cities.find(c => c.citySlug === slug)?.cityName)
       .filter(Boolean);
 
+    // Add count prefix only if totalAgencies > 0
+    const countPrefix = totalAgencies > 0 ? `${totalAgencies} ` : '';
+
     if (serviceNames.length && locationNames.length) {
-      return `The Ultimate List of **${totalAgencies} Best ${serviceNames.join(', ')} Agencies in ${locationNames.join(', ')}**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
+      return `The Ultimate List of **${countPrefix}Best ${serviceNames.join(', ')} Agencies in ${locationNames.join(', ')}**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
     }
     
     if (serviceNames.length) {
-      return `The Ultimate List of **${totalAgencies} Best ${serviceNames.join(', ')} Agencies Worldwide**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
+      return `The Ultimate List of **${countPrefix}Best ${serviceNames.join(', ')} Agencies Worldwide**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
     }
 
     if (locationNames.length) {
-      return `The Ultimate List of **${totalAgencies} Best Marketing Agencies in ${locationNames.join(', ')}**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
+      return `The Ultimate List of **${countPrefix}Best Marketing Agencies in ${locationNames.join(', ')}**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
     }
     
-    return `The Ultimate List of **${totalAgencies} Best Marketing Agencies Worldwide**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
+    return `The Ultimate List of **Best Marketing Agencies Worldwide**. Browse trusted agencies, check ratings, and connect with the best marketing experts for your business growth.`;
   };
 
   // Update total agencies count
