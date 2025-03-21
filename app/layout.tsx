@@ -16,6 +16,10 @@ export const metadata: Metadata = {
     },
     description:
         "Find and compare top-rated SEO and marketing agencies on AgencySpot. Read reviews, check ratings, and hire the best agency for your business needs today!",
+    icons: {
+        icon: "/favicon.ico",
+    },
+    manifest: "/site.webmanifest",
     robots: {
         index: true,
         follow: true,
@@ -54,30 +58,7 @@ export default function RootLayout({
                     <link
                         rel="icon"
                         type="image/svg+xml"
-                        href="favicon.ico"
-                    />
-                    <link
-                        rel="icon"
-                        type="image/png"
-                        href="favicon.ico"
-                    />
-                    <link
-                        rel="apple-touch-icon"
-                        href="favicon.ico"
-                    />
-                    <link 
-                        rel="manifest" 
-                        href="/site.webmanifest" 
-                    />
-                    <link
-                        rel="preload"
-                        href="/images/dashboard.png"
-                        as="image"
-                    />
-                    <link
-                        rel="preload"
-                        href="/images/dashboard.png"
-                        as="image"
+                        href="/images/favicon.svg"
                     />
                 </head>
                 <body className={GeistSans.className}>
