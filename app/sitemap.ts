@@ -34,6 +34,12 @@ const getSitemapEntries = cache(async (): Promise<SitemapEntry[]> => {
       lastModified: new Date().toISOString(),
       changeFrequency: "daily",
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/favicon.svg`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: "monthly",
+      priority: 0.1,
     }
   ];
 

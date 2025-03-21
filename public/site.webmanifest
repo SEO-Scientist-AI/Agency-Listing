@@ -1,14 +1,18 @@
 {
     "name": "AgencySpot",
     "short_name": "AgencySpot",
+    "description": "Find and compare top-rated SEO and marketing agencies. Read reviews, check ratings, and hire the best agency for your business needs.",
     "icons": [
         {
-            "src": "/favicon.ico",
-            "sizes": "16x16 32x32 48x48",
-            "type": "image/x-icon"
+            "src": "/favicon.svg",
+            "type": "image/svg+xml",
+            "sizes": "any"
         }
     ],
     "theme_color": "#ffffff",
     "background_color": "#ffffff",
-    "display": "standalone"
+    "display": "standalone",
+    "start_url": "/",
+    "scope": "/",
+    "prefer_related_applications": false
 } 

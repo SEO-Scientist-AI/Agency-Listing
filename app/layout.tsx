@@ -17,7 +17,10 @@ export const metadata: Metadata = {
     description:
         "Find and compare top-rated SEO and marketing agencies on AgencySpot. Read reviews, check ratings, and hire the best agency for your business needs today!",
     icons: {
-        icon: "/favicon.ico",
+        icon: {
+            url: '/favicon.svg',
+            type: 'image/svg+xml',
+        },
     },
     manifest: "/site.webmanifest",
     robots: {
@@ -54,13 +57,6 @@ export default function RootLayout({
     return (
         <AuthWrapper>
             <html lang="en" suppressHydrationWarning>
-                <head>
-                    <link
-                        rel="icon"
-                        type="image/svg+xml"
-                        href="/images/favicon.svg"
-                    />
-                </head>
                 <body className={GeistSans.className}>
                     <Provider>
                         <ThemeProvider

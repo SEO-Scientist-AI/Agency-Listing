@@ -89,7 +89,10 @@ export default function middleware(req: any) {
       '/agency/list',
       '/sitemap.xml',
       '/robots.txt',
-      '/static'
+      '/static',
+      '/favicon.svg',
+      '/site.webmanifest',
+      '/images',
     ];
 
     // Check if the current path starts with any of the public paths
@@ -135,7 +138,7 @@ export default function middleware(req: any) {
 
 export const middlewareConfig = {
   matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/((?!_next|images|favicon\\.svg|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ico|ttf|woff2?|json|webmanifest)).*)",
     "/(api|trpc)(.*)",
   ],
 };

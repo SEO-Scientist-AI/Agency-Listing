@@ -15,7 +15,10 @@ export default function robots(): MetadataRoute.Robots {
           '/agency/list/*',
           '/sitemap.xml',
           '/robots.txt',
-          '/static/*'
+          '/static/*',
+          '/images/*',
+          '/favicon.svg',
+          '/site.webmanifest'
         ],
         disallow: [
           '/dashboard',
